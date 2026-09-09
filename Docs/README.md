@@ -49,7 +49,17 @@ Para comprender la plataforma de forma lógica y estructurada, la documentación
                    │
                    ▼
 ┌──────────────────────────────────────┐
+│   05 — Planificación y Ejecución     │ ──> ¿Cómo nos organizamos y ejecutamos en paralelo?
+└──────────────────┬───────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
 │      06 — Propuesta del Proyecto     │ ──> ¿Cuál es la visión ejecutiva e impacto del proyecto?
+└──────────────────┬───────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│        07 — Cronograma Maestro       │ ──> ¿Cuándo y en qué sprints se entrega cada hito?
 └──────────────────────────────────────┘
 ```
 
@@ -67,6 +77,7 @@ La documentación se estructura en documentos temáticos numerados de forma secu
 | **[04](file:///home/yair/VIGIA_Vision_Systems/Docs/04_estandares_de_desarrollo.md)** | **Estándares de Desarrollo** | *¿Cómo debe escribirse y mantenerse el código?* | `Activo / Fase 0` | Guías de codificación en Python, convenciones de Git, gestión de configuración y variables de entorno, logging estructurado, manejo de excepciones y filosofía de testing sin hardware físico. |
 | **[05](file:///home/yair/VIGIA_Vision_Systems/Docs/05_marco_de_planificacion_y_ejecucion.md)** | **Marco de Planificación y Ejecución** | *¿Cómo nos organizamos, planificamos y ejecutamos en paralelo sin bloqueos?* | `Activo / Sprint 0` | Tríada Roadmap/Cronograma/Contratos, Scrum con desarrollo paralelo por Workstreams (A–I), regla de no bloqueo mediante contratos e interfaces, asignación de roles del equipo y objetivos/DoD del Sprint 0. |
 | **[06](file:///home/yair/VIGIA_Vision_Systems/Docs/06_propuesta_del_proyecto.md)** | **Propuesta del Proyecto** | *¿Qué es VIGIA, qué problema resuelve y qué valor demuestra en el caso rector?* | `Activo / Propuesta` | Propuesta ejecutiva y académica de 2–3 páginas: misión, visión, propuesta de valor, planteamiento del problema, caso rector de caseta inteligente, alcance y proyección a futuro. |
+| **[07](file:///home/yair/VIGIA_Vision_Systems/Docs/07_cronograma_maestro.md)** | **Cronograma Maestro** | *¿Cuándo trabajará cada equipo y qué hitos deben alcanzarse en cada iteración?* | `Activo / S0-S7` | Plan temporal sincronizado (Sep 9 - Dic 16, 2026), matriz de actividades por sprint, hitos H0 a H8, integraciones progresivas y protocolo estricto de protección del deadline. |
 
 ---
 
