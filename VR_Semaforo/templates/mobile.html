@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Semáforo Inteligente</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin: 0; padding: 10px; background-color: #f4f4f9; }
+        video, canvas, img { width: 100%; max-width: 400px; display: block; margin: 10px auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button { font-size: 18px; padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; background-color: #007bff; color: white; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #stopBtn { background-color: #dc3545; }
+        #stopBtn:hover { background-color: #c82333; }
+        
+        /* Estilo para el nuevo panel de métricas */
+        .panel-metricas {
+            text-align: left; 
+            max-width: 400px; 
+            margin: 15px auto; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h2>Cámara del Semáforo</h2>
+    
+    <video id="video" autoplay playsinline muted></video>
+    
+    <label style="display:block; margin:10px; font-weight: bold;">
+        <input type="checkbox" id="verDeteccion"> Mostrar visión artificial (YOLO)
+    </label>
+
+    <img id="imagenAnotada" style="display:none;">
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <div class="panel-metricas">
+        <h3 style="margin-top: 0; text-align: center; color: #333;">Decisión del Agente</h3>
+        <p style="font-size: 18px;">🚗 <b>Vehículos:</b> <span id="res_carritos" style="color: #007bff; font-weight: bold;">--</span></p>
+        <p style="font-size: 18px;">📊 <b>Estado de Tráfico:</b> <span id="res_estado" style="font-weight: bold;">--</span></p>
+        <p style="font-size: 18px;">🚥 <b>Tiempo Verde:</b> <span id="res_verde" style="color: #28a745; font-weight: bold;">--</span> seg</p>
+    </div>
+
+    <button id="startBtn">▶ Iniciar Análisis</button>
+    <button id="stopBtn" style="display:none;">⏹ Detener</button>
+
+    <script>
+        window.SERVER_URL = "{{ server_url }}"; 
+    </script>
+    <script src="{{ url_for('static', filename='js/mobile.js') }}"></script>
+</body>
+</html>

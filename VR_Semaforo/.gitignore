@@ -1,0 +1,28 @@
+*/venv# 🔐 Archivos sensibles
+cert.pem
+key.pem
+*.pem
+
+dataset_dudoso/
+
+.env
+.env.*
+
+# 🐍 Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 🧪 Virtual env
+venv/
+.venv/
+
+# 🧾 Logs
+*.log
+
+# 💻 OS basura
+.DS_Store
+Thumbs.db
+# Modelos YOLO
+*.pt

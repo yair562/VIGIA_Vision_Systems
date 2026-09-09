@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contador de Carritos</title>
+</head>
+<body>
+
+    <h1>Contador de Carritos</h1>
+
+    <button onclick="capturar()">
+        Capturar Imagen
+    </button>
+
+    <p id="resultado"></p>
+
+    <script>
+        async function capturar() {
+        
+            const response = await fetch("/capture", {
+                method: "POST"
+            });
+        
+            const data = await response.json();
+        
+            if(data.success){
+                document.getElementById("resultado").innerText =
+                    "Carritos detectados: " + data.carritos;
+            } else {
+                document.getElementById("resultado").innerText =
+                    "Error en visión";
+            }
+        }
+        </script>
+
+</body>
+</html>

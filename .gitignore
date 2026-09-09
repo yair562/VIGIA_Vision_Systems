@@ -1,0 +1,136 @@
+# ==============================================================================
+# VIGIA Vision Systems — .gitignore
+# Repositorio oficial para Python, Computer Vision, AI/ML, IoT y Desarrollo Web
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Entornos Virtuales y Empaquetado Python
+# ------------------------------------------------------------------------------
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ------------------------------------------------------------------------------
+# 2. Bytecode y Cachés de Python
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ------------------------------------------------------------------------------
+# 3. Variables de Entorno, Credenciales y Secretos
+# ------------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+
+# ------------------------------------------------------------------------------
+# 4. Archivos de Entorno de Desarrollo (IDEs y Editores)
+# ------------------------------------------------------------------------------
+.vscode/
+!.vscode/settings.json.example
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.directory
+
+# ------------------------------------------------------------------------------
+# 5. Archivos del Sistema Operativo
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ------------------------------------------------------------------------------
+# 6. Logs, Diagnóstico y Archivos Temporales
+# ------------------------------------------------------------------------------
+logs/
+*.log
+*.log.*
+*.pid
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# ------------------------------------------------------------------------------
+# 7. Herramientas de Testing y Cobertura
+# ------------------------------------------------------------------------------
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+htmlcov/
+*.cover
+
+# ------------------------------------------------------------------------------
+# 8. Visión por Computadora, AI/ML y Datasets Temporales
+# (Nota: Se ignoran cachés y artefactos pesados temporales.
+#  La política definitiva de versionado de modelos/datasets se definirá en Fase 1/2)
+# ------------------------------------------------------------------------------
+# Cachés de frameworks de inferencia
+runs/
+wandb/
+.model_cache/
+*.onnx.cache
+*.engine
+
+# Archivos de video y grabaciones temporales de depuración
+*.mp4.tmp
+*.avi.tmp
+*.mkv.tmp
+recordings_temp/
+captures_temp/
+
+# Datasets locales de prueba o anotación temporal
+dataset_temp/
+data_raw/
+data_annotated_temp/
+
+# ------------------------------------------------------------------------------
+# 9. Hardware, Microcontroladores y Artefactos Compilados
+# ------------------------------------------------------------------------------
+*.hex
+*.bin
+*.elf
+.pio/
+.pioenvs/
