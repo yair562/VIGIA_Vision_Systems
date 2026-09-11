@@ -146,19 +146,21 @@ coordina la dirección general del producto y mantiene alineados los diferentes 
 
 # 4. Workstreams Oficiales
 
-El trabajo y el cronograma de VIGIA se estructuran mediante 9 Workstreams especializados:
+El trabajo y el cronograma de VIGIA se estructuran mediante 8 Workstreams especializados y coordinados, normalizados sobre el equipo oficial de 6 integrantes:
 
-| ID | Workstream | Alcance Principal |
-| :---: | :--- | :--- |
-| **A** | **Product & Architecture** | Visión del producto, priorización del backlog, arquitectura sistémica, gobierno técnico y límites de módulos. |
-| **B** | **AI / Computer Vision** | Captura de video, detección vehicular, localización de placas, LPR/OCR, datasets y benchmarks de inferencia. |
-| **C** | **Backend** | Máquina de estados de carril, reglas de acceso, lógica de invariantes de seguridad, persistencia y servicios core. |
-| **D** | **Frontend / Dashboard** | Interfaz web de supervisión operativa, renderizado en tiempo real, alertas y controles manuales autorizados. |
-| **E** | **Hardware / IoT** | Circuitos embebidos, firmware (Arduino/ESP32), sensores físicos de presencia/carrera, servomotores y protocolo serial. |
-| **F** | **DevOps / Infrastructure** | Entornos de desarrollo, pipelines de testing automatizado, contenedores ligeros para borde y empaquetado Edge. |
-| **G** | **Data** | Modelado relacional de bitácoras, persistencia de evidencias, pipeline de datos dudosos y telemetría de rendimiento. |
-| **H** | **Marketing / Market Research** | Investigación de mercado, perfiles de usuario, análisis de competencia, dimensionamiento de producto y viabilidad comercial. |
-| **I** | **Institutional Web** | Presencia institucional del proyecto VIGIA, documentación pública, identidad de marca y portal de divulgación. |
+| ID | Workstream | Alcance Principal | Responsables Principales | Participación / Apoyo |
+| :---: | :--- | :--- | :--- | :--- |
+| **A** | **Product & Architecture** | Visión del producto, priorización del backlog, arquitectura sistémica, gobierno técnico y contratos de interfaces. | **Yair + Josue** | Todo el equipo |
+| **B** | **AI / Computer Vision / Data** | Captura de video, detección vehicular, localización de placas, LPR/OCR, datasets y benchmarks de inferencia. | **Estefany** | Naty (QA) |
+| **C** | **Backend / Core / Automation** | Máquina de estados de carril, reglas de acceso deterministas, persistencia local y servicios de dominio. | **Vianey** | Josue (Arquitectura) |
+| **D** | **Frontend / Dashboard / QA / BA** | Interfaz web de supervisión operativa, renderizado en tiempo real, alertas, UX/UI y aseguramiento de calidad (QA). | **Naty** | Vianey (API) |
+| **E** | **Hardware / Embedded / IoT** | Circuitos embebidos, firmware (Arduino/ESP32), sensores físicos de presencia/carrera, servomotores y protocolo serial. | **Ernesto** | Vianey (Serial Core) |
+| **F** | **DevOps / Infrastructure** | Entornos de desarrollo reproducibles, pipelines de testing automatizado, linters y empaquetado local. | **Vianey** | Yair (CTO) |
+| **G** | **Marketing / Market Research** | Investigación de mercado, perfiles de usuario, análisis de competencia, propuesta de valor y difusión pública. | **Yair + Josue** | Naty, Vianey, Estefany (Transversal) |
+| **H** | **Security / Information Governance** | Invariantes de seguridad física (*fail-safe*), control de acceso, gobernanza técnica y protección de datos. | **Yair + Ernesto** | Josue, Vianey |
+
+> **Integración de Presencia Web Institucional (Antes "Workstream I"):**  
+> Para mantener una estructura limpia y sin silos artificiales, el desarrollo del portal y difusión web se consolida formalmente como una **actividad transversal compartida** entre **Marketing / Producto (Workstreams A/G — Josue/Yair)** y **Frontend / UI (Workstream D — Naty)**, evitando la dispersión en una novena área independiente.
 
 Cada Workstream cuenta con:
 * **Responsable principal** y participantes asignados.
@@ -170,6 +172,7 @@ Cada Workstream cuenta con:
 * **Puntos de integración** formal con los demás Workstreams.
 
 > **Nota:** Los Workstreams no representan silos jerárquicos independientes, sino **líneas de trabajo especializadas y coordinadas dentro de un esfuerzo de ingeniería unificado**.
+
 
 ---
 
@@ -208,99 +211,107 @@ Antes de iniciar la construcción formal de las capacidades de VIGIA en el mundo
 ### Objetivo del Sprint 0
 > *Preparar al equipo, producto, arquitectura, herramientas, responsabilidades y mecanismos de trabajo necesarios para iniciar el desarrollo de VIGIA de manera coordinada y sin bloqueos.*
 
-### Asignación de Roles y Responsabilidades en Sprint 0:
+### 6.1 Asignación de Roles y Responsabilidades Principales
 
-#### Product & Project Management
-* **Yahir — Project Manager / CIO**
-  * Gobierno inicial y marco de trabajo de VIGIA.
-  * Definición y aplicación del marco Scrum adaptado.
-  * Organización general del equipo y asignación formal de roles.
-  * Preparación de los contratos de trabajo por entregables.
-  * Coordinación general, facilitación de ceremonias y planificación inicial.
+#### Project Management & CTO
+* **Yair — Project Manager + CTO**
+  * Coordinar el proyecto, planificar actividades, dar seguimiento al cronograma y gestionar riesgos.
+  * Dirigir las decisiones tecnológicas globales y asegurar la viabilidad técnica del sistema.
+  * Definición y aplicación del marco Scrum adaptado y facilitación de ceremonias.
+  * Preparación de los contratos de trabajo por entregables y gestión de dependencias.
+  * Responsable principal de **Documentation** y co-responsable de **Marketing & Market Research** y **Security**.
 
-#### Product & Architecture
-* **Josué — Product Owner / System Architect**
-  * Construcción inicial y mantenimiento del Product Backlog central.
-  * Definición funcional de las necesidades del producto (Caseta Inteligente).
-  * Levantamiento de requisitos iniciales e historias de usuario base.
-  * Definición de la arquitectura base del sistema y contratos de datos entre módulos.
-  * Identificación temprana de dependencias críticas y resolución de decisiones arquitectónicas.
+#### Product Ownership & System Architecture
+* **Josue — Product Owner + System Architect**
+  * Definir la visión del producto y gestionar/priorizar los requisitos del sistema.
+  * Construcción inicial, administración y mantenimiento del Product Backlog central.
+  * Diseñar la arquitectura general de VIGIA y los contratos de datos entre módulos (`VIGIA_Core/`, interfaces).
+  * Definición funcional de las necesidades del producto (Caseta Inteligente) e historias de usuario base.
+  * Co-responsable principal de **Marketing & Market Research** y participante en **Security**.
 
-#### Hardware / IoT
-* **Ernesto — CTO / Hardware & Embedded / IoT**
-  * Arquitectura inicial del subsistema de hardware y control embebido.
-  * Inventario técnico de componentes (microcontroladores, sensores, actuadores, fuentes de poder).
+#### Hardware, IoT & CIO
+* **Ernesto — Hardware / Embedded IoT Engineer + CIO**
+  * Diseñar e integrar cámaras, sensores, dispositivos IoT y sistemas embebidos (`VIGIA_IoT/`).
+  * Gestionar la información, inventario técnico y apoyar la seguridad y gobernanza de la información.
   * Identificación y selección de sensores de verificación física (finales de carrera, lazo magnético, presencia).
-  * Revisión de protocolos de comunicación física (UART/Serial, tramas de comando, baudrates, timeouts).
-  * Definición y montaje del banco de pruebas y entorno de prototipado físico.
+  * Revisión y definición de protocolos de comunicación física (UART/Serial, tramas de comando, baudrates, timeouts).
+  * Montaje del banco de pruebas y entorno de prototipado físico / maqueta.
+  * Co-responsable principal de **Security**.
 
-#### AI / Computer Vision
-* **Stephanie — AI / Computer Vision Engineer / Data Engineer**
-  * Arquitectura inicial del pipeline de percepción visual.
-  * Identificación de necesidades de datos (imágenes de placas, formatos de video, iluminación).
+#### AI, Computer Vision & Data Engineering
+* **Estefany — AI / Computer Vision Engineer + Data Engineer**
+  * Desarrollar e integrar modelos de IA y visión computacional (`VIGIA_Vision/`).
+  * Procesamiento de imágenes y video, localización y detección vehicular, y reconocimiento óptico de matrículas (LPR/OCR).
+  * Identificación de necesidades de datos, preparación de datasets, pipelines y gestión de datos para los modelos.
   * Investigación tecnológica y benchmarks de inferencia en hardware edge.
-  * Definición inicial del pipeline de captura, preprocesamiento y estructuración de la observación.
-* **Julio + Ever — Computer Vision Specialists**
-  * Investigación técnica de modelos de detección vehicular y localización de matrículas.
-  * Evaluación de alternativas de OCR ligero (Tesseract, EasyOCR, modelos dedicados).
-  * Análisis de los algoritmos previos en `VR_Semaforo/vision/` para auditoría y rescate.
-  * Apoyo técnico especializado a la definición del pipeline de visión.
+  * Participante en **Marketing & Market Research**, **Testing & Integration** y **Documentation**.
 
 > *Nota de Ingeniería:* Durante el Sprint 0 **no es obligatorio iniciar la implementación de detección o entrenamiento**. El objetivo primordial es evaluar, diseñar y preparar correctamente el dominio antes de codificar la Capacidad 1.
 
-#### Backend / DevOps
-* **Vianey — Backend Engineer / DevOps Engineer**
-  * Arquitectura inicial del backend y servicios de estado (`VIGIA_Core`).
-  * Preparación y estandarización del entorno de desarrollo unificado.
-  * Configuración de la estructura inicial del repositorio y dependencias limpias.
-  * Identificación de necesidades de persistencia local (diseño preliminar de esquemas SQLite).
-  * Preparación de la infraestructura de automatización de pruebas y linters.
+#### Backend & DevOps Engineering
+* **Vianey — Backend Engineer + DevOps Engineer**
+  * Desarrollar APIs (`VIGIA_API/`), lógica de negocio, gestión de datos, eventos y alertas (`VIGIA_Automation/`).
+  * Administrar entornos de desarrollo, despliegues, CI/CD, infraestructura de pruebas automatizadas y monitoreo.
+  * Arquitectura inicial de servicios de persistencia local (diseño de esquemas SQLite) y adaptadores de datos.
+  * Configuración de la estructura inicial del repositorio, estándares de dependencias y linters.
+  * Participante en **Security**, **Marketing & Market Research**, **Testing & Integration** y **Documentation**.
 
-#### Frontend / Business Analysis
-* **Naty — Frontend Engineer / Business Analyst**
-  * Identificación y análisis de necesidades del operador humano en caseta.
-  * Estructura inicial de flujos de interacción y wireframes UX/UI.
-  * Arquitectura inicial del Dashboard operativo de supervisión (`VIGIA_Dashboard`).
-  * Definición preliminar de los estados del carril y vistas requeridas para la supervisión en vivo.
-
-#### Dashboard / Web
-* **Jonathan — Dashboard & Web Developer**
-  * Apoyo en el diseño e implementación técnica de la interfaz del Dashboard.
-  * Preparación de la estructura base del proyecto web (HTML/CSS/JS o framework seleccionado).
-  * Análisis inicial y arquitectura del sitio institucional de VIGIA.
-  * Identificación de requerimientos técnicos comunes entre ambas interfaces (Dashboard vs. Web Institucional).
-
-#### Marketing / Market Research
-* **Ale — Marketing & Market Research**
-  * Investigación inicial del mercado de control de accesos vehiculares y automatización física.
-  * Identificación y tipificación de clientes potenciales, administradores y operadores finales.
-  * Análisis preliminar de soluciones competidoras y alternativas existentes en el mercado.
-  * Identificación de oportunidades clave de diferenciación y propuesta de valor del producto VIGIA.
+#### Frontend, QA & Business Analysis
+* **Naty — Frontend Engineer + QA + Business Analyst**
+  * Desarrollar la interfaz visual y el dashboard operativo de supervisión (`VIGIA_Dashboard/`).
+  * Identificación y análisis de necesidades del operador humano en caseta, UX/UI y wireframes de interacción.
+  * Responsable principal de **Testing & Integration**: diseño de estrategia de QA, pruebas funcionales, de integración y validación integral del sistema.
+  * Participante en **Marketing & Market Research** y **Documentation**.
 
 ---
 
-# 7. Resultado Esperado del Sprint 0 (*Definition of Done*)
+### 6.2 Responsabilidades Transversales
 
-El **Sprint 0** se considerará formalmente concluido cuando el proyecto cuente, como mínimo, con los siguientes entregables verificables:
+Estas actividades no constituyen cargos adicionales independientes; son responsabilidades compartidas que todos los integrantes apoyan activamente:
+
+| Área Transversal | Responsable Principal | Participación del Equipo |
+| :--- | :--- | :--- |
+| **Marketing & Market Research** | Yair + Josue | Naty, Vianey y Estefany |
+| **Security** | Yair + Ernesto | Josue + Vianey |
+| **Documentation** | Yair | Todos |
+| **Testing & Integration** | Naty | Todos |
+
+
+---
+
+# 7. Estado de Cierre del Sprint 0 (*Definition of Done*)
+
+El **Sprint 0** se evalúa formalmente con el estado:
+
+> **ESTADO OFICIAL: COMPLETADO CON PENDIENTES MENORES DE SANEAMIENTO DOCUMENTAL**
+
+### Verificación de Entregables del Sprint 0:
 
 ```text
-✓ Equipo organizado con gobernanza clara
-✓ Roles técnicos y de gestión unívocamente definidos
-✓ Responsabilidades y ownership por componente asignados
+✓ Equipo organizado con gobernanza clara (Yair -> Josue -> Áreas Técnicas)
+✓ Roles técnicos y de gestión unívocamente definidos (6 integrantes)
+✓ Responsabilidades y ownership por componente asignados (Docs/01)
 ✓ Contratos de trabajo por entregables preparados
-✓ Marco Scrum adaptado y ceremonias establecidas
-✓ Product Backlog inicial construido y priorizado
-✓ Roadmap orientado a capacidades aprobado y congelado
-✓ Cronograma base temporal alineado con el Roadmap
-✓ Arquitectura sistémica y fronteras de módulos formalizadas
-✓ Workstreams (A–I) activos con objetivos delimitados
-✓ Interfaces iniciales y contratos de datos identificados
-✓ Entornos de desarrollo locales estandarizados
-✓ Repositorio VIGIA organizado bajo estándares limpios
-✓ Criterios iniciales de aceptación definidos por entregable
-✓ Mecanismo de revisión periódica e integración continua acordado
+✓ Marco Scrum adaptado y ceremonias establecidas (Docs/05)
+✓ Product Backlog inicial y caso rector de Caseta formalizado (Docs/09)
+✓ Roadmap orientado a capacidades aprobado y congelado (Docs/03)
+✓ Cronograma base temporal alineado con el Roadmap (Docs/07)
+✓ Arquitectura sistémica y fronteras de módulos formalizadas (Docs/02)
+✓ Workstreams (A–I) activos y normalizados sobre los 6 integrantes
+✓ Matriz de riesgos inicial consolidada (Docs/08)
+✓ Entornos de desarrollo locales estandarizados (.env, .gitignore, PEP 8)
+✓ Repositorio VIGIA organizado bajo estándares limpios (Fase 0)
 ```
 
-> **Criterio Fundamental:**  
-> El Sprint 0 **no tiene como objetivo demostrar todavía las capacidades físicas finales de VIGIA**.  
-> Su propósito exclusivo es **construir las condiciones técnicas, organizacionales y metodológicas necesarias para desarrollarlas con velocidad, rigor y sin bloqueos**.
+---
+
+# 8. Planificación y Alcance del Sprint 1
+
+El **Sprint 1 (14 al 27 de septiembre de 2026)** marca el inicio de la construcción formal del sistema, orientado a cinco entregables críticos:
+
+1. **Requisitos Detallados:** Refinamiento del catálogo de Requisitos Funcionales (RF), Requisitos No Funcionales (RNF) y reglas de negocio (`Docs/09_especificacion_de_requisitos.md`). *(Responsables: Josue + Naty)*.
+2. **User Stories:** Redacción y estimación de Historias de Usuario con criterios de aceptación en formato `Given-When-Then`. *(Responsables: Josue + Naty)*.
+3. **Auditoría Técnica de `VR_Semaforo/`:** Análisis del prototipo de referencia para rescatar rutinas de OpenCV y comunicación serial con Arduino. *(Responsables: Ernesto + Estefany + Vianey)*.
+4. **Contratos de Interfaces:** Especificación formal de esquemas Pydantic (`ObservationEvent`, `Decision`, `Command`, `VerificationEvent`) y tramas seriales IoT. *(Responsables: Josue + Vianey + Ernesto + Estefany)*.
+5. **Validación de Matriz de Riesgos:** Revisión quincenal y ajuste de los riesgos prioritarios del proyecto (`Docs/08_matriz_de_riesgos.md`). *(Responsables: Yair + Ernesto)*.
+

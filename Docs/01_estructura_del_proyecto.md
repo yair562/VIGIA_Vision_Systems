@@ -28,12 +28,19 @@ VIGIA_Vision_Systems/
 │
 ├── README.md                          # Visión general, ciclo fundamental y caso rector (Caseta)
 │
-├── Docs/                              # Documentación técnica, conceptual y de estándares
+├── Docs/                              # Documentación técnica, conceptual y de estándares (01 al 09)
 │   ├── README.md                      # Índice maestro y progresión conceptual
 │   ├── 01_estructura_del_proyecto.md  # [Este documento] Estructura, fronteras y ownership
 │   ├── 02_arquitectura_del_sistema.md # El ciclo físico, flujo de control y componentes
 │   ├── 03_roadmap.md                  # Hoja de ruta orientada a capacidades del producto
-│   └── 04_estandares_de_desarrollo.md # Guías de código simple, Git, testing y disciplina técnica
+│   ├── 04_estandares_de_desarrollo.md # Guías de código simple, Git, testing y disciplina técnica
+│   ├── 05_marco_de_planificacion_y_ejecucion.md # Marco Scrum paralelo y Workstreams
+│   ├── 06_propuesta_del_proyecto.md   # Propuesta ejecutiva y académica
+│   ├── 07_cronograma_maestro.md       # Plan temporal detallado (Sep-Dic 2026)
+│   ├── 08_matriz_de_riesgos.md        # Matriz consolidada de riesgos y contingencias
+│   ├── 09_especificacion_de_requisitos.md # Especificación de RF, RNF e Historias de Usuario
+│   ├── Gest_Proy_Soft/                # Soporte académico y plantillas UX/UI (PDFs y PPTXs)
+│   └── Archive/                       # Archivo histórico y borradores previos
 │
 ├── VR_Semaforo/                       # [Proyecto de Referencia / PoC funcional] (Intacto)
 │   ├── app.py                         # Prototipo previo funcional de semáforo inteligente
@@ -233,17 +240,40 @@ La siguiente secuencia describe cómo colaboran los módulos para cumplir el cic
 
 # 5. Mapeo de Roles y Ownership del Equipo
 
-Para garantizar la correcta ejecución del proyecto y evitar colisiones, cada dominio cuenta con responsables técnicos asignados, coordinados bajo el marco formal de trabajo (*ver detalle en [05 — Marco de Planificación y Ejecución](file:///home/yair/VIGIA_Vision_Systems/Docs/05_marco_de_planificacion_y_ejecucion.md)*):
+Para garantizar la correcta ejecución del proyecto y evitar colisiones, cada dominio cuenta con responsables técnicos asignados, coordinados bajo el marco formal de trabajo (*ver detalle en [05 — Marco de Planificación y Ejecución](./05_marco_de_planificacion_y_ejecucion.md)*):
 
-| Integrante | Rol Oficial | Workstream / Módulos bajo su Ownership |
+### 5.1 Equipo y Responsabilidades Principales
+
+| Integrante | Cargo | Responsabilidades Principales | Módulos / Workstream Principal |
+| :--- | :--- | :--- | :--- |
+| **Yair** | Project Manager + CTO | Coordinar el proyecto, planificar actividades, dar seguimiento al cronograma, gestionar riesgos y dirigir las decisiones tecnológicas. | Dirección de Proyecto, Gobierno Scrum, Decisiones Tecnológicas Globales |
+| **Josue** | Product Owner + System Architect | Definir la visión del producto, gestionar y priorizar requisitos, administrar el Product Backlog y diseñar la arquitectura general de VIGIA. | `VIGIA_Core/`, Product Backlog, Arquitectura de Sistema, Interfaces |
+| **Ernesto** | Hardware / Embedded IoT Engineer + CIO | Diseñar e integrar cámaras, sensores, dispositivos IoT y sistemas embebidos; gestionar la información y apoyar la seguridad y gobernanza de la información. | `VIGIA_IoT/`, Microcontroladores (Arduino/ESP32), Sensores, Actuadores y Maqueta |
+| **Naty** | Frontend Engineer + QA + Business Analyst | Desarrollar la interfaz y dashboard, analizar requisitos y realizar pruebas funcionales, de integración y validación del sistema. | `VIGIA_Dashboard/`, Pruebas y QA, Análisis de Negocio / UX |
+| **Vianey** | Backend Engineer + DevOps Engineer | Desarrollar APIs, lógica de negocio, gestión de datos, eventos y alertas; administrar entornos, despliegues, CI/CD, infraestructura y monitoreo. | `VIGIA_API/`, `VIGIA_Automation/`, `VIGIA_Core/`, CI/CD, DevOps, Persistencia |
+| **Estefany** | AI / Computer Vision Engineer + Data Engineer | Desarrollar e integrar modelos de IA y visión computacional, procesamiento de imágenes y video, datasets, pipelines y gestión de datos para los modelos. | `VIGIA_Vision/`, Pipeline Perceptual, Datasets, Inferencia |
+
+---
+
+### 5.2 Responsabilidades Transversales
+
+Estas no son cargos adicionales, sino actividades transversales que todo el equipo debe apoyar de manera coordinada:
+
+| Área Transversal | Responsable Principal | Participación del Equipo |
 | :--- | :--- | :--- |
-| **Yahir** | Project Manager / CIO | **Workstream A** — Gobierno Scrum, Contratos, Planificación y Coordinación General |
-| **Josué** | Product Owner / System Architect | **Workstream A** — Product Backlog, Arquitectura Base, `VIGIA_Core/`, Integración del Ciclo |
-| **Ernesto** | CTO / Hardware & Embedded / IoT | **Workstream E** — `VIGIA_IoT/`, Microcontroladores (Arduino/ESP32), Sensores, Actuadores y Maqueta |
-| **Stephanie** | AI / Computer Vision Engineer / Data Engineer | **Workstream B & G** — `VIGIA_Vision/`, Pipeline Perceptual, LPR/OCR, Datasets y Telemetría |
-| **Julio + Ever** | Computer Vision Specialists | **Workstream B** — Modelos de Detección, Benchmark de OCR, Auditoría de `VR_Semaforo/vision/` |
-| **Vianey** | Backend Engineer / DevOps Engineer | **Workstream C & F** — `VIGIA_API/`, Servicios de Persistencia (SQLite), Entorno de CI/DevOps |
-| **Naty** | Frontend Engineer / Business Analyst | **Workstream D** — Requisitos de Usuario, UX/UI, Wireframes, Arquitectura de `VIGIA_Dashboard/` |
-| **Jonathan** | Dashboard & Web Developer | **Workstream D & I** — Implementación de `VIGIA_Dashboard/`, Interfaces Web, Sitio Institucional VIGIA |
-| **Ale** | Marketing & Market Research | **Workstream H** — Investigación de Mercado, Validación de Clientes, Análisis de Competencia |
+| **Marketing & Market Research** | Yair + Josue | Naty, Vianey y Estefany |
+| **Security & Information Governance** | Yair + Ernesto | Josue + Vianey |
+| **Documentation & Project Knowledge** | Yair (Coordinación) | Todos |
+| **Testing & System Validation** | Naty (Coordinación QA) | Todos |
+
+---
+
+### 5.3 Distinción de Autoridad Arquitectónica vs. Ownership de Implementación
+
+Para asegurar una gobernanza técnica ordenada y evitar conflictos de integración:
+
+* **Autoridad Arquitectónica Global (Yair + Josue):** Tienen la atribución exclusiva de aprobar cambios estructurales, modelos canónicos de dominio, interfaces públicas entre módulos y modificaciones a los contratos de datos.
+* **Ownership de Implementación Técnica:** Los desarrolladores asignados (Ernesto en IoT, Estefany en Vision, Vianey en Backend/DevOps/Core, Naty en Dashboard/QA) lideran la codificación interna de sus componentes, subordinados a los contratos e invariantes aprobados.
+
+
 

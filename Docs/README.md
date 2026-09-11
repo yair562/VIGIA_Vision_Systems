@@ -1,4 +1,4 @@
-# VIGIA Vision Systems — Repositorio Central de Documentación
+﻿# VIGIA Vision Systems — Repositorio Central de Documentación
 
 Bienvenido a la base de documentación técnica, arquitectónica y metodológica de **VIGIA Vision Systems**.
 
@@ -8,12 +8,10 @@ Bienvenido a la base de documentación técnica, arquitectónica y metodológica
 
 El propósito fundamental de este directorio es actuar como la **fuente única de verdad** técnica para el diseño, evolución y gobernanza de la plataforma.
 
-En proyectos de alta complejidad que combinan Visión Artificial, Inteligencia Artificial, Hardware IoT, Microcontroladores, Automatización en tiempo real y Sistemas Web, la ausencia de especificaciones formales genera silos de trabajo, dependencias circulares y deuda técnica inmediata.
-
 Esta documentación garantiza que:
 * Las responsabilidades de cada módulo y de cada integrante estén formalmente delimitadas.
 * Las decisiones arquitectónicas se fundamenten en principios de ingeniería de software sólidos (desacoplamiento, abstracción de hardware y modelos).
-* La transición desde el prototipo actual (`VR_Semaforo`) hacia la arquitectura definitiva de `VIGIA` ocurra de manera metódica y controlada.
+* La transición desde el prototipo de referencia (`VR_Semaforo/`) hacia la arquitectura definitiva de `VIGIA` ocurra de manera metódica y controlada.
 * Los contratos de interfaz y eventos se definan antes de la implementación de código dependiente.
 
 ---
@@ -34,17 +32,12 @@ Para comprender la plataforma de forma lógica y estructurada, la documentación
                    │
                    ▼
 ┌──────────────────────────────────────┐
-│          03 — Roadmap                │ ──> ¿En qué orden construiremos el sistema?
+│          03 — Roadmap                │ ──> ¿En qué orden construiremos las capacidades?
 └──────────────────┬───────────────────┘
                    │
                    ▼
 ┌──────────────────────────────────────┐
-│     04 — Estándares de Desarrollo    │ ──> ¿Cómo debe escribirse y mantenerse el código?
-└──────────────────┬───────────────────┘
-                   │
-                   ▼
-┌──────────────────────────────────────┐
-│   05 — Planificación y Ejecución     │ ──> ¿Cómo nos organizamos y ejecutamos en paralelo?
+│     04 — Estándares de Desarrollo    │ ──> ¿Cómo debe escribirse y probarse el código?
 └──────────────────┬───────────────────┘
                    │
                    ▼
@@ -54,48 +47,50 @@ Para comprender la plataforma de forma lógica y estructurada, la documentación
                    │
                    ▼
 ┌──────────────────────────────────────┐
-│      06 — Propuesta del Proyecto     │ ──> ¿Cuál es la visión ejecutiva e impacto del proyecto?
+│      06 — Propuesta del Proyecto     │ ──> ¿Cuál es la visión ejecutiva e impacto?
 └──────────────────┬───────────────────┘
                    │
                    ▼
 ┌──────────────────────────────────────┐
 │        07 — Cronograma Maestro       │ ──> ¿Cuándo y en qué sprints se entrega cada hito?
+└──────────────────┬───────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│      08 — Matriz de Riesgos          │ ──> ¿Qué riesgos existen y cómo se mitigan?
+└──────────────────┬───────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│    09 — Especificación Requisitos    │ ──> ¿Cuáles son los RF, RNF e Historias de Usuario?
 └──────────────────────────────────────┘
 ```
 
 ---
 
-## 3. Organización de los Documentos
+## 3. Catálogo de Documentación Oficial (01 al 09)
 
-La documentación se estructura en documentos temáticos numerados de forma secuencial:
-
-| Documento | Título | Pregunta Central | Estado | Descripción |
-| :--- | :--- | :--- | :--- | :--- |
-| **[01](file:///home/yair/VIGIA_Vision_Systems/Docs/01_estructura_del_proyecto.md)** | **Estructura del Proyecto** | *¿Quién es responsable de qué?* | `Activo / Fase 0` | Organización de carpetas del repositorio, responsabilidades técnicas por directorio, código admitido vs. prohibido por módulo, límites de responsabilidad y ownership del equipo. |
-| **[02](file:///home/yair/VIGIA_Vision_Systems/Docs/02_arquitectura_del_sistema.md)** | **Arquitectura del Sistema** | *¿Cómo se relacionan los módulos?* | `Activo / Fase 0` | Arquitectura conceptual global, ciclo *Perceive → Process → Analyze → Decide → Act → Record*, delimitación de `VIGIA_Core` (autoridad de estado y seguridad) frente a `VIGIA_Automation` (políticas y reglas), persistencia basada en puertos/adaptadores, contrato bidireccional IoT con ACKs y fundamentación del Patrón Mediador ($O(N)$ vs $O(N^2)$). |
-| **[03](file:///home/yair/VIGIA_Vision_Systems/Docs/03_roadmap_de_desarrollo_orientado_a_capacidades.md)** | **Roadmap Orientado a Capacidades** | *¿En qué orden y bajo qué criterios verificables adquiere VIGIA capacidades reales en el entorno físico?* | `Activo / Fase 0` | Hoja de ruta estratégica por capacidades físicas demostrables (Fase 0 a Fase 8), criterios de avance por evidencia, matriz de casos límite y trazabilidad de ingeniería. *(Alias: [`03_roadmap.md`](file:///home/yair/VIGIA_Vision_Systems/Docs/03_roadmap.md))* |
-| **[04](file:///home/yair/VIGIA_Vision_Systems/Docs/04_estandares_de_desarrollo.md)** | **Estándares de Desarrollo** | *¿Cómo debe escribirse y mantenerse el código?* | `Activo / Fase 0` | Guías de codificación en Python, convenciones de Git, gestión de configuración y variables de entorno, logging estructurado, manejo de excepciones y filosofía de testing sin hardware físico. |
-| **[05](file:///home/yair/VIGIA_Vision_Systems/Docs/05_marco_de_planificacion_y_ejecucion.md)** | **Marco de Planificación y Ejecución** | *¿Cómo nos organizamos, planificamos y ejecutamos en paralelo sin bloqueos?* | `Activo / Sprint 0` | Tríada Roadmap/Cronograma/Contratos, Scrum con desarrollo paralelo por Workstreams (A–I), regla de no bloqueo mediante contratos e interfaces, asignación de roles del equipo y objetivos/DoD del Sprint 0. |
-| **[06](file:///home/yair/VIGIA_Vision_Systems/Docs/06_propuesta_del_proyecto.md)** | **Propuesta del Proyecto** | *¿Qué es VIGIA, qué problema resuelve y qué valor demuestra en el caso rector?* | `Activo / Propuesta` | Propuesta ejecutiva y académica de 2–3 páginas: misión, visión, propuesta de valor, planteamiento del problema, caso rector de caseta inteligente, alcance y proyección a futuro. |
-| **[07](file:///home/yair/VIGIA_Vision_Systems/Docs/07_cronograma_maestro.md)** | **Cronograma Maestro** | *¿Cuándo trabajará cada equipo y qué hitos deben alcanzarse en cada iteración?* | `Activo / S0-S7` | Plan temporal sincronizado (Sep 9 - Dic 16, 2026), matriz de actividades por sprint, hitos H0 a H8, integraciones progresivas y protocolo estricto de protección del deadline. |
+| Documento | Título | Pregunta Central | Source of Truth para: | Descripción Resumida |
+| :---: | :--- | :--- | :--- | :--- |
+| **[01](./01_estructura_del_proyecto.md)** | **Estructura del Proyecto** | *¿Quién es responsable de qué?* | **Organización y Estructura** | Organización de carpetas, responsabilidades técnicas por módulo, código admitido/prohibido y ownership del equipo. |
+| **[02](./02_arquitectura_del_sistema.md)** | **Arquitectura del Sistema** | *¿Cómo se relacionan los módulos?* | **Arquitectura del Sistema** | Arquitectura conceptual global, ciclo cerrado, mediador, persistencia local y separación de invariantes vs reglas. |
+| **[03](./03_roadmap.md)** | **Roadmap de Capacidades** | *¿En qué orden construiremos las capacidades?* | **Roadmap del Producto** | Hoja de ruta estratégica por 7 capacidades físicas demostrables (Fase 0 a Fase 8) y criterios de avance. |
+| **[04](./04_estandares_de_desarrollo.md)** | **Estándares de Desarrollo** | *¿Cómo debe escribirse y mantenerse el código?* | **Estándares Técnicos** | Guías de codificación en Python (PEP 8), convenciones de Git, testing sin hardware físico y logging. |
+| **[05](./05_marco_de_planificacion_y_ejecucion.md)** | **Marco de Planificación y Ejecución** | *¿Cómo nos organizamos y ejecutamos en paralelo?* | **Metodología y Scrum** | Scrum adaptado con desarrollo paralelo por Workstreams (A–I), regla de no bloqueo mediante mocks y contratos. |
+| **[06](./06_propuesta_del_proyecto.md)** | **Propuesta del Proyecto** | *¿Qué problema resuelve y qué valor demuestra?* | **Propuesta Ejecutiva** | Propuesta ejecutiva y académica: misión, visión, caso rector de caseta inteligente, alcance y proyección a futuro. |
+| **[07](./07_cronograma_maestro.md)** | **Cronograma Maestro** | *¿Cuándo y en qué fechas se entrega cada hito?* | **Fechas y Cronograma** | Plan temporal sincronizado (Sep 9 - Dic 16, 2026), matriz S0-S7, hitos H0-H8 y protección del deadline. |
+| **[08](./08_matriz_de_riesgos.md)** | **Matriz de Riesgos** | *¿Qué riesgos existen y cómo se mitigan?* | **Gestión de Riesgos** | Matriz de riesgos técnicos, de hardware, visión e integración, con planes de contingencia y responsables. |
+| **[09](./09_especificacion_de_requisitos.md)** | **Especificación de Requisitos** | *¿Qué debe hacer el sistema exactamente?* | **Requisitos y Backlog** | Catálogo formal de Requisitos Funcionales (RF), No Funcionales (RNF), Historias de Usuario (HU) y reglas de negocio. |
 
 ---
 
-## 4. Convenciones Utilizadas
+## 4. Directorios Complementarios
 
-Para preservar la calidad, claridad y coherencia en toda la documentación técnica, se aplican las siguientes reglas:
+* **[`Gest_Proy_Soft/`](./Gest_Proy_Soft/)**: Material de soporte académico, actas administrativas y plantillas de diseño centrado en el usuario (PDFs y PPTXs). No forma parte del código base ejecutable.
+* **[`Archive/`](./Archive/)**: Documentación histórica, versiones preliminares y borradores anteriores preservados para auditoría y trazabilidad.
 
-### 4.1 Estados de Documentos
-Cada documento formal incluye un encabezado con su estado de ciclo de vida:
-* `Borrador (Draft)`: Documento en fase de redacción o discusión preliminar.
-* `Propuesta (Proposal)`: Documento sometido a revisión del equipo o arquitecto de software.
-* `Activo / Congelado (Frozen/Active)`: Documento aprobado que rige el desarrollo actual. Cualquier alteración a una interfaz congelada requiere justificación técnica formal.
+---
 
-### 4.2 Diagramas y Modelado
-* **Diagramas conceptuales y de flujo:** Se estructuran preferentemente en texto plano con bloques ASCII o en sintaxis `mermaid` para garantizar su versionabilidad en Git.
-* **Flujos de datos:** Se representan con flechas direccionales unívocas indicando el emisor del evento y el consumidor de la acción.
+## 5. Regla "Source of Truth"
 
-### 4.3 Tipografía y Referencias
-* Los nombres de módulos del sistema se escriben con mayúsculas y guiones bajos: `VIGIA_Core`, `VIGIA_Vision`, `VIGIA_IoT`, etc.
-* Los componentes o archivos de código se denotan en formato monoespaciado: `README.md`, `requirements.txt`, etc.
-* Los roles del equipo y responsabilidades se documentan de forma explícita, separando estrictamente la responsabilidad conceptual del acoplamiento técnico personal.
+Cada tipo de información posee una única fuente oficial. Los demás documentos únicamente resumen o enlazan a dicha fuente, evitando duplicidades y desincronizaciones futuras.
