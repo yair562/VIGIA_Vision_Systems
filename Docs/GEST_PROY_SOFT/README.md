@@ -1,4 +1,4 @@
-﻿# GEST_PROY_SOFT — Gestión de Proyectos de Software
+# GEST_PROY_SOFT — Gestión de Proyectos de Software
 
 **Proyecto:** VIGIA Vision Systems *(Iniciativa Académica / Empresa)*  
 **Producto:** VIGIA *(Plataforma de Supervisión, Análisis y Automatización de Entornos Físicos)*  
@@ -48,8 +48,10 @@ Docs/
     │   └── Ficha_descripcion_de_roles.md               # [En desarrollo] Documentación preliminar de puestos/roles
     ├── 02_Logos_accesibilidad/                         # Identidad visual institucional y versión de alto contraste
     │   └── README.md                                   # [Pendiente / En desarrollo] Especificaciones y criterios WCAG
-    ├── 03_Requerimientos_funcionales_no_funcionales/   # Catálogo formal de RF, RNF e invariantes
-    │   └── Requerimientos_funcionales_y_no_funcionales.md # [En desarrollo] Línea base preliminar de requisitos
+    ├── 03_Requerimientos_funcionales_no_funcionales/   # Catálogo formal de RF, RNF y RLC
+    │   ├── Requerimientos_funcionales.md               # [En desarrollo] RF-01 a RF-12
+    │   ├── Requerimientos_no_funcionales.md            # [En desarrollo] RNF-01 a RNF-09
+    │   └── Requisitos_legales_y_cumplimiento.md        # [En desarrollo] RLC-01 a RLC-06
     ├── 04_Mapa_de_empatia/                             # Artefacto de empatía con usuarios y operadores
     │   ├── README.md                                   # [En desarrollo] Estado y especificaciones del mapa
     │   └── Ejemplo_mapas_de_empatia.pptx               # [Plantilla / Referencia] Material institucional de ejemplo
