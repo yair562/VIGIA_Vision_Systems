@@ -1,27 +1,77 @@
-# 02 — Logos con Criterios de Accesibilidad
+﻿# 02 — Logos con Criterios de Accesibilidad
 
 **Proyecto:** VIGIA Vision Systems  
 **Área:** Identidad Visual y Accesibilidad  
-**Responsable del Entregable:** Ernesto  
-**Puesto / Rol del Responsable:** CIO + Ing. de Diseño de Circuitos  
-**Estado:** `Pendiente de carga de archivos gráficos definitivos`  
+**Responsable:** Ernesto  
+**Estado:** En desarrollo
 
 ---
 
-## 1. Descripción del Entregable
+## 1. Objetivo
 
-Este directorio está destinado a albergar los **dos (2) logos oficiales** de VIGIA Vision Systems, diseñados conforme a lineamientos internacionales de accesibilidad visual (WCAG 2.1 / contraste y legibilidad):
-
-### Recursos Requeridos:
-
-1. **Logo Principal (`logo_principal.svg` / `logo_principal.png`):**
-   * Logotipo e isotipo institucional a color para aplicaciones en interfaz web, documentación ejecutiva y portal.
-2. **Logo de Alto Contraste / Accesibilidad (`logo_accesibilidad.svg` / `logo_accesibilidad.png`):**
-   * Variante monocromática o de alto contraste con ratio de contraste $\ge 7:1$ (WCAG AAA), legible para personas con daltonismo, baja visión o visualización en pantallas monocromáticas/exteriores.
+Este entregable define los elementos gráficos principales de la
+identidad visual de la empresa y de su producto, considerando
+criterios de legibilidad, contraste y accesibilidad visual.
 
 ---
 
-## 2. Estado Actual del Entregable
+## 2. Identidad de la Empresa
 
-> **Constancia de Estado:**  
-> La estructura y especificaciones para los dos logos han sido formalizadas en este directorio. Los archivos de imagen y vectores finales se encuentran **pendientes de entrega y carga** por parte del responsable (**Ernesto**).
+### Figura de la empresa
+
+<img src="./svg/empresa_figura.svg"
+     alt="Figura representativa de VIGIA Vision Systems"
+     width="250">
+
+### Nombre de la empresa
+
+<img src="./svg/empresa_nombre.svg"
+     alt="Nombre de VIGIA Vision Systems"
+     width="500">
+
+---
+
+## 3. Identidad del Producto
+
+### Figura del producto
+
+<img src="./svg/producto_figura.svg"
+     alt="Figura representativa del producto"
+     width="250">
+
+### Nombre del producto
+
+<img src="./svg/producto_nombre.svg"
+     alt="Nombre del producto"
+     width="500">
+
+---
+
+## 4. Criterios de Accesibilidad
+
+Los recursos gráficos se diseñarán considerando:
+
+- Contraste suficiente entre elementos y fondo.
+- Legibilidad del nombre de la empresa y del producto.
+- Diferenciación visual de los elementos gráficos.
+- Uso de formatos vectoriales para conservar la calidad en diferentes tamaños.
+- Alternativas de presentación que permitan su utilización sobre diferentes fondos.
+
+---
+
+## 5. Recursos
+
+| Recurso | Archivo | Formato |
+|---|---|---|
+| Figura de la empresa | `empresa_figura.svg` | SVG |
+| Nombre de la empresa | `empresa_nombre.svg` | SVG |
+| Figura del producto | `producto_figura.svg` | SVG |
+| Nombre del producto | `producto_nombre.svg` | SVG |
+
+---
+
+## 6. Estado del Entregable
+
+Los cuatro recursos gráficos forman parte de la identidad visual
+del proyecto y serán utilizados en la interfaz, documentación y
+materiales de presentación correspondientes.
