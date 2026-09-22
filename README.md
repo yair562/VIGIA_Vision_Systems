@@ -157,6 +157,7 @@ VIGIA_Vision_Systems/
 │
 ├── Docs/                          # Documentación técnica, metodológica y de requisitos (01 al 09)
 │   ├── README.md                  # Índice maestro y mapa conceptual de lectura
+│   ├── BASELINE_V1.1.md           # [Línea Base Oficial] Congelación formal de Fase 0
 │   ├── 01_estructura_del_proyecto.md # ¿Quién es responsable de qué? (Módulos y ownership)
 │   ├── 02_arquitectura_del_sistema.md # ¿Cómo se relacionan los módulos para cumplir el ciclo?
 │   ├── 03_roadmap.md              # ¿En qué orden construiremos las capacidades de VIGIA?
@@ -166,7 +167,7 @@ VIGIA_Vision_Systems/
 │   ├── 07_cronograma_maestro.md   # Plan temporal sincronizado (Sep-Dic 2026)
 │   ├── 08_matriz_de_riesgos.md    # Matriz consolidada de riesgos y mitigaciones
 │   ├── 09_especificacion_de_requisitos.md # Requisitos Funcionales, No Funcionales y User Stories
-│   ├── Gest_Proy_Soft/            # Material de soporte académico y plantillas UX
+│   ├── GEST_PROY_SOFT/            # Entregables de Gestión de Proyectos de Software (01 al 08)
 │   └── Archive/                   # Documentación y borradores históricos
 │
 ├── VR_Semaforo/                   # [Proyecto de Referencia / PoC funcional] (Intacto)

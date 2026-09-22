@@ -150,17 +150,17 @@ El trabajo y el cronograma de VIGIA se estructuran mediante 8 Workstreams especi
 
 | ID | Workstream | Alcance Principal | Responsables Principales | Participación / Apoyo |
 | :---: | :--- | :--- | :--- | :--- |
-| **A** | **Product & Architecture** | Visión del producto, priorización del backlog, arquitectura sistémica, gobierno técnico y contratos de interfaces. | **Yair + Josue** | Todo el equipo |
-| **B** | **AI / Computer Vision / Data** | Captura de video, detección vehicular, localización de placas, LPR/OCR, datasets y benchmarks de inferencia. | **Estefany** | Naty (QA) |
-| **C** | **Backend / Core / Automation** | Máquina de estados de carril, reglas de acceso deterministas, persistencia local y servicios de dominio. | **Vianey** | Josue (Arquitectura) |
-| **D** | **Frontend / Dashboard / QA / BA** | Interfaz web de supervisión operativa, renderizado en tiempo real, alertas, UX/UI y aseguramiento de calidad (QA). | **Naty** | Vianey (API) |
-| **E** | **Hardware / Embedded / IoT** | Circuitos embebidos, firmware (Arduino/ESP32), sensores físicos de presencia/carrera, servomotores y protocolo serial. | **Ernesto** | Vianey (Serial Core) |
-| **F** | **DevOps / Infrastructure** | Entornos de desarrollo reproducibles, pipelines de testing automatizado, linters y empaquetado local. | **Vianey** | Yair (CTO) |
-| **G** | **Marketing / Market Research** | Investigación de mercado, perfiles de usuario, análisis de competencia, propuesta de valor y difusión pública. | **Yair + Josue** | Naty, Vianey, Estefany (Transversal) |
-| **H** | **Security / Information Governance** | Invariantes de seguridad física (*fail-safe*), control de acceso, gobernanza técnica y protección de datos. | **Yair + Ernesto** | Josue, Vianey |
+| **A** | **Product & Architecture** | Visión del producto, priorización del backlog, arquitectura sistémica y contratos de interfaces. | **Vianey (PO) + Yair (Software/Eléctrico)** | Todo el equipo |
+| **B** | **AI / Computer Vision / Data** | Captura de video, detección vehicular, localización de placas, LPR/OCR, datasets y análisis de datos. | **Estef (Analista) + Yair** | Natalia (UX/UI) |
+| **C** | **Backend / Core / Automation** | Máquina de estados de carril, reglas de acceso deterministas, persistencia local y lógica de procesos. | **Yair (Software) + Josue (Procesos)** | Vianey (PO) |
+| **D** | **Frontend / Dashboard / UX/UI** | Interfaz web de supervisión operativa, renderizado en tiempo real, alertas, wireframes y experiencia de usuario. | **Natalia (UX/UI)** | Estef (Análisis) |
+| **E** | **Hardware / Embedded / Circuitos** | Circuitos electrónicos, sensores físicos, actuadores, diseño de potencia e integración física. | **Ernesto (CIO/Circuitos) + Yair (Eléctrico)** | Josue (Procesos) |
+| **F** | **DevOps / Infrastructure** | Entornos de desarrollo reproducibles, testing automatizado, linters y empaquetado local. | **Yair (Software)** | Ernesto (CIO) |
+| **G** | **Marketing / Market Research** | Investigación de mercado, perfiles de usuario, análisis de competencia, propuesta de valor y difusión. | **Vianey (PO) + Josue (Procesos)** | Natalia, Estef, Yair |
+| **H** | **Security / Information Governance** | Invariantes de seguridad física (*fail-safe*), gobernanza de información y protección de datos. | **Ernesto (CIO) + Yair** | Vianey, Josue |
 
-> **Integración de Presencia Web Institucional (Antes "Workstream I"):**  
-> Para mantener una estructura limpia y sin silos artificiales, el desarrollo del portal y difusión web se consolida formalmente como una **actividad transversal compartida** entre **Marketing / Producto (Workstreams A/G — Josue/Yair)** y **Frontend / UI (Workstream D — Naty)**, evitando la dispersión en una novena área independiente.
+> **Integración de Presencia Web Institucional:**  
+> El desarrollo del portal y difusión web se consolida como una **actividad transversal compartida** entre **Marketing / Producto (Vianey/Josue)** y **UX/UI (Natalia)**, evitando silos artificiales.
 
 Cada Workstream cuenta con:
 * **Responsable principal** y participantes asignados.
@@ -213,55 +213,46 @@ Antes de iniciar la construcción formal de las capacidades de VIGIA en el mundo
 
 ### 6.1 Asignación de Roles y Responsabilidades Principales
 
-#### Project Management & CTO
-* **Yair — Project Manager + CTO**
-  * Coordinar el proyecto, planificar actividades, dar seguimiento al cronograma y gestionar riesgos.
-  * Dirigir las decisiones tecnológicas globales y asegurar la viabilidad técnica del sistema.
-  * Definición y aplicación del marco Scrum adaptado y facilitación de ceremonias.
-  * Preparación de los contratos de trabajo por entregables y gestión de dependencias.
-  * Responsable principal de **Documentation** y co-responsable de **Marketing & Market Research** y **Security**.
+#### Software & Electrical Engineering
+* **Yair — Ingeniero de Software + Ing. de Diseño Eléctrico**
+  * Diseñar y desarrollar la arquitectura de software, backend/core y liderar el diseño de sistemas eléctricos del proyecto.
+  * Coordinar la infraestructura técnica, estándares de código y viabilidad del sistema.
+  * **Entregable Académico Asignado (Confirmado):** Ficha de descripción de roles + Requerimientos funcionales y no funcionales (`Docs/09`).
+  * Co-responsable de **Documentation**, **Marketing** y **Security**.
 
-#### Product Ownership & System Architecture
-* **Josue — Product Owner + System Architect**
-  * Definir la visión del producto y gestionar/priorizar los requisitos del sistema.
-  * Construcción inicial, administración y mantenimiento del Product Backlog central.
-  * Diseñar la arquitectura general de VIGIA y los contratos de datos entre módulos (`VIGIA_Core/`, interfaces).
-  * Definición funcional de las necesidades del producto (Caseta Inteligente) e historias de usuario base.
-  * Co-responsable principal de **Marketing & Market Research** y participante en **Security**.
+#### Product Ownership
+* **Vianey — Product Owner (PO)**
+  * Definir la visión del producto, gestionar y priorizar el Product Backlog y articular los requisitos funcionales.
+  * Asegurar la entrega de valor y alineación del caso rector de Caseta Inteligente.
+  * **Entregable Académico Asignado (Confirmado):** Historia de usuario (`Docs/09`).
+  * Responsable principal de **Marketing & Market Research**.
 
-#### Hardware, IoT & CIO
-* **Ernesto — Hardware / Embedded IoT Engineer + CIO**
-  * Diseñar e integrar cámaras, sensores, dispositivos IoT y sistemas embebidos (`VIGIA_IoT/`).
-  * Gestionar la información, inventario técnico y apoyar la seguridad y gobernanza de la información.
-  * Identificación y selección de sensores de verificación física (finales de carrera, lazo magnético, presencia).
-  * Revisión y definición de protocolos de comunicación física (UART/Serial, tramas de comando, baudrates, timeouts).
-  * Montaje del banco de pruebas y entorno de prototipado físico / maqueta.
-  * Co-responsable principal de **Security**.
+#### CIO & Circuit Design Engineering
+* **Ernesto — CIO + Ing. de Diseño de Circuitos**
+  * Diseñar circuitos electrónicos, integración de sensores, actuadores, hardware embebido (`VIGIA_IoT/`) y gobernar la información técnica.
+  * Identificación de sensórica de verificación física y protocolos de comunicación de bajo nivel.
+  * **Entregable Académico Asignado (Confirmado):** Logos, asegurando accesibilidad + Mapas de recorrido.
+  * Responsable principal de **Security & Information Governance**.
 
-#### AI, Computer Vision & Data Engineering
-* **Estefany — AI / Computer Vision Engineer + Data Engineer**
-  * Desarrollar e integrar modelos de IA y visión computacional (`VIGIA_Vision/`).
-  * Procesamiento de imágenes y video, localización y detección vehicular, y reconocimiento óptico de matrículas (LPR/OCR).
-  * Identificación de necesidades de datos, preparación de datasets, pipelines y gestión de datos para los modelos.
-  * Investigación tecnológica y benchmarks de inferencia en hardware edge.
-  * Participante en **Marketing & Market Research**, **Testing & Integration** y **Documentation**.
+#### Process Engineering
+* **Josue — Ing. de Procesos**
+  * Diseñar, optimizar y formalizar los flujos de procesos del sistema, control operativo y estandarización del flujo de trabajo.
+  * Modelado del ciclo físico y coordinación de dinámicas de equipo.
+  * **Entregable Académico Asignado (Confirmado):** Todas las hojas del formato de reuniones (`Docs/GEST_PROY_SOFT/07_Formato_de_reuniones/`).
+  * Co-responsable de **Procesos Operativos** y **Marketing**.
 
-> *Nota de Ingeniería:* Durante el Sprint 0 **no es obligatorio iniciar la implementación de detección o entrenamiento**. El objetivo primordial es evaluar, diseñar y preparar correctamente el dominio antes de codificar la Capacidad 1.
+#### UX / UI Design
+* **Natalia — UX / UI**
+  * Diseñar la experiencia de usuario (UX), interfaces visuales interactivas (UI), flujos de interacción del operador y wireframes del dashboard (`VIGIA_Dashboard/`).
+  * **Entregable Académico Asignado (Confirmado):** Creación de personas.
+  * Participante en **Testing & QA** y **Documentation**.
 
-#### Backend & DevOps Engineering
-* **Vianey — Backend Engineer + DevOps Engineer**
-  * Desarrollar APIs (`VIGIA_API/`), lógica de negocio, gestión de datos, eventos y alertas (`VIGIA_Automation/`).
-  * Administrar entornos de desarrollo, despliegues, CI/CD, infraestructura de pruebas automatizadas y monitoreo.
-  * Arquitectura inicial de servicios de persistencia local (diseño de esquemas SQLite) y adaptadores de datos.
-  * Configuración de la estructura inicial del repositorio, estándares de dependencias y linters.
-  * Participante en **Security**, **Marketing & Market Research**, **Testing & Integration** y **Documentation**.
-
-#### Frontend, QA & Business Analysis
-* **Naty — Frontend Engineer + QA + Business Analyst**
-  * Desarrollar la interfaz visual y el dashboard operativo de supervisión (`VIGIA_Dashboard/`).
-  * Identificación y análisis de necesidades del operador humano en caseta, UX/UI y wireframes de interacción.
-  * Responsable principal de **Testing & Integration**: diseño de estrategia de QA, pruebas funcionales, de integración y validación integral del sistema.
-  * Participante en **Marketing & Market Research** y **Documentation**.
+#### Systems & Requirements Analysis
+* **Estef — Analista *(Analistas)***
+  * Analizar los requisitos del dominio, especificaciones del sistema, modelado analítico y flujo de datos.
+  * Apoyo en la preparación y validación de datos para el pipeline perceptual.
+  * **Entregable Académico Asignado (Confirmado):** Mapa de empatía.
+  * Participante en **Análisis de Requisitos**, **Testing & QA** y **Documentation**.
 
 ---
 
@@ -271,10 +262,10 @@ Estas actividades no constituyen cargos adicionales independientes; son responsa
 
 | Área Transversal | Responsable Principal | Participación del Equipo |
 | :--- | :--- | :--- |
-| **Marketing & Market Research** | Yair + Josue | Naty, Vianey y Estefany |
-| **Security** | Yair + Ernesto | Josue + Vianey |
-| **Documentation** | Yair | Todos |
-| **Testing & Integration** | Naty | Todos |
+| **Marketing & Market Research** | Vianey (PO) + Josue (Procesos) | Natalia, Estef y Yair |
+| **Security & Information Governance** | Ernesto (CIO) + Yair | Vianey + Josue |
+| **Documentation & Project Knowledge** | Yair (Coordinación) | Todos |
+| **Testing & System Validation** | Natalia + Estef | Todos |
 
 
 ---
@@ -307,11 +298,14 @@ El **Sprint 0** se evalúa formalmente con el estado:
 
 # 8. Planificación y Alcance del Sprint 1
 
-El **Sprint 1 (14 al 27 de septiembre de 2026)** marca el inicio de la construcción formal del sistema, orientado a cinco entregables críticos:
+El **Sprint 1 (14 al 27 de septiembre de 2026)** marca el inicio de la construcción formal del sistema. Las actividades planificadas se estructuran distinguiendo entregables confirmados de actividades técnicas pendientes de validación operativa:
 
-1. **Requisitos Detallados:** Refinamiento del catálogo de Requisitos Funcionales (RF), Requisitos No Funcionales (RNF) y reglas de negocio (`Docs/09_especificacion_de_requisitos.md`). *(Responsables: Josue + Naty)*.
-2. **User Stories:** Redacción y estimación de Historias de Usuario con criterios de aceptación en formato `Given-When-Then`. *(Responsables: Josue + Naty)*.
-3. **Auditoría Técnica de `VR_Semaforo/`:** Análisis del prototipo de referencia para rescatar rutinas de OpenCV y comunicación serial con Arduino. *(Responsables: Ernesto + Estefany + Vianey)*.
-4. **Contratos de Interfaces:** Especificación formal de esquemas Pydantic (`ObservationEvent`, `Decision`, `Command`, `VerificationEvent`) y tramas seriales IoT. *(Responsables: Josue + Vianey + Ernesto + Estefany)*.
-5. **Validación de Matriz de Riesgos:** Revisión quincenal y ajuste de los riesgos prioritarios del proyecto (`Docs/08_matriz_de_riesgos.md`). *(Responsables: Yair + Ernesto)*.
+### 8.1 Entregables con Responsabilidad Confirmada
+1. **Requerimientos Funcionales y No Funcionales:** Refinamiento del catálogo de RF y RNF (`Docs/09_especificacion_de_requisitos.md`). *(Responsable: Yair)*.
+2. **Historias de Usuario:** Elaboración y estructuración de historias de usuario (`Docs/09_especificacion_de_requisitos.md`). *(Responsable: Vianey)*.
+
+### 8.2 Actividades Técnicas Planificadas del Proyecto *(Pendientes de Asignación y Validación por el Equipo)*
+3. **Auditoría Técnica de `VR_Semaforo/`:** Análisis del prototipo de referencia para identificar rutinas de visión y comunicación serial. *(Actividad técnica del proyecto, pendiente de asignación operativa).*
+4. **Contratos de Interfaces:** Definición formal de contratos y esquemas de eventos entre módulos. *(Actividad técnica del proyecto, pendiente de validación).*
+5. **Seguimiento de Matriz de Riesgos:** Revisión periódica de riesgos prioritarios (`Docs/08_matriz_de_riesgos.md`). *(Actividad de gestión del proyecto).*
 

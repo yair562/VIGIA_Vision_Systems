@@ -1,11 +1,13 @@
-﻿# VIGIA Vision Systems
+# VIGIA Vision Systems
 
 ## 09 — Especificación de Requisitos de Software y Dominio
 
 **Estado:** Activo / Fase 0 (Línea Base para Refinamiento en Sprint 1)  
-**Versión:** 1.1 (Alineación Arquitectónica y Desacoplamiento de Decisiones de Implementación)  
+**Versión:** 1.3 (Alineación Estricta de Responsabilidades Confirmadas)  
 **Fuente de Verdad:** Requisitos Funcionales, No Funcionales e Historias de Usuario  
-**Responsables de Gobernanza:** Josue (Product Owner) & Naty (QA / Business Analyst)  
+**Responsables de Contenido Asignados (Confirmados):**  
+* **Yair:** Requerimientos funcionales y no funcionales (Secciones 2 y 3)  
+* **Vianey:** Historia de usuario (Sección 4)  
 **Propósito:** Definir formalmente los requisitos funcionales, requisitos no funcionales, reglas de negocio, invariantes de seguridad e historias de usuario para el caso de uso rector de VIGIA Vision Systems: la **Caseta Inteligente de Acceso Vehicular**.
 
 ---
@@ -24,7 +26,7 @@ $$\text{Observar} \longrightarrow \text{Interpretar} \longrightarrow \text{Decid
 
 ---
 
-# 2. Requisitos Funcionales (RF)
+# 2. Requisitos Funcionales (RF) — [Responsable: Yair]
 
 | ID | Nombre del Requisito | Descripción Funcional | Módulo Responsable | Estado |
 | :-: | :--- | :--- | :---: | :---: |
@@ -46,7 +48,7 @@ $$\text{Observar} \longrightarrow \text{Interpretar} \longrightarrow \text{Decid
 
 ---
 
-# 3. Requisitos No Funcionales (RNF)
+# 3. Requisitos No Funcionales (RNF) — [Responsable: Yair]
 
 | ID | Categoría | Requisito de Calidad | Métrica / Criterio Objetivo | Estado |
 | :-: | :--- | :--- | :--- | :---: |
@@ -59,7 +61,7 @@ $$\text{Observar} \longrightarrow \text{Interpretar} \longrightarrow \text{Decid
 
 ---
 
-# 4. Historias de Usuario (User Stories — Sprint 1)
+# 4. Historias de Usuario (User Stories — Sprint 1) — [Responsable: Vianey]
 
 ### HU-01: Detección y Lectura de Placa de Residente
 * **Como** sistema VIGIA,

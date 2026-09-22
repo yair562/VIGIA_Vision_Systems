@@ -39,7 +39,8 @@ VIGIA_Vision_Systems/
 │   ├── 07_cronograma_maestro.md       # Plan temporal detallado (Sep-Dic 2026)
 │   ├── 08_matriz_de_riesgos.md        # Matriz consolidada de riesgos y contingencias
 │   ├── 09_especificacion_de_requisitos.md # Especificación de RF, RNF e Historias de Usuario
-│   ├── Gest_Proy_Soft/                # Soporte académico y plantillas UX/UI (PDFs y PPTXs)
+│   ├── GEST_PROY_SOFT/                # Entregables de Gestión de Proyectos de Software (01 al 08)
+│   ├── Referencias/                   # Documentos institucionales y normativos de referencia externa
 │   └── Archive/                       # Archivo histórico y borradores previos
 │
 ├── VR_Semaforo/                       # [Proyecto de Referencia / PoC funcional] (Intacto)
@@ -244,36 +245,38 @@ Para garantizar la correcta ejecución del proyecto y evitar colisiones, cada do
 
 ### 5.1 Equipo y Responsabilidades Principales
 
-| Integrante | Cargo | Responsabilidades Principales | Módulos / Workstream Principal |
-| :--- | :--- | :--- | :--- |
-| **Yair** | Project Manager + CTO | Coordinar el proyecto, planificar actividades, dar seguimiento al cronograma, gestionar riesgos y dirigir las decisiones tecnológicas. | Dirección de Proyecto, Gobierno Scrum, Decisiones Tecnológicas Globales |
-| **Josue** | Product Owner + System Architect | Definir la visión del producto, gestionar y priorizar requisitos, administrar el Product Backlog y diseñar la arquitectura general de VIGIA. | `VIGIA_Core/`, Product Backlog, Arquitectura de Sistema, Interfaces |
-| **Ernesto** | Hardware / Embedded IoT Engineer + CIO | Diseñar e integrar cámaras, sensores, dispositivos IoT y sistemas embebidos; gestionar la información y apoyar la seguridad y gobernanza de la información. | `VIGIA_IoT/`, Microcontroladores (Arduino/ESP32), Sensores, Actuadores y Maqueta |
-| **Naty** | Frontend Engineer + QA + Business Analyst | Desarrollar la interfaz y dashboard, analizar requisitos y realizar pruebas funcionales, de integración y validación del sistema. | `VIGIA_Dashboard/`, Pruebas y QA, Análisis de Negocio / UX |
-| **Vianey** | Backend Engineer + DevOps Engineer | Desarrollar APIs, lógica de negocio, gestión de datos, eventos y alertas; administrar entornos, despliegues, CI/CD, infraestructura y monitoreo. | `VIGIA_API/`, `VIGIA_Automation/`, `VIGIA_Core/`, CI/CD, DevOps, Persistencia |
-| **Estefany** | AI / Computer Vision Engineer + Data Engineer | Desarrollar e integrar modelos de IA y visión computacional, procesamiento de imágenes y video, datasets, pipelines y gestión de datos para los modelos. | `VIGIA_Vision/`, Pipeline Perceptual, Datasets, Inferencia |
+| Integrante | Roles / Puestos Oficiales | Responsabilidades de Ingeniería | Entregable Académico Asignado (Confirmado) | Módulos / Áreas Principales |
+| :--- | :--- | :--- | :--- | :--- |
+| **Yair** | Ingeniero de Software + Ing. de Diseño Eléctrico | Desarrollar la arquitectura de software, backend/core y liderar el diseño de sistemas eléctricos del proyecto. | Ficha de descripción de roles + Requerimientos funcionales y no funcionales | `VIGIA_Core/`, Software Global, Diseño Eléctrico |
+| **Vianey** | Product Owner (PO) | Definir la visión del producto, gestionar y priorizar el Product Backlog y coordinar los requisitos del sistema. | Historia de usuario | Product Backlog, Visión del Producto, `Docs/09` |
+| **Ernesto** | CIO + Ing. de Diseño de Circuitos | Diseñar e integrar circuitos electrónicos, sensores, actuadores, hardware IoT y gobernar la información del proyecto. | Logos, asegurando accesibilidad + Mapas de recorrido | `VIGIA_IoT/`, Diseño de Circuitos, Hardware Embebido, Seguridad de Información |
+| **Josue** | Ing. de Procesos | Diseñar, optimizar y formalizar los flujos de procesos del sistema, control operativo y estandarización del flujo de trabajo. | Todas las hojas del formato de reuniones | Procesos Operativos, `VIGIA_Automation/`, Gestión Metodológica |
+| **Natalia** | UX / UI | Diseñar la experiencia de usuario, interfaces visuales interactivas, flujos de interacción y wireframes del operador. | Creación de personas | `VIGIA_Dashboard/`, Experiencia de Usuario (UX), Diseño Visual (UI) |
+| **Estef** *(Estefany)* | Analista *(Analistas)* | Analizar los requisitos del dominio, flujo de datos, especificaciones del sistema y soporte al modelado analítico. | Mapa de empatía | Análisis de Requisitos y Datos, `VIGIA_Vision/` |
+
+> *Nota:* El equipo está integrado por seis integrantes que desempeñan ocho puestos o funciones oficiales distribuidos entre ellos.
 
 ---
 
 ### 5.2 Responsabilidades Transversales
 
-Estas no son cargos adicionales, sino actividades transversales que todo el equipo debe apoyar de manera coordinada:
+Estas no son cargos adicionales, sino actividades transversales que todo el equipo apoya de manera coordinada:
 
 | Área Transversal | Responsable Principal | Participación del Equipo |
 | :--- | :--- | :--- |
-| **Marketing & Market Research** | Yair + Josue | Naty, Vianey y Estefany |
-| **Security & Information Governance** | Yair + Ernesto | Josue + Vianey |
+| **Marketing & Market Research** | Vianey (PO) + Yair | Natalia, Estef y Josue |
+| **Security & Information Governance** | Ernesto (CIO) + Yair | Vianey + Josue |
 | **Documentation & Project Knowledge** | Yair (Coordinación) | Todos |
-| **Testing & System Validation** | Naty (Coordinación QA) | Todos |
+| **Testing & System Validation** | Natalia + Estef | Todos |
 
 ---
 
-### 5.3 Distinción de Autoridad Arquitectónica vs. Ownership de Implementación
+### 5.3 Gobernanza Técnica y Ownership de Implementación
 
 Para asegurar una gobernanza técnica ordenada y evitar conflictos de integración:
 
-* **Autoridad Arquitectónica Global (Yair + Josue):** Tienen la atribución exclusiva de aprobar cambios estructurales, modelos canónicos de dominio, interfaces públicas entre módulos y modificaciones a los contratos de datos.
-* **Ownership de Implementación Técnica:** Los desarrolladores asignados (Ernesto en IoT, Estefany en Vision, Vianey en Backend/DevOps/Core, Naty en Dashboard/QA) lideran la codificación interna de sus componentes, subordinados a los contratos e invariantes aprobados.
+* **Gobernanza de Producto y Arquitectura (Vianey [PO] + Yair [Software/Eléctrico]):** Coordinan la priorización del backlog, el alineamiento de capacidades y la aprobación de interfaces públicas entre módulos.
+* **Ownership de Implementación Técnica:** Cada integrante lidera su área de especialidad (Ernesto en Circuitos/IoT, Yair en Software/Eléctrico, Natalia en UX/UI, Josue en Procesos, Estef en Análisis y Vianey en Producto/Backlog), garantizando la coherencia e integración del sistema.
 
 
 
