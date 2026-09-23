@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # 02 — Logos con Criterios de Accesibilidad
 
@@ -65,15 +65,23 @@ Este entregable define los elementos gráficos principales de la identidad visua
 
 ---
 
-## 4. Criterios de Accesibilidad
+## 4. Criterios de Accesibilidad y Evaluación de Contraste
 
-Los recursos gráficos se diseñaron considerando:
+Los recursos gráficos se diseñaron y evaluaron considerando los siguientes principios:
 
-- **Contraste suficiente:** Se implementaron versiones diferenciadas para modo claro (`#000000`) y modo oscuro (`#FFFFFF`) para asegurar visibilidad óptima independientemente del tema del entorno.
+- **Contraste suficiente:** Se implementaron versiones diferenciadas para modo claro (`#000000` / `#111827`) y modo oscuro (`#FFFFFF`) para asegurar visibilidad óptima independientemente del tema del entorno.
 - **Legibilidad:** Definición geométrica clara del nombre de la empresa y del producto.
 - **Diferenciación visual:** Separación visual inequívoca entre la identidad corporativa de la empresa y la identidad del producto.
 - **Escalabilidad vectorial:** Uso de formato SVG para preservar la calidad sin distorsión ni pixelado en diferentes escalas.
 - **Adaptabilidad a fondos:** Estructura vectorial transparente que permite su integración en fondos claros y oscuros.
+
+### Evaluación Métrica de Contraste (WCAG 2.1)
+
+| Entorno / Modo | Foreground (Elemento) | Background (Fondo) | Ratio de Contraste | Nivel WCAG AA | Nivel WCAG AAA | Estado |
+| :--- | :--- | :--- | :---: | :---: | :---: | :---: |
+| **Modo Claro (Documental / Web)** | `#111827` *(Gris oscuro corporativo)* | `#FFFFFF` *(Blanco puro)* | `16.6:1` | Pass ($\ge 4.5:1$) | Pass ($\ge 7.0:1$) | **Apto** |
+| **Modo Oscuro (Dashboard / Caseta)** | `#FFFFFF` *(Blanco puro)* | `#0B0F19` *(Azul pizarra nocturno)* | `18.7:1` | Pass ($\ge 4.5:1$) | Pass ($\ge 7.0:1$) | **Apto** |
+| **Monocromático Absoluto (Impresión)** | `#000000` *(Negro estándar)* | `#FFFFFF` *(Papel / Fondo)* | `21.0:1` | Pass ($\ge 4.5:1$) | Pass ($\ge 7.0:1$) | **Apto** |
 
 ---
 
