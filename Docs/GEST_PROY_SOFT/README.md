@@ -47,7 +47,8 @@ Docs/
     ├── 01_Ficha_descripcion_de_roles/                  # Ficha de puesto y descripción de responsabilidades
     │   └── Ficha_descripcion_de_roles.md               # [En desarrollo] Documentación preliminar de puestos/roles
     ├── 02_Logos_accesibilidad/                         # Identidad visual institucional y versión de alto contraste
-    │   └── README.md                                   # [Pendiente / En desarrollo] Especificaciones y criterios WCAG
+    │   ├── README.md                                   # [En desarrollo] Especificaciones y criterios WCAG
+    │   └── svg/                                        # [Entregable] Recursos gráficos vectoriales SVG (empresa y producto)
     ├── 03_Requerimientos_funcionales_no_funcionales/   # Catálogo formal de RF, RNF y RLC
     │   ├── Requerimientos_funcionales.md               # [En desarrollo] RF-01 a RF-12
     │   ├── Requerimientos_no_funcionales.md            # [En desarrollo] RNF-01 a RNF-09
