@@ -2,18 +2,10 @@
 
 # 02 — Logos con Criterios de Accesibilidad
 
-**VIGIA Vision Systems** • *Identidad Visual y Accesibilidad Gráfica*
-
-[![Accesibilidad WCAG](https://img.shields.io/badge/WCAG_2.1-AAA_Contrast-2ea44f?style=for-the-badge&logo=w3c&logoColor=white)](#criterios-de-accesibilidad)
-[![Formato SVG](https://img.shields.io/badge/Formato-SVG_Vectorial-ff69b4?style=for-the-badge&logo=svg&logoColor=white)](#recursos)
-[![Soporte Dual](https://img.shields.io/badge/Tema-Claro_%2F_Oscuro-0969da?style=for-the-badge)](#identidad-de-la-empresa)
-
-| Metadato | Detalle |
-| :--- | :--- |
-| **Proyecto** | VIGIA Vision Systems |
-| **Área** | Identidad Visual, Ergonomía y Accesibilidad |
-| **Responsable** | Ernesto *(CIO + Ing. de Diseño de Circuitos)* |
-| **Estado** | `En desarrollo / Recursos vectoriales integrados` |
+**Proyecto:** VIGIA Vision Systems  
+**Área:** Identidad Visual y Accesibilidad  
+**Responsable:** Ernesto *(CIO + Ing. de Diseño de Circuitos)*  
+**Estado:** En desarrollo
 
 </div>
 
@@ -21,7 +13,7 @@
 
 ## 1. Objetivo
 
-Este entregable define los elementos gráficos principales de la **identidad visual de la empresa** y de su **producto insignia (VIGIA)**, diseñados bajo estrictos lineamientos de **legibilidad, alto contraste y accesibilidad visual (WCAG 2.1)** para garantizar su correcta visualización en interfaces web, paneles de monitoreo físico, documentación técnica y presentaciones oficiales.
+Este entregable define los elementos gráficos principales de la identidad visual de la empresa y de su producto, considerando criterios de legibilidad, contraste y accesibilidad visual para su uso en interfaces de usuario, documentación técnica y materiales institucionales.
 
 ---
 
@@ -29,27 +21,21 @@ Este entregable define los elementos gráficos principales de la **identidad vis
 
 <div align="center">
 
-### 🏢 Figura Representativa de la Empresa
+### Figura de la Empresa
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./svg/empresa_figura_dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./svg/empresa_figura.svg">
-  <img src="./svg/empresa_figura.svg" alt="Figura representativa de VIGIA Vision Systems" width="240">
-</picture>
+<img src="./svg/empresa_figura.svg#gh-light-mode-only" alt="Figura representativa de VIGIA Vision Systems" width="240">
+<img src="./svg/empresa_figura_dark.svg#gh-dark-mode-only" alt="Figura representativa de VIGIA Vision Systems" width="240">
 
-*Isotipo institucional de seguridad y supervisión perimetral*
+*Isotipo representativo de la empresa*
 
 <br>
 
-### 🏷️ Nombre Institucional de la Empresa
+### Nombre de la Empresa
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./svg/empresa_nombre_dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./svg/empresa_nombre.svg">
-  <img src="./svg/empresa_nombre.svg" alt="Nombre de VIGIA Vision Systems" width="480">
-</picture>
+<img src="./svg/empresa_nombre.svg#gh-light-mode-only" alt="Nombre de VIGIA Vision Systems" width="480">
+<img src="./svg/empresa_nombre_dark.svg#gh-dark-mode-only" alt="Nombre de VIGIA Vision Systems" width="480">
 
-*Tipografía corporativa de alta legibilidad*
+*Tipografía institucional de la empresa*
 
 </div>
 
@@ -59,25 +45,19 @@ Este entregable define los elementos gráficos principales de la **identidad vis
 
 <div align="center">
 
-### 👁️ Figura del Producto (VIGIA)
+### Figura del Producto (VIGIA)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./svg/producto_figura_dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./svg/producto_figura.svg">
-  <img src="./svg/producto_figura.svg" alt="Figura representativa del producto VIGIA" width="240">
-</picture>
+<img src="./svg/producto_figura.svg#gh-light-mode-only" alt="Figura representativa del producto VIGIA" width="240">
+<img src="./svg/producto_figura_dark.svg#gh-dark-mode-only" alt="Figura representativa del producto VIGIA" width="240">
 
-*Isotipo representativo del núcleo de visión y control inteligente*
+*Isotipo representativo del producto*
 
 <br>
 
-### 🏷️ Nombre del Producto
+### Nombre del Producto
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./svg/producto_nombre_dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./svg/producto_nombre.svg">
-  <img src="./svg/producto_nombre.svg" alt="Nombre del producto VIGIA" width="480">
-</picture>
+<img src="./svg/producto_nombre.svg#gh-light-mode-only" alt="Nombre del producto VIGIA" width="480">
+<img src="./svg/producto_nombre_dark.svg#gh-dark-mode-only" alt="Nombre del producto VIGIA" width="480">
 
 *Logotipo oficial del producto VIGIA*
 
@@ -85,33 +65,29 @@ Este entregable define los elementos gráficos principales de la **identidad vis
 
 ---
 
-## 4. Criterios de Accesibilidad y Ergonomía Visual
+## 4. Criterios de Accesibilidad
 
-Los recursos gráficos han sido vectorizados y optimizados considerando los siguientes principios:
+Los recursos gráficos se diseñaron considerando:
 
-* 🌗 **Soporte Dinámico Modo Claro / Modo Oscuro:**  
-  Implementación de versiones adaptativas (`_dark.svg`) para asegurar una relación de contraste óptima ($\ge 7:1$, nivel WCAG AAA) tanto en fondos blancos como en interfaces oscuras.
-* 📐 **Escalabilidad Vectorial Pura (SVG):**  
-  Conservación milimétrica de nitidez y fidelidad geométrica en cualquier resolución o tamaño de pantalla (desde displays embebidos e interfaces móviles hasta monitores 4K de caseta).
-* 🔍 **Legibilidad y Diferenciación Geométrica:**  
-  Trazos limpios con espaciado balanceado que facilitan la lectura inmediata a distancia o en condiciones de baja luminosidad.
-* 🛡️ **Versatilidad de Aplicación:**  
-  Estructura sin fondos rígidos que permite su incrustación natural en carátulas de reportes, cabeceras de dashboard web, manuales de usuario y señalética de caseta.
+- **Contraste suficiente:** Se implementaron versiones diferenciadas para modo claro (`#000000`) y modo oscuro (`#FFFFFF`) para asegurar visibilidad óptima independientemente del tema del entorno.
+- **Legibilidad:** Definición geométrica clara del nombre de la empresa y del producto.
+- **Diferenciación visual:** Separación visual inequívoca entre la identidad corporativa de la empresa y la identidad del producto.
+- **Escalabilidad vectorial:** Uso de formato SVG para preservar la calidad sin distorsión ni pixelado en diferentes escalas.
+- **Adaptabilidad a fondos:** Estructura vectorial transparente que permite su integración en fondos claros y oscuros.
 
 ---
 
-## 5. Catálogo de Recursos Disponibles
+## 5. Recursos
 
-| Elemento | Archivo (Modo Claro) | Archivo (Modo Oscuro) | Formato | Resolución / Tipo |
-| :--- | :--- | :--- | :---: | :---: |
-| **Figura de la Empresa** | [`empresa_figura.svg`](./svg/empresa_figura.svg) | [`empresa_figura_dark.svg`](./svg/empresa_figura_dark.svg) | `SVG` | Vectorial Escalable |
-| **Nombre de la Empresa** | [`empresa_nombre.svg`](./svg/empresa_nombre.svg) | [`empresa_nombre_dark.svg`](./svg/empresa_nombre_dark.svg) | `SVG` | Vectorial Escalable |
-| **Figura del Producto** | [`producto_figura.svg`](./svg/producto_figura.svg) | [`producto_figura_dark.svg`](./svg/producto_figura_dark.svg) | `SVG` | Vectorial Escalable |
-| **Nombre del Producto** | [`producto_nombre.svg`](./svg/producto_nombre.svg) | [`producto_nombre_dark.svg`](./svg/producto_nombre_dark.svg) | `SVG` | Vectorial Escalable |
+| Recurso | Archivo (Modo Claro) | Archivo (Modo Oscuro) | Formato |
+| :--- | :--- | :--- | :---: |
+| Figura de la empresa | `empresa_figura.svg` | `empresa_figura_dark.svg` | SVG |
+| Nombre de la empresa | `empresa_nombre.svg` | `empresa_nombre_dark.svg` | SVG |
+| Figura del producto | `producto_figura.svg` | `producto_figura_dark.svg` | SVG |
+| Nombre del producto | `producto_nombre.svg` | `producto_nombre_dark.svg` | SVG |
 
 ---
 
-## 6. Estado y Uso del Entregable
+## 6. Estado del Entregable
 
-> **Constancia de Integración:**  
-> Los recursos gráficos aquí catalogados constituyen la **identidad visual oficial** del proyecto **VIGIA Vision Systems**. Serán empleados transversalmente en el Dashboard del operador, diagramas de arquitectura, minutas de reunión y presentaciones ejecutivas.
+Los cuatro recursos gráficos forman parte de la identidad visual del proyecto y serán utilizados en la interfaz, documentación y materiales de presentación correspondientes.
