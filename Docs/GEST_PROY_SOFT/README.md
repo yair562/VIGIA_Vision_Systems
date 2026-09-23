@@ -50,8 +50,8 @@ Docs/
     │   ├── README.md                                   # [En desarrollo] Especificaciones y criterios WCAG
     │   └── svg/                                        # [Entregable] Recursos gráficos vectoriales SVG (empresa y producto)
     ├── 03_Requerimientos_funcionales_no_funcionales/   # Catálogo formal de RF, RNF y RLC
-    │   ├── Requerimientos_funcionales.md               # [En desarrollo] RF-01 a RF-12
-    │   ├── Requerimientos_no_funcionales.md            # [En desarrollo] RNF-01 a RNF-09
+    │   ├── Requerimientos_funcionales.md               # [En desarrollo] RF-01 a RF-13
+    │   ├── Requerimientos_no_funcionales.md            # [En desarrollo] RNF-01 a RNF-12
     │   └── Requisitos_legales_y_cumplimiento.md        # [En desarrollo] RLC-01 a RLC-06
     ├── 04_Mapa_de_empatia/                             # Artefacto de empatía con usuarios y operadores
     │   ├── README.md                                   # [En desarrollo] Estado y especificaciones del mapa
