@@ -89,10 +89,10 @@ Los recursos gráficos se diseñaron y evaluaron considerando los siguientes pri
 
 | Recurso | Archivo (Modo Claro) | Archivo (Modo Oscuro) | Formato |
 | :--- | :--- | :--- | :---: |
-| Figura de la empresa | `empresa_figura.svg` | `empresa_figura_dark.svg` | SVG |
-| Nombre de la empresa | `empresa_nombre.svg` | `empresa_nombre_dark.svg` | SVG |
-| Figura del producto | `producto_figura.svg` | `producto_figura_dark.svg` | SVG |
-| Nombre del producto | `producto_nombre.svg` | `producto_nombre_dark.svg` | SVG |
+| **Figura de la empresa** | [`empresa_figura.svg`](./svg/empresa_figura.svg) | [`empresa_figura_dark.svg`](./svg/empresa_figura_dark.svg) | `SVG` |
+| **Nombre de la empresa** | [`empresa_nombre.svg`](./svg/empresa_nombre.svg) | [`empresa_nombre_dark.svg`](./svg/empresa_nombre_dark.svg) | `SVG` |
+| **Figura del producto** | [`producto_figura.svg`](./svg/producto_figura.svg) | [`producto_figura_dark.svg`](./svg/producto_figura_dark.svg) | `SVG` |
+| **Nombre del producto** | [`producto_nombre.svg`](./svg/producto_nombre.svg) | [`producto_nombre_dark.svg`](./svg/producto_nombre_dark.svg) | `SVG` |
 
 ---
 
