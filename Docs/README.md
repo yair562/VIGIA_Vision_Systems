@@ -94,6 +94,7 @@ Para comprender la plataforma de forma lógica y estructurada, la documentación
 
 ## 5. Directorios Complementarios
 
+* **[`Base_de_Datos/`](./Base_de_Datos/)**: Modelado conceptual, lógico y físico de la base de datos institucional en PostgreSQL (entidades, ERD, reglas de negocio y flujos).
 * **[`GEST_PROY_SOFT/`](./GEST_PROY_SOFT/)**: Entregables oficiales de Gestión de Proyectos de Software y diseño centrado en el usuario (8 categorías estructuradas). No forma parte del código base ejecutable.
 * **[`Referencias/`](./Referencias/)**: Documentos institucionales, normativos y guías metodológicas de referencia académica externa (`Memoria_Tecnica_de_proyecto.pdf` y `Plan_de_calidad.pdf`).
 * **[`Archive/`](./Archive/)**: Documentación histórica, versiones preliminares y borradores anteriores preservados para auditoría y trazabilidad.
