@@ -33,6 +33,7 @@ cert = (
         x509.SubjectAlternativeName([
             x509.DNSName("localhost"),
             x509.IPAddress(ipaddress.IPv4Address("127.0.0.1")),
+            x509.IPAddress(ipaddress.IPv4Address(local_ip)),
         ]),
         critical=False
     )
@@ -51,4 +52,4 @@ with open("key.pem", "wb") as f:
         encryption_algorithm=serialization.NoEncryption()
     ))
 
-print("✅ Certificados generados correctamente")
+print("Certificados generados correctamente")

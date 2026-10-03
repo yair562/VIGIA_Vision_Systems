@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>VIGIA Vision Systems - Descripción del Proyecto</title>
+<style>
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background-color: #ffffff;
+    font-size: 8.6pt;
+    line-height: 1.32;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 8.5in;
+    height: 11in;
+    padding: 0.42in 0.48in 0.38in 0.48in;
+    position: relative;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+
+  /* Header Styles */
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #0f2b48;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-box {
+    background: linear-gradient(135deg, #0f2b48 0%, #1e3a8a 100%);
+    color: #38bdf8;
+    font-weight: 900;
+    font-size: 13pt;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #1e3a8a;
+  }
+  .header-title-group h1 {
+    font-size: 12.5pt;
+    font-weight: 800;
+    color: #0f2b48;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+  }
+  .header-title-group p {
+    font-size: 7.5pt;
+    color: #475569;
+    font-weight: 500;
+  }
+  .header-meta {
+    text-align: right;
+    font-size: 7pt;
+    color: #64748b;
+    line-height: 1.25;
+  }
+  .header-meta strong {
+    color: #0f2b48;
+  }
+
+  /* Section Styling */
+  .section {
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 9.2pt;
+    font-weight: 700;
+    color: #0f2b48;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-left: 3.5px solid #0284c7;
+    padding-left: 6px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title .badge {
+    font-size: 6.5pt;
+    font-weight: 600;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 1px 6px;
+    border-radius: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Text & Paragraphs */
+  p {
+    margin-bottom: 4px;
+    text-align: justify;
+  }
+  strong {
+    color: #0f172a;
+  }
+
+  /* Highlight Banner / Card */
+  .banner-card {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 3px solid #0284c7;
+    border-radius: 4px;
+    padding: 5px 8px;
+    margin-bottom: 6px;
+    font-size: 8pt;
+  }
+  .banner-card.accent {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    border-left-color: #2563eb;
+  }
+
+  /* Grid Layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 6px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 5px 7px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .card-title {
+    font-size: 8pt;
+    font-weight: 700;
+    color: #0f2b48;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .card-title .dot {
+    width: 5.5px;
+    height: 5.5px;
+    border-radius: 50%;
+    background-color: #0284c7;
+    display: inline-block;
+  }
+  .card p {
+    font-size: 7.6pt;
+    margin-bottom: 0;
+    color: #334155;
+    line-height: 1.22;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.5pt;
+    margin-bottom: 5px;
+  }
+  th {
+    background-color: #0f2b48;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    padding: 3.5px 5px;
+    border: 1px solid #0f2b48;
+    font-size: 7.2pt;
+    letter-spacing: 0.3px;
+  }
+  td {
+    padding: 3px 5px;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    vertical-align: top;
+    line-height: 1.22;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  .tag {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 6.5pt;
+    font-weight: 600;
+  }
+  .tag-blue { background: #dbeafe; color: #1e40af; }
+  .tag-teal { background: #ccfbf1; color: #0f766e; }
+  .tag-amber { background: #fef3c7; color: #92400e; }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-purple { background: #f3e8ff; color: #6b21a8; }
+
+  /* Cycle Steps Diagram */
+  .cycle-container {
+    display: flex;
+    align-items: stretch;
+    gap: 3px;
+    margin-bottom: 6px;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid #cbd5e1;
+  }
+  .cycle-step {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 3px 2px;
+    text-align: center;
+  }
+  .cycle-step.active {
+    border-top: 2.5px solid #0284c7;
+  }
+  .cycle-num {
+    font-size: 6.5pt;
+    font-weight: 800;
+    color: #0284c7;
+    text-transform: uppercase;
+  }
+  .cycle-name {
+    font-size: 7pt;
+    font-weight: 700;
+    color: #0f2b48;
+    margin-bottom: 1px;
+  }
+  .cycle-desc {
+    font-size: 6.2pt;
+    color: #475569;
+    line-height: 1.12;
+  }
+
+  /* Lists */
+  ul {
+    padding-left: 13px;
+    margin-bottom: 3px;
+  }
+  li {
+    font-size: 7.7pt;
+    margin-bottom: 1.5px;
+    color: #334155;
+    line-height: 1.22;
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid #cbd5e1;
+    padding-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 6.8pt;
+    color: #64748b;
+  }
+  .footer-left {
+    font-weight: 600;
+    color: #0f2b48;
+  }
+  .footer-right {
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ==================== PÁGINA 1 ==================== -->
+  <div class="page">
+    <div>
+      <!-- Header -->
+      <div class="header-container">
+        <div class="header-left">
+          <div class="logo-box">VIGÍA</div>
+          <div class="header-title-group">
+            <h1>VIGIA VISION SYSTEMS</h1>
+            <p>Plataforma Inteligente de Gobernanza Física y Automatización en Lazo Cerrado</p>
+          </div>
+        </div>
+        <div class="header-meta">
+          <strong>DESCRIPCIÓN DEL PROYECTO</strong><br>
+          Gestión de Proyectos de Software<br>
+          Versión 1.2 | Septiembre 2026
+        </div>
+      </div>
+
+      <!-- 1. Naturaleza y Propuesta de Valor -->
+      <div class="section">
+        <div class="section-title">
+          <span>1. Identificación y Naturaleza del Proyecto</span>
+          <span class="badge">Iniciativa Tecnológica</span>
+        </div>
+        <p>
+          <strong>VIGIA Vision Systems</strong> es una iniciativa de desarrollo e ingeniería aplicada orientada a la creación de una plataforma modular e inteligente para la supervisión, análisis determinista y control automatizado de entornos físicos en tiempo real. Su propósito primordial es cerrar la brecha existente entre el procesamiento digital de alto nivel (visión artificial e inteligencia computacional) y la dinámica del mundo físico (sensores y actuadores electromecánicos).
+        </p>
+        
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid #0f2b48;">
+            <div class="card-title"><span class="dot" style="background:#0f2b48;"></span> Misión</div>
+            <p>Desarrollar soluciones integradas de software y hardware que transformen la observación óptica en decisiones autónomas, seguras y verificables, optimizando el control de accesos y la supervisión física con mínima latencia y máxima robustez.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #0284c7;">
+            <div class="card-title"><span class="dot" style="background:#0284c7;"></span> Visión</div>
+            <p>Consolidar a VIGIA como una plataforma modular, confiable y escalable para la gobernanza de entornos físicos inteligentes (accesos, estacionamientos, cruces e industria) sin requerir rediseños estructurales en su núcleo tecnológico.</p>
+          </div>
+        </div>
+
+        <div class="banner-card accent">
+          <strong>Propuesta de Valor Diferencial (Superación del Paradigma Convencional):</strong><br>
+          A diferencia de los sistemas de videovigilancia pasivos (CCTV) o software aislado de lectura de placas (LPR) que se limitan a grabar video o emitir alertas visuales dejando la acción y verificación física en manos humanas, <strong>VIGIA integra el ciclo operacional completo</strong>: <em>Percibe</em> mediante cámaras y sensores &#x2192; <em>Evalúa</em> bajo reglas de acceso e invariantes de seguridad &#x2192; <em>Actúa</em> sobre barreras físicas y semáforos &#x2192; <em>Verifica</em> en lazo cerrado que el movimiento mecánico realmente ocurrió &#x2192; <em>Registra</em> evidencia estructurada e inmutable para auditoría continua.
+        </div>
+      </div>
+
+      <!-- 2. Planteamiento del Problema -->
+      <div class="section">
+        <div class="section-title">
+          <span>2. Planteamiento del Problema y Justificación</span>
+          <span class="badge">Diagnóstico Operativo</span>
+        </div>
+        <p>
+          En la administración contemporánea de accesos vehiculares, estacionamientos y perímetros restringidos predominan esquemas operativos con deficiencias críticas que comprometen la fluidez, la seguridad y la transparencia:
+        </p>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#ef4444;"></span> Dependencia Manual y Fatiga</div>
+            <p>La revisión visual de credenciales y apertura manual causan cuellos de botella en horas pico, fatiga en guardias y alta vulnerabilidad al error humano o accesos no autorizados.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#f59e0b;"></span> Sistemas Aislados y Desarticulados</div>
+            <p>Cámaras CCTV, barreras vehiculares y bases de datos operan sin comunicación nativa, impidiendo una respuesta coordinada e inmediata ante eventos del entorno.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#6366f1;"></span> Falta de Trazabilidad y Certeza Forense</div>
+            <p>Ante anomalías o incidentes, no existe una correlación temporal confiable entre la decisión de apertura, la imagen de evidencia y las lecturas sensoriales físicas.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#0284c7;"></span> Control en Lazo Abierto (Open-Loop)</div>
+            <p>Los sistemas convencionales envían órdenes de apertura o cierre a ciegas, sin comprobar sensorialmente si la barrera subió o si un vehículo continúa en la zona de paso.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Objetivos del Proyecto -->
+      <div class="section">
+        <div class="section-title">
+          <span>3. Objetivos del Proyecto</span>
+          <span class="badge">Alcance Técnico</span>
+        </div>
+        <div class="banner-card" style="margin-bottom: 5px;">
+          <strong>Objetivo General:</strong> Desarrollar y validar una plataforma modular e inteligente capaz de supervisar, gobernar y automatizar un entorno físico en tiempo real, integrando visión computacional, sensores, controladores embebidos IoT y software de toma de decisiones deterministas en un ciclo cerrado y verificable.
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title"><span class="dot"></span> 1. Percepción Inteligente</div>
+            <p>Captura de video, detección vehicular y reconocimiento óptico de matrículas (LPR) con extracción de confianza.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span> 2. Decisión Determinista</div>
+            <p>Motor de reglas de negocio y gestor de invariantes de seguridad física (<em>SafetyEnforcer</em>) libre de colisiones.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span> 3. Actuación Embebida</div>
+            <p>Control de hardware y potencia para gobernar barreras electromecánicas y señalización semafórica LED.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span> 4. Lazo Cerrado Sensorial</div>
+            <p>Verificación física con sensores de fin de carrera y fotoceldas de despeje antes de cambiar de estado.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span> 5. Auditoría y Trazabilidad</div>
+            <p>Persistencia estructurada local de eventos con marca de tiempo, placa, decisión y captura fotográfica.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span> 6. Validación Integral</div>
+            <p>Comprobación funcional de punta a punta en banco de pruebas experimental bajo condiciones normales y límite.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-left">VIGIA Vision Systems — Descripción Integral del Proyecto</div>
+      <div class="footer-right">Página 1 de 3</div>
+    </div>
+  </div>
+
+  <!-- ==================== PÁGINA 2 ==================== -->
+  <div class="page">
+    <div>
+      <!-- Header -->
+      <div class="header-container">
+        <div class="header-left">
+          <div class="logo-box">VIGÍA</div>
+          <div class="header-title-group">
+            <h1>ARQUITECTURA, CICLO OPERATIVO Y CASO RECTOR</h1>
+            <p>Modelo Conceptual, Desacoplamiento de Módulos y Aplicación en Caseta Vehicular</p>
+          </div>
+        </div>
+        <div class="header-meta">
+          <strong>ARQUITECTURA & OPERACIÓN</strong><br>
+          Closed-Loop Physical Governance<br>
+          Versión 1.2 | Septiembre 2026
+        </div>
+      </div>
+
+      <!-- 4. El Ciclo Operativo Fundamental -->
+      <div class="section">
+        <div class="section-title">
+          <span>4. El Ciclo Operativo Fundamental (Lazo Cerrado)</span>
+          <span class="badge">Closed-Loop Flow</span>
+        </div>
+        <p>
+          La arquitectura de VIGIA se articula en torno a un ciclo continuo de 7 fases coordinadas que garantizan que ninguna acción en el mundo físico se ejecute a ciegas ni quede sin verificación sensorial:
+        </p>
+
+        <div class="cycle-container">
+          <div class="cycle-step active">
+            <div class="cycle-num">Paso 01</div>
+            <div class="cycle-name">Observar</div>
+            <div class="cycle-desc">Captura de video continuo y lectura de sensores de presencia física.</div>
+          </div>
+          <div class="cycle-step active">
+            <div class="cycle-num">Paso 02</div>
+            <div class="cycle-name">Interpretar</div>
+            <div class="cycle-desc">Inferencia de IA (detección y LPR) para extraer placas con confianza.</div>
+          </div>
+          <div class="cycle-step active">
+            <div class="cycle-num">Paso 03</div>
+            <div class="cycle-name">Decidir</div>
+            <div class="cycle-desc">Evaluación de políticas de acceso, listas autorizadas y horarios.</div>
+          </div>
+          <div class="cycle-step active">
+            <div class="cycle-num">Paso 04</div>
+            <div class="cycle-name">Actuar</div>
+            <div class="cycle-desc">Emisión de comandos a servomotores de barrera y semáforos.</div>
+          </div>
+          <div class="cycle-step active">
+            <div class="cycle-num">Paso 05</div>
+            <div class="cycle-name">Verificar</div>
+            <div class="cycle-desc">Confirmación física: sensor de tope superior y despeje de paso.</div>
+          </div>
+          <div class="cycle-step active">
+            <div class="cycle-num">Paso 06</div>
+            <div class="cycle-name">Registrar</div>
+            <div class="cycle-desc">Bitácora local estructurada con timestamp, placa, decisión y foto.</div>
+          </div>
+          <div class="cycle-step active">
+            <div class="cycle-num">Paso 07</div>
+            <div class="cycle-name">Mejorar</div>
+            <div class="cycle-desc">Archivado de casos de baja confianza para reentrenamiento continuo.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Organización y Desacoplamiento de Módulos -->
+      <div class="section">
+        <div class="section-title">
+          <span>5. Estructura Modular y Separación de Responsabilidades</span>
+          <span class="badge">Clean Architecture</span>
+        </div>
+        <p>
+          Para evitar dependencias cruzadas y código monolítico, el sistema aplica el <strong>patrón mediador</strong>: los módulos periféricos no se comunican directamente entre sí, sino a través de contratos estrictos gobernados por el núcleo:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 22%;">Módulo</th>
+              <th style="width: 18%;">Rol en el Ciclo</th>
+              <th style="width: 42%;">Responsabilidad Técnica Principal</th>
+              <th style="width: 18%;">Tecnologías Clave</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong><code>VIGIA_Core/</code></strong></td>
+              <td><span class="tag tag-blue">Estado & Seguridad</span></td>
+              <td>Orquestador central, gestor del estado del carril, ejecución de invariantes de seguridad (<em>SafetyEnforcer</em>) e interfaces de persistencia.</td>
+              <td>Python 3.10+, State Pattern, InMemory Bus</td>
+            </tr>
+            <tr>
+              <td><strong><code>VIGIA_Vision/</code></strong></td>
+              <td><span class="tag tag-purple">Observar &#x2192; Interpretar</span></td>
+              <td>Captura de frames, localización de matrículas, segmentación OCR, inferencia de IA y emisión de eventos de observación estructurada.</td>
+              <td>OpenCV, YOLO, PyTorch, OCR Engine</td>
+            </tr>
+            <tr>
+              <td><strong><code>VIGIA_IoT/</code></strong></td>
+              <td><span class="tag tag-amber">Actuar &#x2192; Verificar</span></td>
+              <td>Control de hardware embebido, lectura de sensores de carrera y despeje, accionamiento de relevadores, servomotores y señalización.</td>
+              <td>C++, Arduino / ESP32, PySerial, GPIO</td>
+            </tr>
+            <tr>
+              <td><strong><code>VIGIA_Automation/</code></strong></td>
+              <td><span class="tag tag-teal">Decidir</span></td>
+              <td>Motor determinista de reglas operativas, validación de permisos de listas de residentes/visitantes y políticas de contingencia horaria.</td>
+              <td>Rules Engine determinista, Timers</td>
+            </tr>
+            <tr>
+              <td><strong><code>VIGIA_API/</code></strong></td>
+              <td><span class="tag tag-blue">Servicios & Telemetría</span></td>
+              <td>Exposición de servicios REST y canales de telemetría en tiempo real para supervisión remota, configuración y sincronización de eventos.</td>
+              <td>FastAPI / REST, WebSockets, JSON</td>
+            </tr>
+            <tr>
+              <td><strong><code>VIGIA_Dashboard/</code></strong></td>
+              <td><span class="tag tag-green">Supervisión Humana</span></td>
+              <td>Panel web para el operador de caseta con visualización del video en vivo, estado del carril, bitácora y botón de apertura manual supervisada.</td>
+              <td>HTML5, CSS3, JavaScript reactivo, WS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6. Aplicación Rectora: Caseta Inteligente -->
+      <div class="section">
+        <div class="section-title">
+          <span>6. Caso de Uso Rector: Caseta Inteligente de Acceso Vehicular</span>
+          <span class="badge">Demostrador MVP</span>
+        </div>
+        <p>
+          Como escenario rector de validación experimental, VIGIA implementa la automatización integral de una caseta de acceso vehicular:
+        </p>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#0284c7;"></span> Secuencia Operativa de Acceso</div>
+            <ul style="margin-bottom:0;">
+              <li><strong>1. Aproximación:</strong> El vehículo activa el sensor de presencia y entra en foco visual.</li>
+              <li><strong>2. Identificación:</strong> <code>VIGIA_Vision</code> segmenta la placa y extrae los caracteres.</li>
+              <li><strong>3. Autorización:</strong> <code>VIGIA_Automation</code> verifica la lista de permisos y vigencia.</li>
+              <li><strong>4. Actuación:</strong> Se comanda la elevación de barrera y semáforo a verde.</li>
+              <li><strong>5. Verificación:</strong> Sensor confirma barrera abierta y fotocelda valida cruce.</li>
+              <li><strong>6. Cierre Seguro:</strong> La barrera baja tras despeje y se archiva la evidencia forense.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#0f2b48;"></span> Invariantes Físicas de Seguridad (Fail-Safe)</div>
+            <ul style="margin-bottom:0;">
+              <li><strong>INV-01 (Anti-Aplastamiento):</strong> Bloqueo estricto e incondicional de descenso si la fotocelda detecta un obstáculo en el carril.</li>
+              <li><strong>INV-02 (Verificación Mecánica):</strong> El semáforo no conmuta a verde hasta recibir confirmación física del fin de carrera superior.</li>
+              <li><strong>INV-03 (Falla Segura de Enlace):</strong> Ante pérdida de comunicación serial con el microcontrolador, el sistema pasa a estado de alerta y mantiene el estado seguro restrictivo.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-left">VIGIA Vision Systems — Arquitectura y Caso de Uso Rector</div>
+      <div class="footer-right">Página 2 de 3</div>
+    </div>
+  </div>
+
+  <!-- ==================== PÁGINA 3 ==================== -->
+  <div class="page">
+    <div>
+      <!-- Header -->
+      <div class="header-container">
+        <div class="header-left">
+          <div class="logo-box">VIGÍA</div>
+          <div class="header-title-group">
+            <h1>EQUIPO, METODOLOGÍA, ALCANCE Y PROYECCIÓN</h1>
+            <p>Estructura Organizacional, Marco de Trabajo, Límites de Proyecto y Escalabilidad</p>
+          </div>
+        </div>
+        <div class="header-meta">
+          <strong>GESTIÓN & PLANIFICACIÓN</strong><br>
+          Marco Scrum & Workstreams<br>
+          Versión 1.2 | Septiembre 2026
+        </div>
+      </div>
+
+      <!-- 7. Estructura y Roles del Equipo -->
+      <div class="section">
+        <div class="section-title">
+          <span>7. Estructura Organizacional y Mapeo de Roles</span>
+          <span class="badge">6 Integrantes / 8 Funciones</span>
+        </div>
+        <p>
+          El desarrollo de VIGIA es ejecutado por un equipo multidisciplinario con asignación unívoca de responsabilidades técnicas y entregables académicos formalizados:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 22%;">Integrante</th>
+              <th style="width: 26%;">Puesto / Rol Oficial</th>
+              <th style="width: 32%;">Responsabilidad Principal de Ingeniería</th>
+              <th style="width: 20%;">Entregable Asignado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Yair Pérez Medina</strong></td>
+              <td>Ingeniero de Software +<br>Ing. de Diseño Eléctrico</td>
+              <td>Arquitectura general, <code>VIGIA_Core/</code>, backend, lógica de persistencia y especificación de diseño eléctrico/potencia.</td>
+              <td><span class="tag tag-blue">Ficha Roles + RF / RNF</span></td>
+            </tr>
+            <tr>
+              <td><strong>Karen Vianey Juárez Hernández</strong></td>
+              <td>Product Owner (PO)</td>
+              <td>Definición de visión del producto, priorización del Product Backlog, gobernanza de requerimientos y criterios de aceptación.</td>
+              <td><span class="tag tag-purple">Historias de Usuario</span></td>
+            </tr>
+            <tr>
+              <td><strong>Ernesto Hazael Mosqueda Hernández</strong></td>
+              <td>CIO +<br>Ing. de Diseño de Circuitos</td>
+              <td>Diseño e integración de circuitos electrónicos, subsistema <code>VIGIA_IoT/</code>, firmware embebido, sensores y gobierno de datos.</td>
+              <td><span class="tag tag-amber">Logos + Recorridos</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cristian Josué Soto Cruz</strong></td>
+              <td>Ingeniero de Procesos</td>
+              <td>Diseño y estandarización de flujos operativos, automatización (<code>VIGIA_Automation/</code>) y control metodológico de minutas.</td>
+              <td><span class="tag tag-teal">Formatos de Reunión</span></td>
+            </tr>
+            <tr>
+              <td><strong>Natalia Guadalupe Ramírez Muciño</strong></td>
+              <td>Diseñadora UX / UI</td>
+              <td>Diseño de interfaces de usuario para <code>VIGIA_Dashboard/</code>, arquitectura de información, wireframes y experiencia del operador.</td>
+              <td><span class="tag tag-green">Creación de Personas</span></td>
+            </tr>
+            <tr>
+              <td><strong>Estefany Sarahí Arellano Reyes</strong></td>
+              <td>Analista de Requisitos y Datos</td>
+              <td>Levantamiento y análisis de requerimientos de dominio, soporte al pipeline de <code>VIGIA_Vision/</code> y análisis de datos.</td>
+              <td><span class="tag tag-blue">Mapa de Empatía</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 8. Marco Metodológico -->
+      <div class="section">
+        <div class="section-title">
+          <span>8. Marco Metodológico y Disciplina de Ingeniería</span>
+          <span class="badge">Scrum Concurrente</span>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#0284c7;"></span> Desarrollo Ágil por Dominios Paralelos</div>
+            <p>Se opera bajo el marco <strong>Scrum</strong> en sprints de 2 semanas. Los frentes de hardware, visión, core e interfaces avanzan concurrentemente sin bloqueos mutuos mediante contratos formales de datos (DTOs) y APIs internas abstractas.</p>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot" style="background:#0f2b48;"></span> Testeabilidad sin Dependencia de Hardware</div>
+            <p>La suite de pruebas automatizadas en <code>tests/</code> utiliza emuladores seriales y videos pregrabados (fixtures), permitiendo verificar el 100% de la lógica del ciclo cerrado de forma continua sin requerir la maqueta física conectada.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Alcance y Delimitación del Proyecto -->
+      <div class="section">
+        <div class="section-title">
+          <span>9. Delimitación del Alcance (Fase 1 / Demostrador)</span>
+          <span class="badge">Límites de Proyecto</span>
+        </div>
+        <div class="grid-2">
+          <div class="banner-card" style="border-left-color: #16a34a; background: #f0fdf4; margin-bottom: 0;">
+            <strong style="color: #166534;">✓ Dentro del Alcance Inicial:</strong>
+            <ul style="margin-top: 2px; margin-bottom: 0;">
+              <li>Plataforma base <code>VIGIA_Core</code> y motor de estados determinista.</li>
+              <li>Pipeline LPR funcional (localización de matrícula y OCR).</li>
+              <li>Controlador IoT con sensores de final de carrera y barrera.</li>
+              <li>Dashboard web para supervisión en vivo y apertura manual.</li>
+              <li>Bitácora de auditoría local con evidencia fotográfica.</li>
+              <li>Validación integral de ciclo en maqueta/banco de pruebas.</li>
+            </ul>
+          </div>
+          <div class="banner-card" style="border-left-color: #dc2626; background: #fef2f2; margin-bottom: 0;">
+            <strong style="color: #991b1b;">✗ Fuera del Alcance Inicial:</strong>
+            <ul style="margin-top: 2px; margin-bottom: 0;">
+              <li>Despliegue comercial o instalación a escala civil real.</li>
+              <li>Integración de pasarelas de pago o cobro de peajes.</li>
+              <li>Dependencia forzada de infraestructura cloud de terceros.</li>
+              <li>Soporte de múltiples carriles bidireccionales simultáneos.</li>
+              <li>Módulos autónomos de autoaprendizaje en producción.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Proyección y Conclusión -->
+      <div class="section">
+        <div class="section-title">
+          <span>10. Impacto, Proyección Futura y Conclusión</span>
+          <span class="badge">Escalabilidad</span>
+        </div>
+        <p>
+          <strong>Escalabilidad Tecnológica:</strong> La caseta vehicular representa el demostrador inicial. Gracias a su núcleo desacoplado, la arquitectura de VIGIA proyecta una evolución natural hacia: <em>(a) Control de accesos peatonales corporativos</em>, <em>(b) Administración inteligente de cajones en estacionamientos</em>, <em>(c) Semaforización adaptativa en cruces viales urbanos</em> y <em>(d) Trazabilidad de flujos y materiales en plantas industriales</em>.
+        </p>
+        <div class="banner-card accent" style="margin-bottom: 0;">
+          <strong>Conclusión Ejecutiva:</strong> VIGIA Vision Systems transforma la observación óptica pasiva en un sistema activo, seguro y auditable de gobernanza física. Al integrar percepción, decisión determinista, control electromecánico y verificación en lazo cerrado, el proyecto establece una base de ingeniería sólida, modular y escalable para la automatización confiable de entornos físicos.
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-left">VIGIA Vision Systems — Estructura de Equipo, Alcance y Proyección</div>
+      <div class="footer-right">Página 3 de 3</div>
+    </div>
+  </div>
+
+</body>
+</html>

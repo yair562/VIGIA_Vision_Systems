@@ -42,7 +42,14 @@ def mobile():
     finally:
         s.close()
 
-    server_url = f"https://{ip}:5443"
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    has_https = all(
+        os.path.exists(os.path.join(base_dir, filename))
+        for filename in ("cert.pem", "key.pem")
+    )
+    scheme = "https" if has_https else "http"
+    port = 5443 if has_https else 5000
+    server_url = f"{scheme}://{ip}:{port}"
 
     return render_template(
         "mobile.html",
@@ -80,11 +87,22 @@ def capture():
 @app.route("/capture-mobile", methods=["POST"])
 def capture_mobile():
 
-    file = request.files["image"]
+    file = request.files.get("image")
+    if file is None:
+        return jsonify({
+            "success": False,
+            "error": "No se recibió el campo de imagen"
+        }), 400
+
     img_bytes = file.read()
 
     np_arr = np.frombuffer(img_bytes, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    if frame is None:
+        return jsonify({
+            "success": False,
+            "error": "La imagen recibida no es válida"
+        }), 400
 
     dibujar = request.form.get(
         "dibujar",
@@ -184,11 +202,7 @@ if __name__ == "__main__":
 
     ssl_context = None
 
-    if (
-        os.path.exists(CERT_PATH)
-        and
-        os.path.exists(KEY_PATH)
-    ):
+    if os.path.exists(CERT_PATH) and os.path.exists(KEY_PATH):
 
         ssl_context = ssl.SSLContext(
             ssl.PROTOCOL_TLS_SERVER
@@ -202,9 +216,7 @@ if __name__ == "__main__":
         print("🔐 SSL configurado")
 
     else:
-
-        print("⚠️ No se encontraron certificados")
-        exit(1)
+        print("⚠️ No se encontraron certificados; se iniciará únicamente HTTP")
 
     http_server = make_server(
         "0.0.0.0",
@@ -212,28 +224,27 @@ if __name__ == "__main__":
         app
     )
 
-    https_server = make_server(
-        "0.0.0.0",
-        5443,
-        app,
-        ssl_context=ssl_context
-    )
-
     t_http = threading.Thread(
         target=http_server.serve_forever,
         daemon=True
     )
 
-    t_https = threading.Thread(
-        target=https_server.serve_forever,
-        daemon=True
-    )
-
     t_http.start()
-    t_https.start()
 
     print("🌐 HTTP en http://0.0.0.0:5000")
-    print("🔐 HTTPS en https://0.0.0.0:5443")
+
+    if ssl_context is not None:
+        https_server = make_server(
+            "0.0.0.0",
+            5443,
+            app,
+            ssl_context=ssl_context
+        )
+        t_https = threading.Thread(
+            target=https_server.serve_forever,
+            daemon=True
+        )
+        t_https.start()
+        print("🔐 HTTPS en https://0.0.0.0:5443")
 
     t_http.join()
-    t_https.join()

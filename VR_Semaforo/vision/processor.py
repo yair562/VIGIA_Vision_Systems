@@ -21,15 +21,21 @@ if torch.cuda.is_available():
     print("Dispositivo:", torch.cuda.get_device_name(0))
 print("========================================\n")
 
-print("[INFO] Cargando modelo YOLO (x) en la arquitectura VRAM...")
-# Instanciamos el modelo extra grande para máxima precisión de frente
-model = YOLO("yolo11x.pt")
-model.to("cuda")
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+USE_HALF = DEVICE.startswith("cuda")
+MODEL_PATH = os.getenv("YOLO_MODEL", "yolo11n.pt")
 
-# Calentamiento del modelo para optimizar la primera inferencia
-dummy = np.zeros((640, 640, 3), dtype=np.uint8)
-model.predict(source=dummy, half=True, verbose=False)
-print("[INFO] Modelo calentado correctamente")
+print(f"[INFO] Cargando modelo YOLO {MODEL_PATH} en {DEVICE}...")
+model = YOLO(MODEL_PATH)
+model.to(DEVICE)
+
+# El calentamiento en CPU puede retrasar varios minutos el arranque.
+if USE_HALF:
+    dummy = np.zeros((640, 640, 3), dtype=np.uint8)
+    model.predict(source=dummy, device=DEVICE, half=USE_HALF, verbose=False)
+    print("[INFO] Modelo calentado correctamente")
+else:
+    print("[INFO] CPU detectada; se omite el calentamiento inicial")
 
 
 def contar_carritos(frame, dibujar=False, params=None):
@@ -44,7 +50,8 @@ def contar_carritos(frame, dibujar=False, params=None):
         source=frame,
         classes=[2, 3, 5, 7],  # Clases COCO: 2=car, 3=motorcycle, 5=bus, 7=truck
         conf=0.20, 
-        half=True,             # Activación de FP16 para los Tensor Cores
+        device=DEVICE,
+        half=USE_HALF,
         verbose=False
     )
     
