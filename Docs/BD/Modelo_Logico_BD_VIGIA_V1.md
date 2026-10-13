@@ -14,6 +14,9 @@ El propósito de este documento es definir y formalizar visualmente el **Modelo 
 
 Este modelo representa fielmente las entidades, atributos, restricciones de integridad y reglas operativas del ciclo de control de acceso ciberfísico en lazo cerrado (*Closed-Loop*), manteniendo una estructura normalizada orientada a evitar redundancias y dependencias innecesarias, adaptada a las capacidades del motor **PostgreSQL**.
 
+> [!NOTE] Fuente Canónica Oficial de Base de Datos (15 Tablas)
+> La definición canónica oficial del esquema relacional y sus migraciones ejecutables residen en el repositorio dedicado `Software/BD/`. Dicho esquema unificado consolida **15 tablas** mediante la migración oficial [`migrations/V001__baseline_schema.sql`](file:///C:/GEST.PROY.TI/Software/BD/migrations/V001__baseline_schema.sql), integrando la jerarquía académica (`carrera`, `alumno`, `administrativo`), la relación temporal `persona_vehiculo` y la telemetría física (`sensor`, `evento_sensor`, `accion_iluminacion`) junto al núcleo de visión y control de acceso aquí descrito.
+
 ---
 
 ## 2. Diagrama Entidad-Relación Lógico (Mermaid ER)

@@ -14,7 +14,9 @@ Este directorio centraliza las especificaciones, modelos y artefactos correspond
 
 | Documento | Versión | Estado | Descripción |
 | :--- | :---: | :---: | :--- |
-| **[01 — Modelo Conceptual de Base de Datos V1](./01_modelo_conceptual_v1.md)** | **V1** | Propuesto | Define las 12 entidades principales, relaciones, reglas de negocio y flujos de vehículos conocidos vs. desconocidos. |
+| **[01 — Modelo Conceptual de Base de Datos V1](./01_modelo_conceptual_v1.md)** | **V1** | Histórico | Define las 12 entidades preliminares, relaciones y reglas conceptuales. |
+| **[Modelo Lógico de BD V1](../BD/Modelo_Logico_BD_VIGIA_V1.md)** | **V1** | Congelado | Especificación lógica de entidades y diagrama Mermaid ER del lazo de visión y acceso. |
+| **Repositorio Canónico de BD (`Software/BD`)** | **15 Tablas** | Activo | Migraciones físicas PostgreSQL (`V001__baseline_schema.sql`), seeds y pruebas automáticas. |
 
 ---
 

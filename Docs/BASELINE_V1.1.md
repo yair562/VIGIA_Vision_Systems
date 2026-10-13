@@ -81,7 +81,7 @@ VIGIA_Vision         VIGIA_IoT
 | **[`Docs/04`](./04_estandares_de_desarrollo.md)** | **Estándares de Desarrollo** | Define la filosofía de mínima complejidad, estilo Python (PEP 8), Git flow y testing con mocks. |
 | **[`Docs/05`](./05_marco_de_planificacion_y_ejecucion.md)** | **Marco de Planificación** | Define el marco Scrum con desarrollo paralelo por Workstreams (A–H) y la regla estricta de no bloqueo. |
 | **[`Docs/06`](./06_propuesta_del_proyecto.md)** | **Propuesta del Proyecto** | Define la justificación ejecutiva, académica, misión, visión y alcance del caso rector. |
-| **[`Docs/07`](./07_cronograma_maestro.md)** | **Cronograma Maestro** | Define el calendario de ejecución temporal (Sep 9 – Dic 16, 2026), Sprints S0–S7 e Hitos H0–H8. |
+| **[`Docs/07`](./07_cronograma_maestro.md)** | **Cronograma Maestro** | Define la replanificación ejecutable de la V1 escolar (13 de octubre – 16 de diciembre de 2026), sus seis fases, responsables, dependencias y criterios de aceptación. |
 | **[`Docs/08`](./08_matriz_de_riesgos.md)** | **Matriz de Riesgos** | Define los riesgos técnicos, de hardware e integración con estrategias de mitigación y contingencia. |
 | **[`Docs/09`](./09_especificacion_de_requisitos.md)** | **Especificación Requisitos**| Define los Requisitos Funcionales (RF), No Funcionales (RNF), Historias de Usuario (HU) e invariantes. |
 
@@ -93,7 +93,7 @@ VIGIA_Vision         VIGIA_IoT
 * Estructura documental canónica normalizada y libre de duplicados activos.
 * Organización del equipo consolidada en 6 integrantes con cadena de mando unívoca.
 * Arquitectura conceptual desacoplada bajo el Patrón Mediador y Lazo Cerrado.
-* Roadmap por capacidades físicas y Cronograma Maestro sincronizados (Sep 9 – Dic 16, 2026).
+* Roadmap por capacidades físicas y Cronograma Maestro relacionados, con el cronograma adaptado al alcance verificable de la V1 escolar.
 * Estándares de desarrollo, convenciones Git y disciplina de testing sin hardware físico.
 * Propuesta ejecutiva y académica de la iniciativa tecnológica.
 * Matriz inicial de riesgos y planes de contingencia documentados.

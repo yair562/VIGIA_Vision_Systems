@@ -36,7 +36,7 @@ VIGIA_Vision_Systems/
 │   ├── 04_estandares_de_desarrollo.md # Guías de código simple, Git, testing y disciplina técnica
 │   ├── 05_marco_de_planificacion_y_ejecucion.md # Marco Scrum paralelo y Workstreams
 │   ├── 06_propuesta_del_proyecto.md   # Propuesta ejecutiva y académica
-│   ├── 07_cronograma_maestro.md       # Plan temporal detallado (Sep-Dic 2026)
+│   ├── 07_cronograma_maestro.md       # Plan realista de V1 (13 oct-16 dic 2026)
 │   ├── 08_matriz_de_riesgos.md        # Matriz consolidada de riesgos y contingencias
 │   ├── 09_especificacion_de_requisitos.md # Especificación de RF, RNF e Historias de Usuario
 │   ├── GEST_PROY_SOFT/                # Entregables de Gestión de Proyectos de Software (01 al 08)
@@ -277,6 +277,5 @@ Para asegurar una gobernanza técnica ordenada y evitar conflictos de integraci�
 
 * **Gobernanza de Producto y Arquitectura (Vianey [PO] + Yair [Software/Eléctrico]):** Coordinan la priorización del backlog, el alineamiento de capacidades y la aprobación de interfaces públicas entre módulos.
 * **Ownership de Implementación Técnica:** Cada integrante lidera su área de especialidad (Ernesto en Circuitos/IoT, Yair en Software/Eléctrico, Natalia en UX/UI, Josue en Procesos, Estef en Análisis y Vianey en Producto/Backlog), garantizando la coherencia e integración del sistema.
-
 
 
