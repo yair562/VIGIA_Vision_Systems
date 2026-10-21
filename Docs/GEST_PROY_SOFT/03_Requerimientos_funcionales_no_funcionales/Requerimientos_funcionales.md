@@ -15,14 +15,13 @@ Los requerimientos funcionales de VIGIA Vision Systems establecen las funciones 
 
 Su definición considera las necesidades identificadas en la encuesta de percepción y los objetivos funcionales contemplados para la primera versión del proyecto. Cada requisito describe un comportamiento esperado del sistema, procurando que sea claro, verificable y congruente con su alcance.
 
-|    ID     | Requerimiento funcional                                                                                                                                                                                                                                                                         |
-| :-------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **RF-01** | El sistema deberá permitir la captura de imágenes del acceso vehicular mediante cámaras de dispositivos móviles, cámaras conectadas por USB y cámaras IP accesibles mediante una dirección de red.                                                                                              |
-| **RF-02** | El sistema deberá permitir registrar y configurar las cámaras que se utilizarán para la supervisión del acceso vehicular, incluyendo el tipo de cámara, el área de detección y la dirección del acceso (entrada o salida).                                                                      |
-| **RF-03** | El sistema deberá analizar las imágenes de las cámaras configuradas para detectar vehículos que se encuentren dentro del área de detección establecida para cada cámara, ignorandolos vehículos que permanezcan fuera de dicha área.                                                            |
-| **RF-04** | El sistema deberá identificar y extraer los caracteres de la matrícula de los vehículos detectados cuando la imagen capturada permita su lectura.                                                                                                                                               |
+| ID | Requerimiento funcional |
+| :---: | :--- |
+| **RF-01** | El sistema deberá permitir la captura de imágenes del acceso vehicular mediante cámaras de dispositivos móviles, cámaras conectadas por USB y cámaras IP accesibles mediante una dirección de red. |
+| **RF-02** | El sistema deberá permitir registrar y configurar las cámaras que se utilizarán para la supervisión del acceso vehicular, incluyendo el tipo de cámara, el área de detección y la dirección del acceso (entrada o salida). |
+| **RF-03** | El sistema deberá analizar las imágenes de las cámaras configuradas para detectar vehículos que se encuentren dentro del área de detección establecida para cada cámara, ignorandolos vehículos que permanezcan fuera de dicha área. |
+| **RF-04** | El sistema deberá identificar y extraer los caracteres de la matrícula de los vehículos detectados cuando la imagen capturada permita su lectura. |
 | **RF-05** | El sistema deberá identificar las características visuales de los vehículos detectados, incluyendo su color y categoría (automóvil, motocicleta, camión u otra categoría contemplada), registrando los resultados como estimaciones cuando no sea posible obtener una identificación confiable. |
-
 | **RF-06** | El sistema deberá registrar los eventos de entrada y salida vehicular confirmados, incluyendo la fecha, hora, dirección del acceso, evidencia visual y datos obtenidos durante el procesamiento, cuando estén disponibles. |
 | **RF-07** | El sistema deberá permitir consultar la información del alumno mediante su matrícula institucional y verificar si cuenta con una motocicleta registrada y asociada a su registro. |
 | **RF-08** | El sistema deberá almacenar los registros de eventos y su evidencia visual asociada para su consulta posterior. |
@@ -31,6 +30,8 @@ Su definición considera las necesidades identificadas en la encuesta de percepc
 
 **Administradores**
 
+| ID | Requerimiento funcional |
+| :---: | :--- |
 | **RF-11** | El sistema deberá permitir al personal autorizado consultar, actualizar y administrar los registros de vehículos almacenados. |
 | **RF-12** | El sistema deberá comparar la matrícula reconocida con los registros de vehículos almacenados cuando exista información suficiente para realizar la comparación. |
 | **RF-13** | El sistema deberá indicar si la matrícula reconocida tiene una coincidencia en los registros de vehículos almacenados. |
