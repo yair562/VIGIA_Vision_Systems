@@ -13,7 +13,7 @@ El directorio `GEST_PROY_SOFT` es el espacio formal y centralizado para almacena
 
 Esta organización permite:
 * Facilitar la navegación, evaluación y presentación del proyecto directamente desde GitHub.
-* Establecer una correspondencia unívoca entre las 8 categorías de entregables y los integrantes responsables del equipo.
+* Establecer una correspondencia unívoca entre las 20 categorías de entregables y los integrantes responsables del equipo.
 * Mantener una nomenclatura estandarizada, profesional y reutilizable sin nombres de personas incrustados en los nombres de archivo.
 * Diferenciar claramente entre entregables técnicos propios del proyecto y plantillas/ejemplos institucionales de referencia.
 
@@ -33,12 +33,24 @@ El equipo está integrado por seis integrantes que desempeñan ocho puestos o fu
 | **06** | **Historia de usuario** | Product Owner (PO) | **Vianey** | [`06_Historias_de_usuario/`](./06_Historias_de_usuario/) |
 | **07** | **Todas las hojas del formato de reuniones** | Ing. de Procesos | **Josué** | [`07_Formato_de_reuniones/`](./07_Formato_de_reuniones/) |
 | **08** | **Mapas de recorrido** | CIO + Ing. de Diseño de Circuitos | **Ernesto** | [`08_Mapas_de_recorrido/`](./08_Mapas_de_recorrido/) |
+| **09** | **Wireframes** | TBD | **TBD** | [`09_Wireframes/`](./09_Wireframes/) |
+| **10** | **Mockups** | TBD | **TBD** | [`10_Mockups/`](./10_Mockups/) |
+| **11** | **Diagrama de flujo** | TBD | **TBD** | [`11_Diagrama_de_flujo/`](./11_Diagrama_de_flujo/) |
+| **12** | **Diagrama de casos de uso** | TBD | **TBD** | [`12_Diagrama_de_casos_de_uso/`](./12_Diagrama_de_casos_de_uso/) |
+| **13** | **Diagramas de bloques** | TBD | **TBD** | [`13_Diagramas_de_bloques/`](./13_Diagramas_de_bloques/) |
+| **14** | **Modelo del prototipo** | TBD | **TBD** | [`14_Modelo_del_prototipo/`](./14_Modelo_del_prototipo/) |
+| **15** | **Memoria técnica** | TBD | **TBD** | [`15_Memoria_tecnica/`](./15_Memoria_tecnica/) |
+| **16** | **Fichas técnicas** | TBD | **TBD** | [`16_Fichas_tecnicas/`](./16_Fichas_tecnicas/) |
+| **17** | **Materiales del proyecto** | TBD | **TBD** | [`17_Materiales_del_proyecto/`](./17_Materiales_del_proyecto/) |
+| **18** | **Costos y presupuestos** | TBD | **TBD** | [`18_Costos_y_presupuestos/`](./18_Costos_y_presupuestos/) |
+| **19** | **Plan de calidad** | TBD | **TBD** | [`19_Plan_de_calidad/`](./19_Plan_de_calidad/) |
+| **20** | **Entregas de la semana y la siguiente** | TBD | **TBD** | [`20_Entregas_de_la_semana_y_la_siguiente/`](./20_Entregas_de_la_semana_y_la_siguiente/) |
 
 ---
 
 ## 3. Estructura Oficial de Directorios
 
-`GEST_PROY_SOFT/` contiene exclusivamente las **ocho (8) categorías principales** de entregables:
+`GEST_PROY_SOFT/` contiene exclusivamente las **veinte (20) categorías principales** de entregables:
 
 ```text
 Docs/
@@ -66,9 +78,19 @@ Docs/
     ├── 07_Formato_de_reuniones/                        # Formato y actas de minutas de reuniones de equipo
     │   ├── README.md                                   # Gobernanza y control de sesiones
     │   └── Formato_acta_de_reunion_TESH.pdf            # [Formato institucional] Formato oficial de actas
-    └── 08_Mapas_de_recorrido/                          # Mapas de viaje de usuario (Customer Journey Maps)
-        ├── README.md                                   # [En desarrollo] Fases del recorrido y touchpoints
-        └── Ejemplo_mapas_de_recorrido.pptx             # [Plantilla / Referencia] Material institucional de ejemplo
+    ├── 08_Mapas_de_recorrido/                          # Mapas de viaje de usuario (Customer Journey Maps)
+    ├── 09_Wireframes/                                  # Estructuras de baja fidelidad de las interfaces
+    ├── 10_Mockups/                                     # Representaciones visuales de las interfaces
+    ├── 11_Diagrama_de_flujo/                           # Flujo de operación y decisiones del sistema
+    ├── 12_Diagrama_de_casos_de_uso/                    # Actores, casos de uso y relaciones
+    ├── 13_Diagramas_de_bloques/                        # Arquitectura funcional y bloques del sistema
+    ├── 14_Modelo_del_prototipo/                        # Modelo y evidencia del prototipo
+    ├── 15_Memoria_tecnica/                             # Memoria técnica del proyecto
+    ├── 16_Fichas_tecnicas/                             # Fichas de componentes y recursos técnicos
+    ├── 17_Materiales_del_proyecto/                     # Inventario de materiales requeridos
+    ├── 18_Costos_y_presupuestos/                       # Cantidades, precios y estimación presupuestaria
+    ├── 19_Plan_de_calidad/                             # Criterios, verificaciones y evidencias de calidad
+    └── 20_Entregas_de_la_semana_y_la_siguiente/       # Seguimiento de entregas y próximos compromisos
 ```
 
 > **Nota de organización:** La documentación institucional de soporte académico (`Memoria_Tecnica_de_proyecto.pdf` y `Plan_de_calidad.pdf`) se encuentra debidamente resguardada en [`Docs/Referencias/`](../Referencias/).
@@ -78,5 +100,5 @@ Docs/
 ## 4. Convenciones de Nomenclatura
 
 * **Sin nombres personales en archivos:** La autoría y responsabilidad se gestiona a nivel de documentación y metadatos, garantizando nombres de archivo estandarizados y limpios (`Ficha_descripcion_de_roles.md`, `Historias_de_usuario.md`, etc.).
-* **Transparencia entre entregables y plantillas:** Los recursos institucionales de referencia se prefijan explícitamente con `Ejemplo_` para distinguirlos claramente de los entregables desarrollados específicamente para VIGIA.
+* **Transparencia entre entregables y plantillas:** Los recursos institucionales de referencia se prefijan explícitamente con `Ejemplo_` o se mantienen en `Docs/Referencias/` para distinguirlos claramente de los entregables desarrollados específicamente para VIGIA.
 * **Separación de responsabilidades:** Cada carpeta contiene su respectivo archivo descriptivo o recurso de presentación, facilitando la auditoría y entrega modular.
