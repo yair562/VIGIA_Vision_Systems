@@ -15,10 +15,12 @@ from werkzeug.serving import make_server
 # Importaciones de tu arquitectura local
 from vision.service import process_pc_capture
 from vision.processor import contar_carritos
+from vision.pipeline import VisionPipeline
 from traffic.analyzer import TrafficAnalyzer
 from traffic.bridge import actualizar_hardware
 
 app = Flask(__name__)
+vision_pipeline = VisionPipeline()
 
 # =========================
 # RUTAS DE INTERFAZ
@@ -76,7 +78,8 @@ def capture():
         "success": True,
         "carritos": resultado["vehiculos"],
         "estado": resultado["estado"],
-        "verde": tiempo_real_asm
+        "verde": tiempo_real_asm,
+        "vision": resultado["vision"],
     })
 
 
@@ -110,15 +113,12 @@ def capture_mobile():
     ).lower() == "true"
 
     analizador = TrafficAnalyzer()
+    vision_result = vision_pipeline.process(frame, draw=dibujar)
+    n = vision_result.vehicle_count
 
     if dibujar:
 
         # Conteo + dibujo
-        n, frame_anotado, boxes = contar_carritos(
-            frame,
-            dibujar=True
-        )
-
         # Análisis de tráfico
         resultado = analizador.analizar(n)
 
@@ -130,6 +130,7 @@ def capture_mobile():
         )
 
         # Imagen anotada a Base64
+        frame_anotado = vision_result.annotated_frame or frame
         _, buffer = cv2.imencode(
             ".jpg",
             frame_anotado
@@ -145,23 +146,15 @@ def capture_mobile():
             "estado": resultado["estado"],
             "verde": tiempo_real_asm,
             "boxes": [
-                {
-                    "x": x,
-                    "y": y,
-                    "w": w,
-                    "h": h
-                }
-                for (x, y, w, h) in boxes
+                vehicle["vehicle_bbox"]
+                for vehicle in vision_result.to_dict()["vehicles"]
             ],
             "imagen_anotada":
-                f"data:image/jpeg;base64,{img_base64}"
+                f"data:image/jpeg;base64,{img_base64}",
+            "vision": vision_result.to_dict(),
         })
 
     else:
-
-        # Conteo normal
-        n = contar_carritos(frame)
-
         # Análisis de tráfico
         resultado = analizador.analizar(n)
 
@@ -176,7 +169,8 @@ def capture_mobile():
             "success": True,
             "carritos": resultado["vehiculos"],
             "estado": resultado["estado"],
-            "verde": tiempo_real_asm
+            "verde": tiempo_real_asm,
+            "vision": vision_result.to_dict(),
         })
 
 
