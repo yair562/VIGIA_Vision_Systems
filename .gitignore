@@ -111,6 +111,8 @@ htmlcov/
 runs/
 wandb/
 .model_cache/
+*.pt
+*.onnx
 *.onnx.cache
 *.engine
 
