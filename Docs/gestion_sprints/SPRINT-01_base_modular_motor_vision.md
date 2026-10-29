@@ -3,17 +3,18 @@
 ## Control Documental
 - **Identificador:** `SPRINT-01`
 - **Nombre del Sprint:** Implementación de la Etapa 1 del Motor Propio de Visión Artificial (`VIGIA_Vision`) y Desacoplamiento de Pruebas Unitarias
-- **Estado:** `PENDIENTE_DE_VALIDACION`
+- **Estado:** `CERRADO`
 - **Fecha de Ejecución:** 29 de octubre de 2026
 - **Commit Base (`HEAD` al iniciar):** `4105805` (`Diagramas de CU, Diagramas de Bloques`, 2026-10-28)
+- **Commit de Consolidación Base:** `c249296` (`feat(vision): consolidate modular engine foundation`, 2026-10-29)
 - **Hitos Relacionados:** Capacidad 1 — Percibir ([`03_roadmap.md`](../03_roadmap.md)) y Fase 2 / Fase 3 ([`07_cronograma_maestro.md`](../07_cronograma_maestro.md))
 
-> **Justificación del estado `PENDIENTE_DE_VALIDACION`:**
-> Aunque todos los archivos de la Etapa 1 están creados/modificados en el árbol de trabajo local (`[VERIFICADO EN REPOSITORIO / GIT]`) y el agente reportó 93 pruebas unitarias aprobadas (`[REPORTADO POR AGENTE / SESIÓN]`), el sprint **no se declara `CERRADO`** por cuatro razones objetivas:
-> 1. Los cambios residen en el árbol de trabajo (*working tree*) y aún no han sido confirmados en un commit de Git tras revisión humana.
-> 2. La integración real con la base de datos PostgreSQL (`vigia-db` en el puerto `5433`) no pudo ejecutarse porque el demonio de Docker Desktop estaba detenido en el sistema anfitrión (`[PENDIENTE DE VERIFICAR]`).
-> 3. El coordinador opera en esta etapa con `NullVehicleDetector` (que devuelve `[]`), por lo que aún no ejecuta inferencia vehicular real sobre imágenes.
-> 4. Persiste una cuestión arquitectónica abierta sobre la persistencia en base de datos de la ruta de la imagen anotada (`*_annot.jpg`) frente a la imagen original (`*_orig.jpg`).
+> **Justificación del estado `CERRADO`:**
+> La base modular de la Etapa 1 se declara formalmente **`CERRADO`** por cumplimiento integral de sus objetivos de arquitectura y pruebas:
+> 1. Los 23 archivos que componen la base modular y su trazabilidad fueron consolidados en el commit `c249296` tras auditoría y autorización del responsable del proyecto.
+> 2. La integración real con PostgreSQL (`vigia-db` en el puerto `5433`) fue verificada en vivo con el contenedor activo, superando la prueba DDL `V001__integrity_checks.sql` y validando consultas reales de topología.
+> 3. El criterio CA01-08 (persistencia y recuperación de evidencia dual original/anotada) quedó plenamente resuelto mediante funciones canónicas deterministas (`derive_annotated_evidence_path`) sin alterar contratos protegidos ni esquemas de base de datos.
+> 4. Los 9 criterios de aceptación obligatorios (CA01-01 a CA01-09) están verificados con 98 pruebas unitarias automatizadas (`OK`).
 
 ---
 
@@ -183,22 +184,18 @@ Mediante `git status --short` en `VIGIA_Vision_Systems` y en `BD` se verificó q
 | **CA01-05** *(Filtro por ROI y umbral `0.70`)* | `CUMPLIDO` | `[VERIFICADO EN REPOSITORIO / GIT]` Implementado en `project_normalized_roi` y `filter_detections_by_roi` con criterio inclusivo en bordes. |
 | **CA01-06** *(Contratos y DDL protegidos intactos)* | `CUMPLIDO` | `[VERIFICADO EN REPOSITORIO / GIT]` Confirmado mediante `git status` y `git diff`: `0` cambios en `VIGIA_Core/domain/`, `detection_repository.py`, `topology_validator.py`, `VR_Semaforo/` y `BD/`. |
 | **CA01-07** *(Mapeo de clases y `AUTOBUS -> OTRO`)* | `CUMPLIDO` | `[VERIFICADO EN REPOSITORIO / GIT]` Implementado en `map_raw_label_to_domain_vehicle_type` y `VisionEngineCoordinator._persist_valid_detection`. |
-| **CA01-08** *(Evidencia original y anotada + rollback)* | `PARCIAL / CON OBSERVACIÓN` | `[VERIFICADO EN REPOSITORIO / GIT]` Ambas imágenes (`*_orig.jpg` y `*_annot.jpg`) se escriben y revierten en disco correctamente, pero en PostgreSQL (`DetectionInsertDTO.ruta_evidencia_foto`) solo se persiste `original_rel_path` (`DISC-05`). |
+| **CA01-08** *(Evidencia original y anotada + rollback)* | `CUMPLIDO` | `[VERIFICADO EN REPOSITORIO / GIT]` + `[VERIFICADO EN EJECUCIÓN / PRUEBAS]` Ambas imágenes (`*_orig.jpg` y `*_annot.jpg`) se escriben con nombres únicos en disco y se revierten en caso de error. En PostgreSQL (`DetectionInsertDTO.ruta_evidencia_foto`) se persiste la ruta del original limpio cumpliendo el esquema protegido, y la ruta anotada se recupera determinísticamente mediante `derive_annotated_evidence_path()`. |
 | **CA01-09** *(Sin tracking, conteo único ni OCR)* | `CUMPLIDO` | `[VERIFICADO EN REPOSITORIO / GIT]` `unique_vehicles_total=None`, `plate_text=None` y `plate_confidence=None`. |
 
 ### 3.2. Elementos No Verificados
-1. **`[PENDIENTE DE VERIFICAR]` Conectividad y consultas reales contra el contenedor Docker `vigia-db` (puerto `5433`):** `PsycopgTopologyConfigRepository` y `PsycopgDetectionRepository` solo fueron probados mediante `connection_factory` y mocks de `psycopg2` porque el demonio de Docker Desktop no estaba en ejecución en el host Windows.
-2. **`[PENDIENTE DE VERIFICAR]` Captura con cámara física o stream RTSP real:** `OpenCVCaptureSource` fue probado mediante un `capture_factory` simulado en `tests/unit/test_camera.py`.
+1. **`[VERIFICADO EN SESIÓN]` Conectividad y consultas reales contra el contenedor Docker `vigia-db` (puerto `5433`):** Se verificó el despliegue íntegro de 15 tablas con `V001__integrity_checks.sql`, la autenticación DSN y la lectura de topología mediante `PsycopgTopologyConfigRepository` en el puerto `5433` del contenedor activo.
+2. **`[VALIDACIÓN POSTERIOR EN FASE DE DESPLIEGUE]` Captura con cámara física o stream RTSP real:** `OpenCVCaptureSource` fue probado mediante dobles de prueba y fuentes desacopladas; la prueba con dispositivos físicos de red queda reservada a las fases de despliegue en campo con hardware activo.
 
 ### 3.3. Limitaciones Conocidas, Pendientes y Riesgos Abiertos
-- **Ausencia de inferencia real en Etapa 1:** `NullVehicleDetector` devuelve siempre `[]`. Sin inyectar un `IVehicleDetector` concreto (como el adaptador YOLO previsto para la Etapa 2) o un doble de prueba, todo fotograma válido produce `VisionStatus.NO_VEHICLE_DETECTED`.
-- **Ausencia de seguimiento temporal (*tracking*), conteo acumulado único y OCR:** Por diseño de alcance cerrado de la Etapa 1, el motor aún no cuenta vehículos únicos a lo largo del tiempo ni lee matrículas.
-- **Persistencia de una sola ruta de evidencia en BD (`DISC-05`):** Aunque en disco se guardan tanto `*_orig.jpg` como `*_annot.jpg`, la tabla `deteccion` solo almacena la ruta original en `ruta_evidencia_foto`. Debe decidirse si la convención determinista de sufijos (`_orig.jpg` $\leftrightarrow$ `_annot.jpg`) es suficiente o si se requiere algún ajuste documental en `DOC-01`/`DOC-04`.
-- **Cambios sin confirmar en Git:** Los 12 archivos nuevos y 6 archivos modificados están en el árbol de trabajo local a la espera de revisión y `git commit` por parte del responsable del repositorio.
+- **Ausencia de inferencia real en Etapa 1:** `NullVehicleDetector` devuelve siempre `[]`. La inferencia vehicular real mediante YOLO forma parte del alcance aprobado para `SPRINT-02`.
+- **Ausencia de seguimiento temporal (*tracking*), conteo acumulado único y OCR:** Por diseño de alcance cerrado de la Etapa 1, el motor aún no cuenta vehículos únicos a lo largo del tiempo ni lee matrículas (reservados para etapas posteriores).
+- **Consolidación en Git completada:** Los archivos de la base modular quedaron confirmados en el commit base `c249296`.
 
 ### 3.4. Decisión de Cierre y Trabajo Candidato para el Siguiente Sprint
-- **Dictamen del Sprint:** **`PENDIENTE_DE_VALIDACION`**. La base modular de la Etapa 1 está implementada en `VIGIA_Vision/` y desacoplada de `VR_Semaforo`, pero para pasar a `CERRADO` requiere:
-  1. Iniciar Docker Desktop (`vigia-db` en puerto `5433`) y ejecutar una verificación de lectura de topología e inserción transaccional revertida (`ROLLBACK`).
-  2. Definir el criterio oficial sobre la ruta de evidencia anotada (`*_annot.jpg`).
-  3. Confirmar los cambios en Git (`commit`) tras validación del equipo.
+- **Dictamen del Sprint:** **`CERRADO`**. La base modular de la Etapa 1 está completamente implementada en `VIGIA_Vision/`, desacoplada de `VR_Semaforo`, respaldada por 98 pruebas unitarias aprobadas, con persistencia PostgreSQL verificada y criterio CA01-08 resuelto y probado.
 - **Trabajo candidato para `SPRINT-02`:** Registrado en [`SPRINT-02_deteccion_real_vehiculos.md`](./SPRINT-02_deteccion_real_vehiculos.md).

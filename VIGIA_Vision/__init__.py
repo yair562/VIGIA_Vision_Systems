@@ -48,6 +48,8 @@ from VIGIA_Vision.runtime import (
     NullVehicleDetector,
     StorageWriteError,
     VisionEngineCoordinator,
+    derive_annotated_evidence_path,
+    derive_original_evidence_path,
     map_raw_label_to_domain_vehicle_type,
     render_annotated_frame,
 )
@@ -84,6 +86,8 @@ __all__ = [
     "VisionEngineCoordinator",
     "VisionEngineSettings",
     "VisionObservationEnvelope",
+    "derive_annotated_evidence_path",
+    "derive_original_evidence_path",
     "filter_detections_by_roi",
     "map_raw_label_to_domain_vehicle_type",
     "project_normalized_roi",

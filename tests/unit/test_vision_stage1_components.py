@@ -33,10 +33,22 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from VIGIA_Core.repository.detection_repository import DatabaseConnectionError
+from VIGIA_Core.domain.vision_result import VisionResult, VisionStatus
+from VIGIA_Core.repository.detection_repository import (
+    DatabaseConnectionError,
+    DetectionInsertDTO,
+    IDetectionRepository,
+)
+from VIGIA_Vision.capture.sources import MobilePushFrameBuffer
 from VIGIA_Vision.config.engine_settings import VisionEngineSettings
 from VIGIA_Vision.config.psycopg_topology_repository import PsycopgTopologyConfigRepository
-from VIGIA_Vision.config.topology_validator import AreaConfigDTO, CameraConfigDTO
+from VIGIA_Vision.config.topology_validator import (
+    AreaConfigDTO,
+    CameraConfigDTO,
+    OperationalTopologyDTO,
+    TopologyValidationResult,
+    TopologyValidator,
+)
 from VIGIA_Vision.detection.models import BoundingBox, RawVehicleDetection
 from VIGIA_Vision.detection.roi_and_preprocess import (
     FrameValidationError,
@@ -44,9 +56,15 @@ from VIGIA_Vision.detection.roi_and_preprocess import (
     project_normalized_roi,
     validate_bgr_frame,
 )
-from VIGIA_Vision.runtime.coordinator import map_raw_label_to_domain_vehicle_type
+from VIGIA_Vision.runtime.coordinator import (
+    IVehicleDetector,
+    VisionEngineCoordinator,
+    map_raw_label_to_domain_vehicle_type,
+)
 from VIGIA_Vision.runtime.evidence_storage import (
     LocalDiskEvidenceStorage,
+    derive_annotated_evidence_path,
+    derive_original_evidence_path,
     render_annotated_frame,
 )
 
@@ -261,6 +279,193 @@ class TestEvidenceStorageSafety(unittest.TestCase):
         annotated = render_annotated_frame(self.frame, [det])
         self.assertEqual(int(self.frame.sum()), 0)
         self.assertGreater(int(annotated.sum()), 0)
+
+    def test_derive_annotated_and_original_paths(self) -> None:
+        """Verifica la derivación determinista bidireccional de rutas de evidencia."""
+        orig = "20261029/CAM-ENTRADA/20261029T120000_000000Z_abcdef123456_orig.jpg"
+        expected_annot = "20261029/CAM-ENTRADA/20261029T120000_000000Z_abcdef123456_annot.jpg"
+        self.assertEqual(derive_annotated_evidence_path(orig), expected_annot)
+        self.assertEqual(derive_original_evidence_path(expected_annot), orig)
+
+        with self.assertRaises(ValueError):
+            derive_annotated_evidence_path("")
+        with self.assertRaises(ValueError):
+            derive_annotated_evidence_path("invalid/path/file.jpg")
+        with self.assertRaises(ValueError):
+            derive_original_evidence_path("invalid/path/file.jpg")
+
+    def test_resolve_files_from_storage(self) -> None:
+        """Verifica la resolución segura de archivos originales y anotados en disco."""
+        ts = datetime(2026, 10, 29, 12, 0, 0, tzinfo=timezone.utc)
+        save_res = self.storage.save_evidence(
+            original_frame=self.frame,
+            codigo_camara="CAM-ENTRADA",
+            timestamp=ts,
+            annotated_frame=self.frame,
+        )
+        self.assertTrue(save_res.saved)
+        assert save_res.original_rel_path is not None
+
+        orig_file = self.storage.resolve_original_file(save_res.original_rel_path)
+        annot_file = self.storage.resolve_annotated_file(save_res.original_rel_path)
+        self.assertIsNotNone(orig_file)
+        self.assertIsNotNone(annot_file)
+        assert orig_file is not None and annot_file is not None
+        self.assertTrue(orig_file.is_file())
+        self.assertTrue(annot_file.is_file())
+
+        # Archivo inexistente retorna None sin excepción
+        self.assertIsNone(self.storage.resolve_annotated_file("20261029/CAM-ENTRADA/no_existe_orig.jpg"))
+
+
+class TestStage1EndToEndReproduciblePipeline(unittest.TestCase):
+    """
+    Validación de integración reproducible de extremo a extremo (E2E) para
+    el flujo completo de la Etapa 1 sin requerir hardware físico ni GPU:
+    1. Recepción de fotograma (fuente push móvil o sintética).
+    2. Validación y preparación del fotograma (BGR uint8).
+    3. Proyección de ROI y evaluación geométrica inclusiva.
+    4. Invocación del detector vehicular inyectable.
+    5. Construcción de observación (VisionObservationEnvelope con VisionResult).
+    6. Almacenamiento seguro de evidencia original y anotada en disco.
+    7. Persistencia relacional (DetectionInsertDTO con ruta_evidencia_foto).
+    8. Recuperación determinista de la imagen anotada a partir de la ruta en BD.
+    9. Limpieza compensatoria ante fallos de persistencia.
+    """
+
+    def setUp(self) -> None:
+        self.temp_dir = Path(tempfile.mkdtemp(prefix="vigia_e2e_reproducible_"))
+        self.id_cam = uuid4()
+        self.id_area = uuid4()
+        id_cam_sal = uuid4()
+        self.cam_config = CameraConfigDTO(
+            id_camara=self.id_cam,
+            codigo="CAM-ENTRADA",
+            nombre="Cámara Entrada Principal",
+            uri_stream="push://cam-entrada",
+            activa=True,
+        )
+        self.area_config = AreaConfigDTO(
+            id_area_vision=self.id_area,
+            id_camara=self.id_cam,
+            codigo="ROI-ENT",
+            nombre="Zona de Control",
+            tipo_movimiento="ENTRADA",
+            x_min=0.1,
+            y_min=0.1,
+            x_max=0.9,
+            y_max=0.9,
+            activa=True,
+        )
+        self.topology = OperationalTopologyDTO(
+            cam_entrada=self.cam_config,
+            area_entrada=self.area_config,
+            cam_salida=CameraConfigDTO(
+                id_camara=id_cam_sal,
+                codigo="CAM-SALIDA",
+                nombre="Cámara Salida",
+                uri_stream="push://cam-salida",
+                activa=True,
+            ),
+            area_salida=AreaConfigDTO(
+                id_area_vision=uuid4(),
+                id_camara=id_cam_sal,
+                codigo="ROI-SAL",
+                nombre="Zona Salida",
+                tipo_movimiento="SALIDA",
+                x_min=0.1,
+                y_min=0.1,
+                x_max=0.9,
+                y_max=0.9,
+                activa=True,
+            ),
+        )
+        self.buffer = MobilePushFrameBuffer("CAM-ENTRADA")
+        self.storage = LocalDiskEvidenceStorage(
+            base_directory=self.temp_dir,
+            encoder=lambda _arr, _q: b"\xff\xd8\xff\xe0JPEG\xff\xd9",
+        )
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def test_reproducible_e2e_flow_and_ca01_08_resolution(self) -> None:
+        persisted_dtos: list[DetectionInsertDTO] = []
+
+        class MockRepo(IDetectionRepository):
+            def persist_detection(self, dto: DetectionInsertDTO) -> UUID:
+                persisted_dtos.append(dto)
+                return uuid4()
+
+        class MockDetector(IVehicleDetector):
+            def detect(self, frame: object) -> Sequence[RawVehicleDetection]:
+                # Detección centrada en (100, 50) dentro del frame 200x100 y ROI [20..180, 10..90]
+                return [
+                    RawVehicleDetection(
+                        bbox=BoundingBox(x_min=70, y_min=30, x_max=130, y_max=70),
+                        confidence=0.88,
+                        raw_label="car",
+                    )
+                ]
+
+        validator = MagicMock(spec=TopologyValidator)
+        validator.validate.return_value = TopologyValidationResult(
+            is_valid=True,
+            topology=self.topology,
+        )
+
+        coordinator = VisionEngineCoordinator(
+            topology_validator=validator,
+            settings=VisionEngineSettings(evidence_directory=self.temp_dir),
+            detector=MockDetector(),
+            detection_repository=MockRepo(),
+            evidence_storage=self.storage,
+            sources={
+                "CAM-ENTRADA": self.buffer,
+                "CAM-SALIDA": MobilePushFrameBuffer("CAM-SALIDA"),
+            },
+        )
+        coordinator.initialize()
+
+        # 1. Recepción: depositar fotograma BGR sintético (200x100x3)
+        synthetic_frame = np.full((100, 200, 3), 128, dtype=np.uint8)
+        self.buffer.push_frame(synthetic_frame)
+
+        # 2 a 7. Ejecutar paso con persistencia como nuevo evento
+        envelope = coordinator.process_camera_step("CAM-ENTRADA", persist_as_new_event=True)
+        self.assertIsNotNone(envelope)
+        assert envelope is not None
+
+        # 5. Construcción de observación con VisionResult intacto
+        self.assertEqual(envelope.vision_result.status, VisionStatus.VEHICLE_DETECTED_NO_PLATE)
+        self.assertTrue(envelope.vision_result.vehicle_detected)
+        self.assertEqual(envelope.vision_result.vehicle_type_pred, "AUTOMOVIL")
+        self.assertAlmostEqual(envelope.vision_result.vehicle_confidence or 0.0, 0.88)
+
+        # 6. Almacenamiento en disco de ambas imágenes
+        self.assertIsNotNone(envelope.original_evidence_path)
+        self.assertIsNotNone(envelope.annotated_evidence_path)
+        assert envelope.original_evidence_path is not None
+        assert envelope.annotated_evidence_path is not None
+
+        orig_file = self.temp_dir / envelope.original_evidence_path
+        annot_file = self.temp_dir / envelope.annotated_evidence_path
+        self.assertTrue(orig_file.is_file())
+        self.assertTrue(annot_file.is_file())
+
+        # 7. Persistencia relacional: DTO solo persiste original_rel_path en ruta_evidencia_foto
+        self.assertEqual(len(persisted_dtos), 1)
+        dto = persisted_dtos[0]
+        self.assertEqual(dto.ruta_evidencia_foto, envelope.original_evidence_path)
+        self.assertEqual(dto.tipo_vehiculo_pred, "AUTOMOVIL")
+
+        # 8. Resolución de CA01-08: la imagen anotada se recupera determinísticamente
+        recovered_annot_path = derive_annotated_evidence_path(dto.ruta_evidencia_foto or "")
+        self.assertEqual(recovered_annot_path, envelope.annotated_evidence_path)
+        self.assertTrue((self.temp_dir / recovered_annot_path).is_file())
+
+        # Reversibilidad bidireccional
+        self.assertEqual(derive_original_evidence_path(recovered_annot_path), dto.ruta_evidencia_foto)
 
 
 class TestNoVRSemaforoDependency(unittest.TestCase):

@@ -173,6 +173,39 @@ def render_annotated_frame(
     return canvas
 
 
+def derive_annotated_evidence_path(original_path: str) -> str:
+    """
+    Retorna la ruta determinista del fotograma anotado (*_annot.jpg) a partir
+    de la ruta del fotograma original (*_orig.jpg) persistida en PostgreSQL.
+
+    Garantiza compatibilidad 1:1 con la columna única ``deteccion.ruta_evidencia_foto``
+    del esquema DDL V1 sin alterar tablas relacionales ni contratos.
+    """
+    if not isinstance(original_path, str) or not original_path.strip():
+        raise ValueError("original_path debe ser una cadena no vacía.")
+    cleaned = original_path.strip()
+    if not cleaned.endswith("_orig.jpg"):
+        raise ValueError(
+            f"original_path='{cleaned}' no cumple con la convención '_orig.jpg'."
+        )
+    return cleaned[:-9] + "_annot.jpg"
+
+
+def derive_original_evidence_path(annotated_path: str) -> str:
+    """
+    Retorna la ruta determinista del fotograma original (*_orig.jpg) a partir
+    de la ruta del fotograma anotado (*_annot.jpg).
+    """
+    if not isinstance(annotated_path, str) or not annotated_path.strip():
+        raise ValueError("annotated_path debe ser una cadena no vacía.")
+    cleaned = annotated_path.strip()
+    if not cleaned.endswith("_annot.jpg"):
+        raise ValueError(
+            f"annotated_path='{cleaned}' no cumple con la convención '_annot.jpg'."
+        )
+    return cleaned[:-10] + "_orig.jpg"
+
+
 def _default_jpeg_encoder(frame: np.ndarray, quality: int) -> bytes:
     """Codifica un arreglo BGR uint8 a bytes JPEG mediante ``cv2.imencode``."""
     import cv2
@@ -342,3 +375,29 @@ class LocalDiskEvidenceStorage(IEvidenceStorageService):
                     exc,
                 )
         return removed
+
+    def resolve_annotated_file(self, original_rel_path: str) -> Optional[Path]:
+        """
+        Retorna la ruta absoluta del fotograma anotado (*_annot.jpg) si existe en disco,
+        o None si no existe o si la ruta original no es válida.
+        """
+        try:
+            annot_rel = derive_annotated_evidence_path(original_rel_path)
+            candidate = self._ensure_within_base(self._base_dir / annot_rel)
+            if candidate.is_file():
+                return candidate
+        except Exception:
+            pass
+        return None
+
+    def resolve_original_file(self, original_rel_path: str) -> Optional[Path]:
+        """
+        Retorna la ruta absoluta del fotograma original (*_orig.jpg) si existe en disco.
+        """
+        try:
+            candidate = self._ensure_within_base(self._base_dir / original_rel_path)
+            if candidate.is_file():
+                return candidate
+        except Exception:
+            pass
+        return None

@@ -17,6 +17,8 @@ from VIGIA_Vision.runtime.evidence_storage import (
     IEvidenceStorageService,
     LocalDiskEvidenceStorage,
     StorageWriteError,
+    derive_annotated_evidence_path,
+    derive_original_evidence_path,
     render_annotated_frame,
 )
 
@@ -29,6 +31,8 @@ __all__ = [
     "NullVehicleDetector",
     "StorageWriteError",
     "VisionEngineCoordinator",
+    "derive_annotated_evidence_path",
+    "derive_original_evidence_path",
     "map_raw_label_to_domain_vehicle_type",
     "render_annotated_frame",
 ]
