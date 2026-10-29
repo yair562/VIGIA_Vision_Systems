@@ -334,14 +334,8 @@ class TestPsycopgDetectionRepository(unittest.TestCase):
     def test_pu_dr_22_psycopg2_unavailable_raises_on_instantiation(self):
         """PU-DR-22: Si psycopg2 no esta instalado, la instanciacion lanza DatabaseConnectionError."""
         with patch.dict("sys.modules", {"psycopg2": None}):
-            # Eliminar el modulo del sys.modules para forzar ImportError
-            original = sys.modules.pop("psycopg2", None)
-            try:
-                with self.assertRaises(DatabaseConnectionError):
-                    PsycopgDetectionRepository(dsn=_VALID_DSN)
-            finally:
-                if original is not None:
-                    sys.modules["psycopg2"] = original
+            with self.assertRaises(DatabaseConnectionError):
+                PsycopgDetectionRepository(dsn=_VALID_DSN)
 
     def test_pu_dr_23_autobus_maps_before_dto_creation(self):
         """PU-DR-23: El flujo correcto usa map_tipo_vehiculo_ddl_v1 antes de crear el DTO."""

@@ -13,11 +13,10 @@ from uuid import uuid4
 
 # Asegurar rutas en sys.path
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-_VR_DIR = _REPO_ROOT / "VR_Semaforo"
-for p in (_REPO_ROOT, _VR_DIR):
-    if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
+from VIGIA_Vision.capture.sources import IFrameCaptureSource
 from VIGIA_Vision.config.topology_validator import (
     AreaConfigDTO,
     CameraConfigDTO,
@@ -28,13 +27,7 @@ from VIGIA_Vision.config.topology_validator import (
     TopologyValidationResult,
     TopologyValidator,
 )
-from vision.service import (
-    process_pc_capture,
-    initialize_vision_service,
-    set_topology_validator,
-)
-from vision.camera import set_default_camera, CameraCapture
-from vision.pipeline import VisionPipeline
+from VIGIA_Vision.runtime.coordinator import IVehicleDetector, VisionEngineCoordinator
 
 
 class TestTopologyValidator(unittest.TestCase):
@@ -88,10 +81,6 @@ class TestTopologyValidator(unittest.TestCase):
         )
 
         self.validator = TopologyValidator()
-
-    def tearDown(self):
-        set_topology_validator(None)
-        set_default_camera(None)
 
     # --------------------------------------------------------------------------
     # Regla 1 a 8: Pruebas unitarias de las 8 reglas de DOC-03
@@ -353,16 +342,13 @@ class TestTopologyValidator(unittest.TestCase):
         self.assertIn("PostgreSQL connection timeout", result.error_detail)
 
     # --------------------------------------------------------------------------
-    # Integración con el inicio del motor (Bloqueo de captura e inferencia)
+    # Integración con el inicio del motor propio (Bloqueo de captura e inferencia)
     # --------------------------------------------------------------------------
 
     def test_validation_failure_blocks_capture_and_inference(self):
-        """Confirmación de que un fallo de topología impide iniciar captura e inferencia."""
-        mock_cam = MagicMock(spec=CameraCapture)
-        set_default_camera(mock_cam)
-
-        mock_detector = MagicMock()
-        pipe = VisionPipeline(detector=mock_detector)
+        """Confirmación de que un fallo de topología impide abrir cámaras o ejecutar inferencia en VIGIA_Vision."""
+        mock_cam = MagicMock(spec=IFrameCaptureSource)
+        mock_detector = MagicMock(spec=IVehicleDetector)
 
         # Validador con error (falta CAM-SALIDA)
         mock_repo = MagicMock(spec=ITopologyConfigRepository)
@@ -370,25 +356,38 @@ class TestTopologyValidator(unittest.TestCase):
         mock_repo.get_areas.return_value = [self.valid_area_entrada]
         invalid_val = TopologyValidator(repository=mock_repo)
 
-        # Debe lanzar TopologyValidationError y no capturar ni inferir
+        coordinator = VisionEngineCoordinator(
+            topology_validator=invalid_val,
+            detector=mock_detector,
+            source_factory=lambda _cam: mock_cam,
+        )
+
+        # Debe lanzar TopologyValidationError al inicializar y al intentar procesar
         with self.assertRaises(TopologyValidationError) as ctx:
-            process_pc_capture(pipeline=pipe, validator=invalid_val)
+            coordinator.initialize(open_sources=True)
 
         self.assertEqual(ctx.exception.error_code, TopologyErrorCode.ERR_CAM_SALIDA_FALTANTE)
+        self.assertFalse(coordinator.is_initialized)
 
-        # Aserción crítica: NO se leyó la cámara y NO se ejecutó inferencia
+        with self.assertRaises(TopologyValidationError):
+            coordinator.process_camera_step("CAM-ENTRADA")
+
+        # Aserción crítica: NO se abrió ni leyó la cámara y NO se ejecutó inferencia
+        mock_cam.open.assert_not_called()
         mock_cam.read_frame.assert_not_called()
-        mock_detector.assert_not_called()
+        mock_detector.detect.assert_not_called()
 
     def test_initialize_vision_service_fail_fast(self):
-        """initialize_vision_service() con topología inválida aborta el inicio con TopologyValidationError."""
+        """VisionEngineCoordinator.initialize() con topología inválida aborta el inicio con TopologyValidationError."""
         mock_repo = MagicMock(spec=ITopologyConfigRepository)
         mock_repo.get_cameras.return_value = []
         mock_repo.get_areas.return_value = []
         invalid_val = TopologyValidator(repository=mock_repo)
 
+        coordinator = VisionEngineCoordinator(topology_validator=invalid_val)
         with self.assertRaises(TopologyValidationError):
-            initialize_vision_service(validator=invalid_val, fail_fast=True)
+            coordinator.initialize(open_sources=True)
+        self.assertFalse(coordinator.is_initialized)
 
 
 if __name__ == "__main__":
