@@ -1,0 +1,228 @@
+/* ==========================================================================
+   VIGÍA Vision Systems — Pantalla de Inicio de Sesión (Sprint 01)
+   Rangos responsivos:
+   - Móvil: < 640px
+   - Tableta: 640px a 1023px
+   - Escritorio: >= 1024px
+   ========================================================================== */
+
+/* Contenedor principal de pantalla completa con soporte para futura imagen de fondo */
+.login-viewport {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  padding: var(--space-md);
+  background-color: var(--login-bg-color);
+  background-image: var(--login-bg-image);
+  background-position: var(--login-bg-position);
+  background-size: var(--login-bg-size);
+  background-repeat: no-repeat;
+}
+
+/* Tarjeta rectangular vertical gris claro con esquinas redondeadas */
+.login-card {
+  width: 100%;
+  max-width: var(--card-max-width);
+  background-color: var(--card-bg-color);
+  border-radius: var(--card-border-radius);
+  padding: 1.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
+}
+
+/* 1. Título centrado: Inicio de Sesión (negro y en negritas) */
+.login-title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* 2. Logotipo oficial de VIGÍA dentro de un círculo gris oscuro */
+.login-brand-circle {
+  width: var(--brand-circle-size-mobile);
+  height: var(--brand-circle-size-mobile);
+  border-radius: 50%;
+  background-color: var(--brand-circle-bg);
+  color: var(--brand-circle-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 1.35rem;
+}
+
+.login-brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Formulario en distribución vertical centrada */
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-field {
+  width: 100%;
+}
+
+/* Campos de entrada con forma de píldora y fondo casi blanco */
+.login-input {
+  width: 100%;
+  min-height: var(--input-height);
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--input-radius);
+  border: 1.5px solid var(--input-border-color);
+  background-color: var(--input-bg-color);
+  color: var(--text-primary);
+  font-size: var(--font-size-body);
+  text-align: left;
+}
+
+.login-input::placeholder {
+  color: var(--text-placeholder);
+  opacity: 1;
+}
+
+.login-input:focus {
+  background-color: var(--input-bg-focus);
+}
+
+.login-input[aria-invalid="true"] {
+  border-color: var(--input-border-error);
+}
+
+/* Botón gris, más corto que los campos, con forma de píldora y texto negro */
+.login-submit-btn {
+  margin-top: 0.25rem;
+  width: 62%;
+  min-width: 156px;
+  max-width: 220px;
+  min-height: var(--btn-height);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--btn-radius);
+  border: none;
+  background-color: var(--btn-bg-color);
+  color: var(--btn-text-color);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  background-color: var(--btn-bg-hover);
+}
+
+.login-submit-btn:active:not(:disabled) {
+  background-color: var(--btn-bg-active);
+}
+
+.login-submit-btn:disabled,
+.login-submit-btn[aria-busy="true"] {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+/* Área accesible para mostrar mensajes de validación, estado o información */
+.login-feedback {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--status-info-border);
+  background-color: var(--status-info-bg);
+  color: var(--status-info-text);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-regular);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.login-feedback--error {
+  border-color: var(--status-error-border);
+  background-color: var(--status-error-bg);
+  color: var(--status-error-text);
+}
+
+.login-feedback--warning {
+  border-color: var(--status-warning-border);
+  background-color: var(--status-warning-bg);
+  color: var(--status-warning-text);
+}
+
+.login-feedback--info {
+  border-color: var(--status-info-border);
+  background-color: var(--status-info-bg);
+  color: var(--status-info-text);
+}
+
+/* Enlace secundario "¿Olvidaste la contraseña?" negro y en negritas */
+.login-forgot-link {
+  background: none;
+  border: none;
+  padding: 0.35rem 0.5rem;
+  color: var(--text-primary);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.login-forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Rango Tableta: 640px a 1023px
+   ========================================================================== */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .login-viewport {
+    padding: var(--space-xl);
+  }
+
+  .login-card {
+    padding: 2.25rem 2rem;
+    gap: 1.375rem;
+  }
+
+  .login-brand-circle {
+    width: var(--brand-circle-size-tablet);
+    height: var(--brand-circle-size-tablet);
+    padding: 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   Rango Escritorio: 1024px en adelante
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .login-viewport {
+    padding: 2.5rem;
+  }
+
+  .login-card {
+    max-width: var(--card-max-width);
+    padding: 2.5rem 2.25rem;
+    gap: 1.5rem;
+  }
+
+  .login-brand-circle {
+    width: var(--brand-circle-size-desktop);
+    height: var(--brand-circle-size-desktop);
+    padding: 1.65rem;
+  }
+}
+

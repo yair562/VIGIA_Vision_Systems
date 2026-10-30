@@ -1,0 +1,611 @@
+/* ==========================================================================
+   VIGÍA Vision Systems — Interfaz de Administración: Gestión de Dispositivos
+   Sprint 02A
+   ========================================================================== */
+
+/* Fondo general gris muy claro / blanco humo (o #121212 en modo oscuro) */
+.admin-viewport {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  background-color: var(--admin-page-bg);
+  color: var(--admin-text-primary);
+  padding: clamp(0.75rem, 2.5vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* 3.1. Contenedor principal: tarjeta gris claro con bordes redondeados (~20px) */
+.admin-shell {
+  width: 100%;
+  max-width: var(--admin-max-width);
+  background-color: var(--admin-shell-bg);
+  border-radius: var(--admin-shell-radius);
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ==========================================================================
+   3.2. Barra de navegación superior reutilizable
+   ========================================================================== */
+.admin-navbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* 1. Logotipo circular a la izquierda */
+.admin-nav-brand {
+  width: var(--admin-circle-size);
+  height: var(--admin-circle-size);
+  border-radius: 50%;
+  background-color: var(--brand-circle-bg);
+  color: var(--brand-circle-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.admin-nav-brand-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 2. Cuatro botones de navegación centrados */
+.admin-nav-list {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+}
+
+.admin-nav-item {
+  display: inline-flex;
+}
+
+.admin-nav-btn {
+  min-width: 118px;
+  min-height: 40px;
+  padding: 0.45rem 1.25rem;
+  border-radius: var(--admin-pill-radius);
+  border: 2px solid transparent;
+  background-color: var(--admin-btn-bg);
+  color: var(--admin-text-primary);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-nav-btn:hover {
+  background-color: var(--admin-btn-bg-hover);
+}
+
+/* Sección activa claramente identificada */
+.admin-nav-btn[aria-current="page"],
+.admin-nav-btn--active {
+  background-color: var(--admin-btn-bg-active);
+  border-color: var(--admin-text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 3. Botón circular de Perfil a la derecha */
+.admin-profile-btn {
+  width: var(--admin-circle-size);
+  height: var(--admin-circle-size);
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-color: var(--admin-btn-bg);
+  color: var(--admin-text-primary);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0.25rem;
+}
+
+.admin-profile-btn:hover {
+  background-color: var(--admin-btn-bg-hover);
+}
+
+.admin-profile-btn[aria-current="page"],
+.admin-profile-btn--active {
+  background-color: var(--admin-btn-bg-active);
+  border-color: var(--admin-text-primary);
+}
+
+/* ==========================================================================
+   3.3. Área de contenido: tarjeta interna blanca con bordes redondeados
+   ========================================================================== */
+.admin-content-card {
+  width: 100%;
+  background-color: var(--admin-panel-bg);
+  border-radius: var(--admin-panel-radius);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.admin-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  text-align: center;
+}
+
+.admin-section-title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--admin-text-primary);
+  text-align: center;
+}
+
+.admin-demo-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.admin-demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: var(--admin-pill-radius);
+  background-color: var(--admin-data-block-bg);
+  color: var(--admin-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.admin-exit-demo-btn {
+  padding: 0.25rem 0.85rem;
+  border-radius: var(--admin-pill-radius);
+  border: 1px solid var(--admin-border-subtle);
+  background-color: var(--admin-btn-bg);
+  color: var(--admin-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.admin-exit-demo-btn:hover {
+  background-color: var(--admin-btn-bg-hover);
+}
+
+/* ==========================================================================
+   3.4. Cuadrícula de datos (5 columnas con áreas rectangulares grises)
+   ========================================================================== */
+.devices-grid-wrapper {
+  width: 100%;
+}
+
+/* Tabla semántica estructurada como cuadrícula de 5 columnas con fondos grises por columna */
+.devices-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0.65rem 0;
+  table-layout: fixed;
+}
+
+/* En escritorio y tablet horizontal cada columna tiene su área rectangular de fondo gris sólido */
+.devices-table thead th {
+  background-color: var(--admin-data-header-bg);
+  color: var(--admin-text-primary);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  padding: 0.75rem 0.65rem;
+  border-top-left-radius: var(--admin-column-radius);
+  border-top-right-radius: var(--admin-column-radius);
+  border-bottom: 2px solid var(--admin-panel-bg);
+  word-wrap: break-word;
+}
+
+.devices-table tbody td {
+  background-color: var(--admin-data-block-bg);
+  color: var(--admin-text-primary);
+  font-size: var(--font-size-small);
+  padding: 0.5rem 0.55rem;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.devices-table tbody tr:last-child td {
+  border-bottom-left-radius: var(--admin-column-radius);
+  border-bottom-right-radius: var(--admin-column-radius);
+  padding-bottom: 0.75rem;
+}
+
+/* Contenedor interno de cada celda para alineación uniforme y manejo de textos largos */
+.device-cell-box {
+  background-color: var(--admin-data-row-bg);
+  border-radius: var(--admin-cell-radius);
+  padding: 0.55rem 0.65rem;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+
+.device-name-text {
+  font-weight: var(--font-weight-bold);
+}
+
+.device-code-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--admin-text-secondary);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Distinción visual de estados de conexión */
+.device-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--admin-pill-radius);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+.device-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.device-status-pill--online {
+  background-color: var(--device-status-online-bg);
+  color: var(--device-status-online-text);
+}
+
+.device-status-pill--online .device-status-dot {
+  background-color: var(--device-status-online-dot);
+}
+
+.device-status-pill--offline {
+  background-color: var(--device-status-offline-bg);
+  color: var(--device-status-offline-text);
+}
+
+.device-status-pill--offline .device-status-dot {
+  background-color: var(--device-status-offline-dot);
+}
+
+.device-status-pill--maintenance {
+  background-color: var(--device-status-maint-bg);
+  color: var(--device-status-maint-text);
+}
+
+.device-status-pill--maintenance .device-status-dot {
+  background-color: var(--device-status-maint-dot);
+}
+
+/* Acciones por registro (provisionales DEMO) */
+.device-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.device-action-btn {
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--admin-pill-radius);
+  border: 1px solid var(--admin-border-subtle);
+  background-color: var(--admin-btn-bg);
+  color: var(--admin-text-primary);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.device-action-btn:hover {
+  background-color: var(--admin-btn-bg-hover);
+}
+
+/* ==========================================================================
+   3.6. Acciones principales debajo de la tarjeta blanca
+   ========================================================================== */
+.admin-primary-actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  flex-wrap: wrap;
+}
+
+.admin-action-pill-btn {
+  min-width: 210px;
+  min-height: 44px;
+  padding: 0.6rem 1.75rem;
+  border-radius: var(--admin-pill-radius);
+  border: 1.5px solid transparent;
+  background-color: var(--admin-btn-bg);
+  color: var(--admin-text-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.admin-action-pill-btn:hover {
+  background-color: var(--admin-btn-bg-hover);
+}
+
+.admin-action-pill-btn:active {
+  background-color: var(--admin-btn-bg-active);
+}
+
+/* Área de notificación en línea dentro del módulo administrativo */
+.admin-inline-notice {
+  width: 100%;
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--status-info-border);
+  background-color: var(--status-info-bg);
+  color: var(--status-info-text);
+  font-size: var(--font-size-small);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.admin-inline-notice--warning {
+  border-color: var(--status-warning-border);
+  background-color: var(--status-warning-bg);
+  color: var(--status-warning-text);
+}
+
+.admin-notice-close-btn {
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--admin-pill-radius);
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Panel Provisional DEMO: "Agregar Dispositivos" y "Detalle Provisional"
+   ========================================================================== */
+.admin-provisional-panel {
+  width: 100%;
+  background-color: var(--admin-data-block-bg);
+  border-radius: var(--admin-column-radius);
+  padding: 1.25rem;
+  border: 1.5px solid var(--admin-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.admin-provisional-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.admin-provisional-title {
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-weight-bold);
+  color: var(--admin-text-primary);
+}
+
+.admin-provisional-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--space-md);
+  align-items: end;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+}
+
+.admin-form-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--admin-text-primary);
+}
+
+.admin-form-input,
+.admin-form-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--admin-pill-radius);
+  border: 1.5px solid var(--admin-input-border);
+  background-color: var(--admin-input-bg);
+  color: var(--admin-text-primary);
+  font-size: var(--font-size-small);
+}
+
+.admin-provisional-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* Vista de sección en desarrollo para Cámaras, Alertas, Informes, Perfil y Visor */
+.admin-under-construction {
+  padding: 2rem 1.25rem;
+  background-color: var(--admin-data-block-bg);
+  border-radius: var(--admin-column-radius);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.admin-under-construction-text {
+  max-width: 560px;
+  color: var(--admin-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* ==========================================================================
+   3.7. Pie de página dentro del contenedor principal
+   ========================================================================== */
+.admin-footer {
+  width: 100%;
+  padding-top: var(--space-xs);
+  text-align: center;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  color: var(--admin-text-secondary);
+}
+
+/* ==========================================================================
+   Responsividad: Tableta (640px a 1023px)
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .devices-table {
+    border-spacing: 0.4rem 0;
+  }
+
+  .devices-table thead th,
+  .devices-table tbody td {
+    padding: 0.4rem 0.35rem;
+    font-size: var(--font-size-xs);
+  }
+
+  .device-cell-box {
+    padding: 0.45rem 0.4rem;
+  }
+}
+
+/* ==========================================================================
+   Responsividad: Móvil (< 640px)
+   Adaptación a tarjetas de registro para no comprimir las 5 columnas
+   ========================================================================== */
+@media (max-width: 639px) {
+  .admin-navbar {
+    justify-content: space-between;
+  }
+
+  .admin-nav-list {
+    order: 3;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .admin-nav-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Transformación de la tabla de 5 columnas a tarjetas legibles en móvil */
+  .devices-table,
+  .devices-table tbody,
+  .devices-table tr,
+  .devices-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .devices-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  .devices-table tbody tr {
+    background-color: var(--admin-data-block-bg);
+    border-radius: var(--admin-column-radius);
+    padding: 0.75rem;
+    margin-bottom: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .devices-table tbody td {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    text-align: left;
+  }
+
+  .devices-table tbody tr:last-child td {
+    padding-bottom: 0;
+  }
+
+  .device-cell-box {
+    justify-content: space-between;
+    text-align: right;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .device-cell-box::before {
+    content: attr(data-label);
+    font-weight: var(--font-weight-bold);
+    color: var(--admin-text-primary);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .admin-action-pill-btn {
+    width: 100%;
+  }
+}
+

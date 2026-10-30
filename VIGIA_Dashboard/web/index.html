@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" data-demo-enabled="false">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VIGÍA Vision Systems — Inicio de Sesión y Panel de Administración (Modo DEMO)">
+  <title>Inicio de Sesión — VIGÍA Vision Systems</title>
+  <link rel="stylesheet" href="/dashboard-assets/css/tokens.css">
+  <link rel="stylesheet" href="/dashboard-assets/css/base.css">
+  <link rel="stylesheet" href="/dashboard-assets/css/login.css">
+  <link rel="stylesheet" href="/dashboard-assets/css/admin-devices.css">
+</head>
+<body>
+  <!-- Vista 1: Inicio de Sesión (Sprint 01 — Conservada íntegramente) -->
+  <main class="login-viewport" id="app-root">
+    <section class="login-card" aria-labelledby="login-heading">
+      <h1 id="login-heading" class="login-title">Inicio de Sesión</h1>
+
+      <div class="login-brand-circle" role="img" aria-label="Logotipo oficial de VIGÍA">
+        <img
+          id="login-brand-img"
+          class="login-brand-logo"
+          src="/assets/brand/producto_figura_dark.svg"
+          alt="Símbolo oficial de VIGÍA"
+          width="148"
+          height="148"
+        >
+      </div>
+
+      <form id="login-form" class="login-form" novalidate>
+        <div class="login-field">
+          <label for="username-input" class="sr-only">Identificación de usuario</label>
+          <input
+            type="text"
+            id="username-input"
+            name="username"
+            class="login-input"
+            placeholder="Usuario"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            maxlength="50"
+            required
+          >
+        </div>
+
+        <div class="login-field">
+          <label for="password-input" class="sr-only">Contraseña</label>
+          <input
+            type="password"
+            id="password-input"
+            name="password"
+            class="login-input"
+            placeholder="Contraseña"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <div
+          id="login-feedback"
+          class="login-feedback"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          hidden
+        ></div>
+
+        <button
+          type="submit"
+          id="login-submit-btn"
+          class="login-submit-btn"
+        >
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <a
+        href="#recuperar-contrasena"
+        id="forgot-password-link"
+        class="login-forgot-link"
+        role="button"
+      >
+        ¿Olvidaste la contraseña?
+      </a>
+    </section>
+  </main>
+
+  <!-- Vista 2: Contenedor del Módulo de Administración en Modo DEMO (Sprint 02A) -->
+  <main class="admin-viewport" id="admin-root" hidden></main>
+
+  <script type="module" src="/dashboard-assets/js/app.js"></script>
+</body>
+</html>

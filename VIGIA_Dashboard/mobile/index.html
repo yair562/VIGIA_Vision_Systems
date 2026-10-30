@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VIGÍA Vision Systems — Captura Móvil</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --accent: #238636;
+      --accent-hover: #2ea043;
+      --danger: #da3633;
+      --text: #c9d1d9;
+      --text-bright: #f0f6fc;
+      --muted: #8b949e;
+      --warn: #d29922;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; min-height: 100vh; display: flex; flex-direction: column; }
+    header { text-align: center; margin-bottom: 16px; }
+    header h1 { font-size: 1.25rem; color: var(--text-bright); letter-spacing: 0.5px; }
+    header p { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+    .config-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .config-group { flex: 1; }
+    label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
+    select, input { width: 100%; background: #090d13; border: 1px solid var(--card-border); color: var(--text-bright); padding: 8px 10px; border-radius: 6px; font-size: 0.9rem; }
+    .preview-container { position: relative; width: 100%; aspect-ratio: 4 / 3; background: #000; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border); margin-bottom: 12px; }
+    video { width: 100%; height: 100%; object-fit: cover; }
+    .preview-placeholder { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 16px; }
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .btn-full { grid-column: span 2; }
+    button { background: var(--card-border); color: var(--text-bright); border: none; padding: 12px; border-radius: 6px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.15s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.primary { background: var(--accent); }
+    button.primary:not(:disabled):hover { background: var(--accent-hover); }
+    button.danger { background: var(--danger); }
+    .alert { padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 12px; display: none; }
+    .alert.error { background: #3d1418; border: 1px solid #da3633; color: #ff7b72; display: block; }
+    .alert.warn { background: #382c0b; border: 1px solid #d29922; color: #e3b341; display: block; }
+    .alert.success { background: #132f1b; border: 1px solid #238636; color: #56d364; display: block; }
+    .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #21262d; font-size: 0.85rem; }
+    .result-row:last-child { border-bottom: none; }
+    .result-label { color: var(--muted); }
+    .result-val { font-weight: 600; color: var(--text-bright); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase; }
+    .badge.detected { background: #238636; color: #fff; }
+    .badge.none { background: #30363d; color: var(--muted); }
+    footer { margin-top: auto; text-align: center; font-size: 0.7rem; color: var(--muted); padding-top: 12px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>VIGÍA VISION SYSTEMS</h1>
+    <p>Ingesta de Cámara Móvil — VO-03</p>
+  </header>
+
+  <!-- Banner de advertencia de contexto seguro -->
+  <div id="secure-warn" class="alert warn">
+    <strong>Aviso de Contexto de Red:</strong> Si no utilizas HTTPS o localhost, los navegadores móviles bloquearán el acceso a la cámara física por políticas de seguridad (WebRTC getUserMedia).
+  </div>
+
+  <!-- Banner dinámico de estado/errores -->
+  <div id="status-alert" class="alert"></div>
+
+  <!-- Contenedor de configuración -->
+  <div class="card">
+    <div class="config-row">
+      <div class="config-group">
+        <label for="cam-code">Cámara Destino</label>
+        <select id="cam-code">
+          <option value="CAM-ENTRADA" selected>CAM-ENTRADA</option>
+          <option value="CAM-SALIDA">CAM-SALIDA</option>
+        </select>
+      </div>
+      <div class="config-group">
+        <label for="auth-key">Clave de Acceso (Obligatoria)</label>
+        <input type="password" id="auth-key" placeholder="Token / API Key">
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista previa de cámara -->
+  <div class="card">
+    <div class="preview-container">
+      <div id="placeholder" class="preview-placeholder">
+        Cámara inactiva.<br>Presiona "Activar Cámara" para iniciar el visor físico.
+      </div>
+      <video id="video-preview" autoplay playsinline muted style="display:none;"></video>
+      <canvas id="canvas-snap" style="display:none;"></canvas>
+    </div>
+
+    <div class="btn-grid">
+      <button id="btn-start">Activar Cámara</button>
+      <button id="btn-stop" disabled class="danger">Detener</button>
+      <button id="btn-capture" class="btn-full primary" disabled>📸 Capturar y Enviar a VIGÍA</button>
+    </div>
+  </div>
+
+  <!-- Resultados de inferencia YOLO y coordinador -->
+  <div class="card" id="results-card">
+    <div class="result-row">
+      <span class="result-label">Estado de Visión</span>
+      <span class="result-val" id="res-status"><span class="badge none">Sin Captura</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Vehículo Detectado</span>
+      <span class="result-val" id="res-type">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Confianza del Modelo</span>
+      <span class="result-val" id="res-conf">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Ocupación en ROI</span>
+      <span class="result-val" id="res-roi">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Fotograma Secuencia</span>
+      <span class="result-val" id="res-seq">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Latencia E2E</span>
+      <span class="result-val" id="res-latency">—</span>
+    </div>
+  </div>
+
+  <footer>
+    VIGÍA Vision Systems &copy; 2026 — Percepción Visual Segura
+  </footer>
+
+  <script>
+    (function() {
+      const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (isSecure) {
+        document.getElementById('secure-warn').style.display = 'none';
+      }
+
+      const video = document.getElementById('video-preview');
+      const canvas = document.getElementById('canvas-snap');
+      const placeholder = document.getElementById('placeholder');
+      const btnStart = document.getElementById('btn-start');
+      const btnStop = document.getElementById('btn-stop');
+      const btnCapture = document.getElementById('btn-capture');
+      const alertBox = document.getElementById('status-alert');
+
+      let currentStream = null;
+
+      function showAlert(msg, type) {
+        alertBox.className = 'alert ' + type;
+        alertBox.textContent = msg;
+        alertBox.style.display = 'block';
+      }
+
+      function clearAlert() {
+        alertBox.style.display = 'none';
+      }
+
+      btnStart.addEventListener('click', async () => {
+        clearAlert();
+        try {
+          const constraints = {
+            video: {
+              facingMode: { ideal: 'environment' },
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            },
+            audio: false
+          };
+
+          currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+          video.srcObject = currentStream;
+          video.style.display = 'block';
+          placeholder.style.display = 'none';
+
+          btnStart.disabled = true;
+          btnStop.disabled = false;
+          btnCapture.disabled = false;
+          showAlert('Cámara física activada correctamente.', 'success');
+        } catch (err) {
+          console.error(err);
+          let detail = 'Error desconocido al acceder a la cámara.';
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            detail = 'Permiso denegado por el usuario o navegador para acceder a la cámara.';
+          } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            detail = 'No se encontró ninguna cámara física disponible en este dispositivo.';
+          } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+            detail = 'La cámara está siendo utilizada por otra aplicación.';
+          } else if (!isSecure) {
+            detail = 'El navegador bloqueó la cámara porque la conexión no es HTTPS.';
+          }
+          showAlert('Fallo de acceso a cámara: ' + detail, 'error');
+        }
+      });
+
+      btnStop.addEventListener('click', () => {
+        if (currentStream) {
+          currentStream.getTracks().forEach(track => track.stop());
+          currentStream = null;
+        }
+        video.srcObject = null;
+        video.style.display = 'none';
+        placeholder.style.display = 'block';
+
+        btnStart.disabled = false;
+        btnStop.disabled = true;
+        btnCapture.disabled = true;
+        clearAlert();
+      });
+
+      btnCapture.addEventListener('click', () => {
+        if (!currentStream) return;
+        clearAlert();
+
+        const track = currentStream.getVideoTracks()[0];
+        const settings = track.getSettings();
+        canvas.width = video.videoWidth || settings.width || 1280;
+        canvas.height = video.videoHeight || settings.height || 720;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        btnCapture.disabled = true;
+        btnCapture.textContent = 'Enviando y Procesando con YOLO...';
+
+        const startTime = performance.now();
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showAlert('Error al generar los bytes del fotograma capturado.', 'error');
+            btnCapture.disabled = false;
+            btnCapture.textContent = '📸 Capturar y Enviar a VIGÍA';
+            return;
+          }
+
+          const camCode = document.getElementById('cam-code').value.trim();
+          const authKey = document.getElementById('auth-key').value.trim();
+
+          const formData = new FormData();
+          formData.append('frame', blob, 'mobile_capture.jpg');
+
+          const headers = {};
+          if (authKey) {
+            headers['X-Camera-Key'] = authKey;
+          }
+
+          try {
+            const resp = await fetch(`/api/v1/cameras/${encodeURIComponent(camCode)}/push`, {
+              method: 'POST',
+              body: formData,
+              headers: headers
+            });
+
+            const latency = Math.round(performance.now() - startTime);
+            const data = await resp.json();
+
+            if (!resp.ok || !data.ok) {
+              const errMsg = data.message || data.error || ('HTTP ' + resp.status);
+              showAlert('Rechazo del motor: ' + errMsg, 'error');
+            } else {
+              showAlert('Fotograma recibido y procesado por VIGÍA con éxito.', 'success');
+              
+              // Actualizar panel de resultados
+              const isVehicle = data.vehicle_detected;
+              const statusEl = document.getElementById('res-status');
+              if (isVehicle) {
+                statusEl.innerHTML = '<span class="badge detected">' + (data.status || 'DETECTADO') + '</span>';
+              } else {
+                statusEl.innerHTML = '<span class="badge none">' + (data.status || 'SIN VEHICULO') + '</span>';
+              }
+
+              document.getElementById('res-type').textContent = data.tipo_vehiculo || 'Ninguno';
+              document.getElementById('res-conf').textContent = data.confianza !== null && data.confianza !== undefined
+                ? (data.confianza * 100).toFixed(1) + '%'
+                : '—';
+              document.getElementById('res-roi').textContent = data.in_roi_now ?? 0;
+              document.getElementById('res-seq').textContent = '#' + (data.frame_sequence ?? '—');
+              document.getElementById('res-latency').textContent = latency + ' ms';
+            }
+          } catch (netErr) {
+            console.error(netErr);
+            showAlert('Error de red al conectar con VIGIA_API: ' + netErr.message, 'error');
+          } finally {
+            btnCapture.disabled = false;
+            btnCapture.textContent = '📸 Capturar y Enviar a VIGÍA';
+          }
+        }, 'image/jpeg', 0.90);
+      });
+    })();
+  </script>
+</body>
+</html>
