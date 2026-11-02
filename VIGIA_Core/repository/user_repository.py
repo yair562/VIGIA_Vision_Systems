@@ -12,7 +12,9 @@ Implementa:
 from __future__ import annotations
 
 import logging
+import os
 import threading
+from pathlib import Path
 from typing import Any, List, Optional, Protocol, Sequence, runtime_checkable
 from uuid import UUID
 
@@ -314,3 +316,62 @@ class PsycopgUserRepository:
             activo=bool(row["activo"]),
             creado_en=row.get("creado_en"),
         )
+
+
+def resolve_database_dsn() -> str:
+    """
+    Resuelve la cadena de conexión DSN para PostgreSQL a partir del entorno
+    o del archivo global Software/.env (ver VIGIA_Core.config.env_loader), sin registrar contraseñas ni secretos.
+    """
+    from VIGIA_Core.config.env_loader import get_setting
+
+    dsn = get_setting("VIGIA_DB_DSN") or get_setting("DATABASE_URL")
+    if dsn and dsn.strip():
+        return dsn.strip()
+
+    resolved_host = get_setting("POSTGRES_HOST", "127.0.0.1")
+    resolved_port = get_setting("POSTGRES_PORT", "5433")
+    resolved_db = get_setting("POSTGRES_DB", "vigia_db")
+    resolved_user = get_setting("POSTGRES_USER", "vigia_admin")
+    resolved_pwd = get_setting("POSTGRES_PASSWORD", "") or ""
+
+    if not resolved_pwd:
+        raise DatabaseConnectionError(
+            "Configuración incompleta de PostgreSQL: no se definió POSTGRES_PASSWORD "
+            "ni cadena de conexión DSN."
+        )
+
+    return f"host={resolved_host} port={resolved_port} dbname={resolved_db} user={resolved_user} password={resolved_pwd}"
+
+
+def build_default_user_repository(
+    allow_in_memory: bool = False,
+    connect_timeout: int = 5,
+) -> IUserRepository:
+    """
+    Construye e inicializa el repositorio de usuarios canónico.
+
+    Por omisión estricta, conecta a PostgreSQL mediante PsycopgUserRepository.
+    Si allow_in_memory es True (o si VIGIA_ALLOW_IN_MEMORY=1), recurre a InMemoryUserRepository.
+    En cualquier otro caso, si PostgreSQL no está disponible o la configuración es inválida,
+    lanza DatabaseConnectionError sin fallback silencioso.
+    """
+    explicit_in_memory = allow_in_memory or (
+        os.environ.get("VIGIA_ALLOW_IN_MEMORY", "").strip().lower() in {"1", "true", "yes"}
+    )
+    if explicit_in_memory:
+        return InMemoryUserRepository()
+
+    dsn = resolve_database_dsn()
+    repo = PsycopgUserRepository(dsn=dsn, connect_timeout=connect_timeout)
+    # Validar conectividad de forma inmediata (fail-fast sin fallback silencioso)
+    try:
+        conn = repo._get_connection()
+        conn.close()
+    except Exception as exc:
+        raise DatabaseConnectionError(
+            f"Fallo de conexión preventiva con PostgreSQL: {exc}"
+        ) from exc
+
+    return repo
+

@@ -93,25 +93,22 @@
   --admin-circle-size: 44px;
   --admin-max-width: 1720px;
 
-  /* Navegación minimalista compacta y tooltips (VO-02A-R2) */
-  --admin-sidebar-width: 68px;
-  --admin-sidebar-bg: #D5D5DC;
-  --admin-sidebar-border: #C4C4CC;
+  /* Navegación superior minimalista e iconos (VO-02A-R2) */
   --admin-nav-btn-size: 44px;
   --admin-nav-btn-radius: 12px;
   --admin-nav-icon-size: 22px;
   --admin-nav-icon-color: #3F3F46;
-  --admin-nav-icon-hover-bg: #C6C6CE;
-  --admin-nav-icon-hover-color: #18181B;
-  --admin-nav-icon-active-bg: #FFFFFF;
+  --admin-nav-icon-hover-bg: rgba(0, 0, 0, 0.06);
+  --admin-nav-icon-hover-color: #000000;
+  --admin-nav-icon-active-bg: rgba(0, 0, 0, 0.08);
   --admin-nav-icon-active-color: #000000;
   --admin-nav-active-indicator: #18181B;
 
-  /* Tooltips contextuales accesibles */
+  /* Tooltips contextuales discretos debajo del icono */
   --admin-tooltip-bg: #18181B;
   --admin-tooltip-text: #FAFAFA;
   --admin-tooltip-border: #3F3F46;
-  --admin-tooltip-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  --admin-tooltip-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
 
   /* Estados de retroalimentación accesible (WCAG AA) */
   --status-info-bg: #F3F4F6;
@@ -160,20 +157,18 @@
   --admin-camera-slot-bg: #000000;     /* Espacios de cámara */
   --admin-border-subtle: #3D3D3D;
 
-  /* Navegación minimalista compacta y tooltips — Modo Oscuro (VO-02A-R2) */
-  --admin-sidebar-bg: #18181B;
-  --admin-sidebar-border: #2E2E34;
-  --admin-nav-icon-color: #A1A1AA;
-  --admin-nav-icon-hover-bg: #27272A;
-  --admin-nav-icon-hover-color: #F4F4F5;
-  --admin-nav-icon-active-bg: #323238;
+  /* Navegación superior minimalista e iconos — Modo Oscuro (VO-02A-R2) */
+  --admin-nav-icon-color: #A0A0A0;
+  --admin-nav-icon-hover-bg: rgba(255, 255, 255, 0.08);
+  --admin-nav-icon-hover-color: #E0E0E0;
+  --admin-nav-icon-active-bg: #424242;
   --admin-nav-icon-active-color: #FFFFFF;
-  --admin-nav-active-indicator: #FAFAFA;
+  --admin-nav-active-indicator: #E0E0E0;
 
-  --admin-tooltip-bg: #27272A;
-  --admin-tooltip-text: #FAFAFA;
-  --admin-tooltip-border: #52525B;
-  --admin-tooltip-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --admin-tooltip-bg: #2C2C2C;
+  --admin-tooltip-text: #E0E0E0;
+  --admin-tooltip-border: #444444;
+  --admin-tooltip-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
 
   --device-status-online-bg: #143321;
   --device-status-online-text: #BBF7D0;

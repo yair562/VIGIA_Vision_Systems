@@ -123,22 +123,37 @@ export function renderDevicesTable({ devices = [], onDeviceAction } = {}) {
     activityTime.textContent = device.ultimaActividad;
     tr.appendChild(createDataCell(COLUMNS[3].label, activityTime));
 
-    // 5. Acciones (Provisional DEMO claramente identificado)
+    // 5. Acciones (Operaciones sobre el dispositivo)
     const actionsGroup = document.createElement('div');
     actionsGroup.className = 'device-row-actions';
 
-    const detailBtn = document.createElement('button');
-    detailBtn.type = 'button';
-    detailBtn.className = 'device-action-btn';
-    detailBtn.textContent = 'Detalle (Provisional)';
-    detailBtn.setAttribute('aria-label', `Ver detalle provisional de ${device.nombre}`);
-    detailBtn.addEventListener('click', () => {
-      if (typeof onDeviceAction === 'function') {
-        onDeviceAction(device, 'detalle-provisional');
-      }
-    });
-
-    actionsGroup.appendChild(detailBtn);
+    if (device.isRealDevice && device.activa) {
+      const revokeBtn = document.createElement('button');
+      revokeBtn.type = 'button';
+      revokeBtn.className = 'device-action-btn device-action-btn--danger';
+      revokeBtn.style.color = 'var(--admin-danger, #dc2626)';
+      revokeBtn.textContent = 'Revocar';
+      revokeBtn.setAttribute('aria-label', `Revocar credencial de ${device.nombre}`);
+      revokeBtn.addEventListener('click', () => {
+        if (typeof onDeviceAction === 'function') {
+          onDeviceAction(device, 'revocar');
+        }
+      });
+      actionsGroup.appendChild(revokeBtn);
+    } else {
+      const detailBtn = document.createElement('button');
+      detailBtn.type = 'button';
+      detailBtn.className = 'device-action-btn';
+      detailBtn.textContent = device.isRealDevice ? 'Inactivo' : 'Detalle (Provisional)';
+      detailBtn.disabled = Boolean(device.isRealDevice);
+      detailBtn.setAttribute('aria-label', `Ver detalle de ${device.nombre}`);
+      detailBtn.addEventListener('click', () => {
+        if (typeof onDeviceAction === 'function') {
+          onDeviceAction(device, 'detalle-provisional');
+        }
+      });
+      actionsGroup.appendChild(detailBtn);
+    }
     tr.appendChild(createDataCell(COLUMNS[4].label, actionsGroup));
 
     tbody.appendChild(tr);

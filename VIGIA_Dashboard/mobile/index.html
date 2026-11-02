@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>VIGÍA Vision Systems — Captura Móvil</title>
+  <title>VIGÍA Vision Systems — Captura y Enrolamiento Móvil</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -11,6 +11,8 @@
       --card-border: #30363d;
       --accent: #238636;
       --accent-hover: #2ea043;
+      --primary: #1f6feb;
+      --primary-hover: #388bfd;
       --danger: #da3633;
       --text: #c9d1d9;
       --text-bright: #f0f6fc;
@@ -19,10 +21,10 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 16px; min-height: 100vh; display: flex; flex-direction: column; }
-    header { text-align: center; margin-bottom: 16px; }
+    header { text-align: center; margin-bottom: 14px; }
     header h1 { font-size: 1.25rem; color: var(--text-bright); letter-spacing: 0.5px; }
     header p { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
     .config-row { display: flex; gap: 8px; margin-bottom: 10px; }
     .config-group { flex: 1; }
     label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
@@ -36,6 +38,8 @@
     button:disabled { opacity: 0.4; cursor: not-allowed; }
     button.primary { background: var(--accent); }
     button.primary:not(:disabled):hover { background: var(--accent-hover); }
+    button.action { background: var(--primary); }
+    button.action:not(:disabled):hover { background: var(--primary-hover); }
     button.danger { background: var(--danger); }
     .alert { padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 12px; display: none; }
     .alert.error { background: #3d1418; border: 1px solid #da3633; color: #ff7b72; display: block; }
@@ -48,55 +52,89 @@
     .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase; }
     .badge.detected { background: #238636; color: #fff; }
     .badge.none { background: #30363d; color: var(--muted); }
+    .badge.active { background: #1f6feb; color: #fff; }
+    .badge.warn { background: #d29922; color: #000; }
     footer { margin-top: auto; text-align: center; font-size: 0.7rem; color: var(--muted); padding-top: 12px; }
+    .tag-auth { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; background: #21262d; color: #8b949e; }
+    .tag-auth.individual { background: #1b4b27; color: #7ee787; border: 1px solid #238636; }
   </style>
 </head>
 <body>
 
   <header>
     <h1>VIGÍA VISION SYSTEMS</h1>
-    <p>Ingesta de Cámara Móvil — VO-03</p>
+    <p>Dispositivo Móvil de Captura — MOB-QR-01</p>
   </header>
 
   <!-- Banner de advertencia de contexto seguro -->
   <div id="secure-warn" class="alert warn">
-    <strong>Aviso de Contexto de Red:</strong> Si no utilizas HTTPS o localhost, los navegadores móviles bloquearán el acceso a la cámara física por políticas de seguridad (WebRTC getUserMedia).
+    <strong>Aviso de Contexto Seguro:</strong> Para habilitar la cámara en celulares se requiere conexión HTTPS o localhost.
+    Si utilizas HTTPS con certificado local, asegúrate de instalar primero la CA en <a href="/api/v1/tls/ca.crt" style="color:#f0f6fc;text-decoration:underline;">/api/v1/tls/ca.crt</a>.
   </div>
 
   <!-- Banner dinámico de estado/errores -->
   <div id="status-alert" class="alert"></div>
 
-  <!-- Contenedor de configuración -->
-  <div class="card">
-    <div class="config-row">
-      <div class="config-group">
-        <label for="cam-code">Cámara Destino</label>
-        <select id="cam-code">
-          <option value="CAM-ENTRADA" selected>CAM-ENTRADA</option>
-          <option value="CAM-SALIDA">CAM-SALIDA</option>
-        </select>
+  <!-- Tarjeta de Enrolamiento / Estado de Credencial -->
+  <div class="card" id="enroll-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <label style="margin:0;">Estado de Enrolamiento</label>
+      <span id="auth-status-tag" class="tag-auth">Sin Enrolar</span>
+    </div>
+    <div id="claim-flow-box" style="display:none; margin-top:8px;">
+      <p style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">
+        Código QR detectado para vincular a: <strong id="qr-target-cam">CAM-ENTRADA</strong>
+      </p>
+      <input type="text" id="device-alias" placeholder="Nombre descriptivo (ej. Pixel 8 Guardia 1)" style="margin-bottom:8px;">
+      <button id="btn-claim" class="action btn-full" style="padding:10px;">✅ Confirmar y Enrolar Teléfono</button>
+    </div>
+    <div id="enrolled-info-box" style="display:none; margin-top:6px; font-size:0.85rem;">
+      <div class="result-row">
+        <span class="result-label">Cámara Asignada:</span>
+        <span class="result-val" id="bound-cam-label">—</span>
       </div>
-      <div class="config-group">
-        <label for="auth-key">Clave de Acceso (Obligatoria)</label>
-        <input type="password" id="auth-key" placeholder="Token / API Key">
+      <div class="result-row">
+        <span class="result-label">Credencial:</span>
+        <span class="result-val" id="bound-cred-label" style="font-family:monospace; font-size:0.8rem; color:#7ee787;">Indiv. Activa</span>
       </div>
     </div>
   </div>
 
-  <!-- Vista previa de cámara -->
+  <!-- Configuración manual alternativa / Ajustes -->
+  <div class="card" id="manual-config-card">
+    <div class="config-row">
+      <div class="config-group">
+        <label for="cam-code">Cámara Destino</label>
+        <select id="cam-code">
+          <option value="CAM-ENTRADA" selected>CAM-ENTRADA (Carril Entrada)</option>
+          <option value="CAM-SALIDA">CAM-SALIDA (Carril Salida)</option>
+        </select>
+      </div>
+      <div class="config-group">
+        <label for="cam-source-select">Lente de Cámara</label>
+        <select id="cam-source-select">
+          <option value="environment" selected>Trasera (Entorno)</option>
+          <option value="user">Frontal</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista previa de cámara física -->
   <div class="card">
     <div class="preview-container">
       <div id="placeholder" class="preview-placeholder">
-        Cámara inactiva.<br>Presiona "Activar Cámara" para iniciar el visor físico.
+        Cámara inactiva.<br>Presiona "Activar Cámara" para iniciar la transmisión visual.
       </div>
       <video id="video-preview" autoplay playsinline muted style="display:none;"></video>
       <canvas id="canvas-snap" style="display:none;"></canvas>
     </div>
 
     <div class="btn-grid">
-      <button id="btn-start">Activar Cámara</button>
+      <button id="btn-start" class="primary">Activar Cámara</button>
       <button id="btn-stop" disabled class="danger">Detener</button>
-      <button id="btn-capture" class="btn-full primary" disabled>📸 Capturar y Enviar a VIGÍA</button>
+      <button id="btn-capture" class="btn-full action" disabled>📸 Capturar y Procesar en VIGÍA</button>
+      <button id="btn-stream-toggle" class="btn-full" disabled style="background:#30363d;">▶️ Transmisión Continua (1 FPS)</button>
     </div>
   </div>
 
@@ -145,9 +183,26 @@
       const btnStart = document.getElementById('btn-start');
       const btnStop = document.getElementById('btn-stop');
       const btnCapture = document.getElementById('btn-capture');
+      const btnStreamToggle = document.getElementById('btn-stream-toggle');
       const alertBox = document.getElementById('status-alert');
 
+      const authStatusTag = document.getElementById('auth-status-tag');
+      const claimFlowBox = document.getElementById('claim-flow-box');
+      const qrTargetCamEl = document.getElementById('qr-target-cam');
+      const deviceAliasInput = document.getElementById('device-alias');
+      const btnClaim = document.getElementById('btn-claim');
+      const enrolledInfoBox = document.getElementById('enrolled-info-box');
+      const boundCamLabel = document.getElementById('bound-cam-label');
+      const camCodeSelect = document.getElementById('cam-code');
+      const camSourceSelect = document.getElementById('cam-source-select');
+
       let currentStream = null;
+      let streamIntervalId = null;
+      let isStreaming = false;
+
+      // Estado de credencial móvil en memoria de sesión
+      let activeStreamToken = sessionStorage.getItem('vigia_mobile_stream_token') || '';
+      let activeCamCode = sessionStorage.getItem('vigia_mobile_cam_code') || '';
 
       function showAlert(msg, type) {
         alertBox.className = 'alert ' + type;
@@ -159,12 +214,100 @@
         alertBox.style.display = 'none';
       }
 
-      btnStart.addEventListener('click', async () => {
+      function updateAuthUI() {
+        if (activeStreamToken && activeCamCode) {
+          authStatusTag.className = 'tag-auth individual';
+          authStatusTag.textContent = 'Enrolado y Autorizado';
+          claimFlowBox.style.display = 'none';
+          enrolledInfoBox.style.display = 'block';
+          boundCamLabel.textContent = activeCamCode;
+          camCodeSelect.value = activeCamCode;
+          camCodeSelect.disabled = true;
+        } else {
+          authStatusTag.className = 'tag-auth';
+          authStatusTag.textContent = 'Sin Enrolar';
+          enrolledInfoBox.style.display = 'none';
+          camCodeSelect.disabled = false;
+        }
+      }
+
+      // 1. Detección automática de token de QR vía URL (?claim=...&cam=...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const claimTokenParam = urlParams.get('claim');
+      const camParam = urlParams.get('cam');
+
+      if (claimTokenParam) {
+        claimFlowBox.style.display = 'block';
+        if (camParam) {
+          qrTargetCamEl.textContent = camParam.toUpperCase();
+          camCodeSelect.value = camParam.toUpperCase();
+        }
+        showAlert('Token de QR detectado. Ingresa un nombre para tu teléfono y confirma.', 'warn');
+      }
+
+      updateAuthUI();
+
+      btnClaim.addEventListener('click', async () => {
+        clearAlert();
+        const alias = deviceAliasInput.value.trim() || 'Teléfono Móvil';
+        btnClaim.disabled = true;
+        btnClaim.textContent = 'Enrolando con el servidor...';
+
+        try {
+          const resp = await fetch('/api/v1/mobile/pairing/claim', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              claim_token: claimTokenParam,
+              device_name: alias
+            })
+          });
+
+          const data = await resp.json();
+          if (!resp.ok || !data.ok) {
+            throw new Error(data.message || data.error || 'Error al enrolar dispositivo.');
+          }
+
+          if (data.stream_token) {
+            activeStreamToken = data.stream_token;
+            activeCamCode = data.codigo_camara || camParam || 'CAM-ENTRADA';
+            sessionStorage.setItem('vigia_mobile_stream_token', activeStreamToken);
+            sessionStorage.setItem('vigia_mobile_cam_code', activeCamCode);
+
+            // Confirmar recepción al backend para purgar la credencial temporal
+            if (data.poll_token) {
+              fetch('/api/v1/mobile/pairing/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ poll_token: data.poll_token })
+              }).catch(() => {});
+            }
+
+            updateAuthUI();
+            showAlert(`¡Enrolamiento exitoso! Dispositivo vinculado a ${activeCamCode}. Ya puedes activar la cámara y transmitir.`, 'success');
+
+            // Limpiar query param de la URL sin recargar
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } else {
+            showAlert('Solicitud registrada. Esperando aprobación en el Dashboard...', 'warn');
+          }
+        } catch (err) {
+          console.error(err);
+          showAlert(err.message, 'error');
+        } finally {
+          btnClaim.disabled = false;
+          btnClaim.textContent = '✅ Confirmar y Enrolar Teléfono';
+        }
+      });
+
+      // 2. Control de captura WebRTC
+      async function startCamera() {
         clearAlert();
         try {
+          const facing = camSourceSelect.value || 'environment';
           const constraints = {
             video: {
-              facingMode: { ideal: 'environment' },
+              facingMode: { ideal: facing },
               width: { ideal: 1280 },
               height: { ideal: 720 }
             },
@@ -179,6 +322,7 @@
           btnStart.disabled = true;
           btnStop.disabled = false;
           btnCapture.disabled = false;
+          btnStreamToggle.disabled = false;
           showAlert('Cámara física activada correctamente.', 'success');
         } catch (err) {
           console.error(err);
@@ -194,9 +338,10 @@
           }
           showAlert('Fallo de acceso a cámara: ' + detail, 'error');
         }
-      });
+      }
 
-      btnStop.addEventListener('click', () => {
+      function stopCamera() {
+        stopContinuousStreaming();
         if (currentStream) {
           currentStream.getTracks().forEach(track => track.stop());
           currentStream = null;
@@ -208,12 +353,22 @@
         btnStart.disabled = false;
         btnStop.disabled = true;
         btnCapture.disabled = true;
+        btnStreamToggle.disabled = true;
         clearAlert();
+      }
+
+      btnStart.addEventListener('click', startCamera);
+      btnStop.addEventListener('click', stopCamera);
+      camSourceSelect.addEventListener('change', () => {
+        if (currentStream) {
+          stopCamera();
+          startCamera();
+        }
       });
 
-      btnCapture.addEventListener('click', () => {
+      // 3. Envío de fotograma a VIGÍA
+      async function captureAndSendFrame() {
         if (!currentStream) return;
-        clearAlert();
 
         const track = currentStream.getVideoTracks()[0];
         const settings = track.getSettings();
@@ -223,72 +378,113 @@
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        btnCapture.disabled = true;
-        btnCapture.textContent = 'Enviando y Procesando con YOLO...';
-
         const startTime = performance.now();
 
-        canvas.toBlob(async (blob) => {
-          if (!blob) {
-            showAlert('Error al generar los bytes del fotograma capturado.', 'error');
-            btnCapture.disabled = false;
-            btnCapture.textContent = '📸 Capturar y Enviar a VIGÍA';
-            return;
-          }
-
-          const camCode = document.getElementById('cam-code').value.trim();
-          const authKey = document.getElementById('auth-key').value.trim();
-
-          const formData = new FormData();
-          formData.append('frame', blob, 'mobile_capture.jpg');
-
-          const headers = {};
-          if (authKey) {
-            headers['X-Camera-Key'] = authKey;
-          }
-
-          try {
-            const resp = await fetch(`/api/v1/cameras/${encodeURIComponent(camCode)}/push`, {
-              method: 'POST',
-              body: formData,
-              headers: headers
-            });
-
-            const latency = Math.round(performance.now() - startTime);
-            const data = await resp.json();
-
-            if (!resp.ok || !data.ok) {
-              const errMsg = data.message || data.error || ('HTTP ' + resp.status);
-              showAlert('Rechazo del motor: ' + errMsg, 'error');
-            } else {
-              showAlert('Fotograma recibido y procesado por VIGÍA con éxito.', 'success');
-              
-              // Actualizar panel de resultados
-              const isVehicle = data.vehicle_detected;
-              const statusEl = document.getElementById('res-status');
-              if (isVehicle) {
-                statusEl.innerHTML = '<span class="badge detected">' + (data.status || 'DETECTADO') + '</span>';
-              } else {
-                statusEl.innerHTML = '<span class="badge none">' + (data.status || 'SIN VEHICULO') + '</span>';
-              }
-
-              document.getElementById('res-type').textContent = data.tipo_vehiculo || 'Ninguno';
-              document.getElementById('res-conf').textContent = data.confianza !== null && data.confianza !== undefined
-                ? (data.confianza * 100).toFixed(1) + '%'
-                : '—';
-              document.getElementById('res-roi').textContent = data.in_roi_now ?? 0;
-              document.getElementById('res-seq').textContent = '#' + (data.frame_sequence ?? '—');
-              document.getElementById('res-latency').textContent = latency + ' ms';
+        return new Promise((resolve) => {
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              showAlert('Error al generar los bytes del fotograma.', 'error');
+              return resolve(false);
             }
-          } catch (netErr) {
-            console.error(netErr);
-            showAlert('Error de red al conectar con VIGIA_API: ' + netErr.message, 'error');
-          } finally {
-            btnCapture.disabled = false;
-            btnCapture.textContent = '📸 Capturar y Enviar a VIGÍA';
-          }
-        }, 'image/jpeg', 0.90);
+
+            const camCode = activeCamCode || camCodeSelect.value.trim();
+            const formData = new FormData();
+            formData.append('frame', blob, 'mobile_capture.jpg');
+
+            const headers = {};
+            if (activeStreamToken) {
+              headers['X-Camera-Key'] = activeStreamToken;
+            }
+
+            try {
+              const resp = await fetch(`/api/v1/cameras/${encodeURIComponent(camCode)}/push`, {
+                method: 'POST',
+                body: formData,
+                headers: headers
+              });
+
+              const latency = Math.round(performance.now() - startTime);
+              const data = await resp.json();
+
+              if (!resp.ok || !data.ok) {
+                const errMsg = data.message || data.error || ('HTTP ' + resp.status);
+                showAlert('Rechazo del motor: ' + errMsg, 'error');
+                if (resp.status === 401) {
+                  authStatusTag.className = 'tag-auth';
+                  authStatusTag.textContent = 'Credencial Inválida o Revocada';
+                }
+                return resolve(false);
+              } else {
+                showAlert(`Fotograma procesado por VIGÍA en ${latency} ms.`, 'success');
+                
+                const isVehicle = data.vehicle_detected;
+                const statusEl = document.getElementById('res-status');
+                if (isVehicle) {
+                  statusEl.innerHTML = '<span class="badge detected">' + (data.status || 'DETECTADO') + '</span>';
+                } else {
+                  statusEl.innerHTML = '<span class="badge none">' + (data.status || 'SIN VEHICULO') + '</span>';
+                }
+
+                document.getElementById('res-type').textContent = data.tipo_vehiculo || 'Ninguno';
+                document.getElementById('res-conf').textContent = data.confianza !== null && data.confianza !== undefined
+                  ? (data.confianza * 100).toFixed(1) + '%'
+                  : '—';
+                document.getElementById('res-roi').textContent = data.in_roi_now ?? 0;
+                document.getElementById('res-seq').textContent = '#' + (data.frame_sequence ?? '—');
+                document.getElementById('res-latency').textContent = latency + ' ms';
+                return resolve(true);
+              }
+            } catch (netErr) {
+              console.error(netErr);
+              showAlert('Error de red al conectar con VIGIA_API: ' + netErr.message, 'error');
+              return resolve(false);
+            }
+          }, 'image/jpeg', 0.90);
+        });
+      }
+
+      btnCapture.addEventListener('click', async () => {
+        btnCapture.disabled = true;
+        btnCapture.textContent = 'Enviando a VIGÍA...';
+        await captureAndSendFrame();
+        btnCapture.disabled = false;
+        btnCapture.textContent = '📸 Capturar y Procesar en VIGÍA';
       });
+
+      // 4. Modo Transmisión Continua periódica (1 FPS)
+      function startContinuousStreaming() {
+        isStreaming = true;
+        btnStreamToggle.textContent = '⏸️ Detener Transmisión Continua';
+        btnStreamToggle.style.background = 'var(--danger)';
+        btnCapture.disabled = true;
+
+        streamIntervalId = setInterval(async () => {
+          if (!isStreaming) return;
+          await captureAndSendFrame();
+        }, 1000);
+      }
+
+      function stopContinuousStreaming() {
+        isStreaming = false;
+        if (streamIntervalId) {
+          clearInterval(streamIntervalId);
+          streamIntervalId = null;
+        }
+        btnStreamToggle.textContent = '▶️ Transmisión Continua (1 FPS)';
+        btnStreamToggle.style.background = '#30363d';
+        if (currentStream) {
+          btnCapture.disabled = false;
+        }
+      }
+
+      btnStreamToggle.addEventListener('click', () => {
+        if (!isStreaming) {
+          startContinuousStreaming();
+        } else {
+          stopContinuousStreaming();
+        }
+      });
+
     })();
   </script>
 </body>

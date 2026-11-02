@@ -2,7 +2,7 @@
 
 **Proyecto:** VIGÍA Vision Systems  
 **Módulo:** `VIGIA_Dashboard`  
-**Versión:** 1.0 (Sprint 01)
+**Versión:** 1.1 (Sprint 01 + Sprint 02A + Refinamiento Visual `VO-02A-R2`)
 
 ---
 
@@ -88,14 +88,18 @@ A diferencia del cliente puntual de pruebas `mobile/index.html` (que concentra e
 
 ---
 
-## 4. Organización de Vistas
+## 4. Organización de Vistas y Componentes
 
-En el **Sprint 01**, únicamente existe e interviene la vista de **Inicio de Sesión** (`views/login-view.js`), cumpliendo con la restricción de no adelantar vistas cuyos requisitos detallados pertenecen a sprints posteriores:
+El directorio `web/js/` separa la lógica de presentación en vistas, componentes reutilizables, servicios desacoplados y datos sintéticos:
 
-- **Vista implementada en Sprint 01:**
-  - `login-view.js`: gestiona el formulario `#login-form`, valida que el identificador de usuario y la contraseña no estén vacíos ni contengan espacios inválidos en el usuario, controla el estado `aria-busy` del botón `Iniciar Sesión`, informa claramente que la autenticación aún no está conectada al servidor y atiende la acción del enlace `¿Olvidaste la contraseña?`.
-- **Evolución prevista para Sprints 02 a 04 (No implementado aún):**
-  - En los siguientes sprints se añadirán dentro de `web/js/views/` los módulos correspondientes al Guardia (`OPERADOR`) y al Administrador (`ADMINISTRADOR`), junto con un módulo cliente HTTP para comunicarse con `VIGIA_API`.
+- **Vistas implementadas (`web/js/views/`):**
+  - `login-view.js` (**Sprint 01**): gestiona el formulario `#login-form`, valida que el identificador de usuario y la contraseña no estén vacíos ni contengan espacios inválidos en el usuario, controla el estado `aria-busy` del botón `Iniciar Sesión`, informa claramente que la autenticación aún no está conectada al servidor y atiende la acción del enlace `¿Olvidaste la contraseña?`.
+  - `devices-view.js` (**Sprint 02A + `VO-02A-R2`**): estructura la vista administrativa en `.admin-shell` conservando la barra de navegación horizontal superior (`header.admin-navbar`), renderiza la pantalla **Gestión de Dispositivos** con su cuadrícula de 5 columnas aprovechando hasta `1720px` de ancho, el formulario provisional DEMO de `Agregar Dispositivos`, el botón `Salir de DEMO / Ir al Inicio de Sesión` y los avisos compactos de sección en desarrollo (`#cameras`, `#alerts`, `#reports`, `#profile`, `#camera-viewer`).
+- **Componentes reutilizables (`web/js/components/`):**
+  - `admin-navbar.js` (**Sprint 02A + `VO-02A-R2`**): genera la barra de navegación horizontal superior minimalista con logotipo circular a la izquierda, 4 iconos SVG inline centrales (`22×22px`), icono SVG de Perfil a la derecha, indicador geométrico inferior de sección activa (`.admin-nav-indicator`), tooltips discretos debajo de cada icono (`role="tooltip"`, `aria-describedby`) y etiquetas cortas visibles en móvil (`< 640px`).
+  - `devices-table.js` (**Sprint 02A**): construye la tabla semántica de 5 columnas con áreas verticales grises y su adaptación a tarjetas en móvil.
+- **Servicios y datos DEMO (`web/js/services/` y `web/js/data/`):**
+  - `device-service.js`: capa de servicio desacoplada que hoy consume `devices-demo-data.js` y está lista para conmutar a `fetch('/api/v1/devices')` sin alterar las vistas.
 
 ---
 

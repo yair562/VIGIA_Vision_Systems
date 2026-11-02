@@ -1,19 +1,20 @@
 /**
- * VIGÍA Vision Systems — Componente Reutilizable de Navegación Administrativa
+ * VIGÍA Vision Systems — Componente Reutilizable de Barra de Navegación Superior Minimalista
  * (Sprint 02A — Refinamiento Visual VO-02A-R2)
  *
- * Distribución aprobada:
- * - Escritorio y tableta (>= 640px): Barra lateral izquierda compacta (~68px) con:
- *   1. Parte superior: Logotipo circular oficial de VIGÍA (/assets/brand/producto_figura_dark.svg).
- *   2. Parte central: Cuatro botones minimalistas con iconos SVG inline (22x22px, trazo uniforme):
- *      - Dispositivos (devices): monitor / nodo de hardware.
- *      - Cámaras (cameras): cámara de videovigilancia.
- *      - Alertas (alerts): campana de notificaciones / alertas.
- *      - Informes (reports): documento / reporte analítico.
- *   3. Parte inferior: Botón de Perfil (profile) con icono SVG de silueta de usuario.
- *   4. Tooltips contextuales accesibles (role="tooltip", aria-describedby) en :hover y :focus-visible.
- * - Móvil (< 640px): Barra de navegación compacta inferior con iconos SVG + etiquetas cortas
- *   visibles para evitar depender de hover en pantallas táctiles.
+ * Distribución horizontal superior innegociable:
+ * ┌──────────────────────────────────────────────────────────────┐
+ * │ LOGO       Dispositivos  Cámaras  Alertas  Informes   Perfil │
+ * └──────────────────────────────────────────────────────────────┘
+ *
+ * 1. Logotipo circular oficial de VIGÍA a la izquierda (/assets/brand/producto_figura_dark.svg).
+ * 2. Navegación central con 4 botones minimalistas de icono SVG inline (22x22px, trazo uniforme):
+ *    - Dispositivos (devices)
+ *    - Cámaras (cameras)
+ *    - Alertas (alerts)
+ *    - Informes (reports)
+ * 3. Acceso al Perfil a la derecha con icono SVG minimalista del mismo lenguaje visual.
+ * 4. Tooltips discretos debajo de cada icono (role="tooltip", aria-describedby) en :hover y :focus-visible.
  */
 
 export const ADMIN_NAV_ITEMS = Object.freeze([
@@ -21,28 +22,28 @@ export const ADMIN_NAV_ITEMS = Object.freeze([
     id: 'devices',
     label: 'Dispositivos',
     title: 'Gestión de Dispositivos',
-    tooltip: 'Gestión de Dispositivos',
+    tooltip: 'Dispositivos',
     implemented: true
   }),
   Object.freeze({
     id: 'cameras',
     label: 'Cámaras',
     title: 'Monitoreo de Cámaras',
-    tooltip: 'Monitoreo de Cámaras',
-    implemented: false
+    tooltip: 'Cámaras',
+    implemented: true
   }),
   Object.freeze({
     id: 'alerts',
     label: 'Alertas',
     title: 'Gestión de Alertas',
-    tooltip: 'Gestión de Alertas',
+    tooltip: 'Alertas',
     implemented: false
   }),
   Object.freeze({
     id: 'reports',
     label: 'Informes',
     title: 'Gestión de Informes',
-    tooltip: 'Gestión de Informes',
+    tooltip: 'Informes',
     implemented: false
   })
 ]);
@@ -52,7 +53,7 @@ export const ADMIN_SPECIAL_ROUTES = Object.freeze({
     id: 'profile',
     label: 'Perfil',
     title: 'Perfil de Usuario',
-    tooltip: 'Perfil de Usuario',
+    tooltip: 'Perfil',
     implemented: false
   }),
   'camera-viewer': Object.freeze({
@@ -101,6 +102,12 @@ const NAV_ICON_PATHS = Object.freeze({
   profile: [
     { tag: 'circle', attrs: { cx: '12', cy: '8', r: '3.75' } },
     { tag: 'path', attrs: { d: 'M5 19.5a7 7 0 0 1 14 0' } }
+  ],
+  // Icono minimalista para Cerrar Sesión (Logout)
+  logout: [
+    { tag: 'path', attrs: { d: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4' } },
+    { tag: 'polyline', attrs: { points: '16 17 21 12 16 7' } },
+    { tag: 'line', attrs: { x1: '21', y1: '12', x2: '9', y2: '12' } }
   ]
 });
 
@@ -137,7 +144,7 @@ function createNavSvgIcon(iconId) {
 
 /**
  * Crea un botón de navegación minimalista con icono SVG, indicador de estado activo,
- * etiqueta móvil compacta y tooltip contextual accesible para escritorio.
+ * etiqueta móvil compacta y tooltip discreto debajo del icono.
  *
  * @param {Object} item
  * @param {string} item.id
@@ -155,7 +162,7 @@ function createNavIconButton(item, isActive, onNavigate, extraClass = '') {
   btn.type = 'button';
   btn.className = `admin-nav-btn${extraClass ? ` ${extraClass}` : ''}`;
   btn.dataset.navId = item.id;
-  btn.setAttribute('aria-label', item.title || item.label);
+  btn.setAttribute('aria-label', `${item.label} (${item.title || item.label})`);
   btn.setAttribute('aria-describedby', tooltipId);
 
   if (isActive) {
@@ -166,30 +173,30 @@ function createNavIconButton(item, isActive, onNavigate, extraClass = '') {
     btn.setAttribute('aria-current', 'page');
   }
 
-  // Indicador geométrico de sección activa (no depende únicamente del color)
-  const indicator = document.createElement('span');
-  indicator.className = 'admin-nav-indicator';
-  indicator.setAttribute('aria-hidden', 'true');
-
   // Icono SVG inline minimalista
   const svgIcon = createNavSvgIcon(item.id);
 
-  // Etiqueta corta visible en barra móvil (< 640px)
+  // Etiqueta corta visible en móvil (< 640px) para no depender exclusivamente de hover
   const mobileLabel = document.createElement('span');
   mobileLabel.className = 'admin-nav-mobile-label';
   mobileLabel.setAttribute('aria-hidden', 'true');
   mobileLabel.textContent = item.label;
 
-  // Tooltip contextual emergente en escritorio (:hover y :focus-visible)
+  // Indicador visual discreto inferior para la sección activa (no depende únicamente del color)
+  const indicator = document.createElement('span');
+  indicator.className = 'admin-nav-indicator';
+  indicator.setAttribute('aria-hidden', 'true');
+
+  // Tooltip discreto debajo del icono en :hover y :focus-visible
   const tooltip = document.createElement('span');
   tooltip.id = tooltipId;
   tooltip.setAttribute('role', 'tooltip');
   tooltip.className = 'admin-nav-tooltip';
-  tooltip.textContent = item.tooltip || item.title || item.label;
+  tooltip.textContent = item.tooltip || item.label;
 
-  btn.appendChild(indicator);
   btn.appendChild(svgIcon);
   btn.appendChild(mobileLabel);
+  btn.appendChild(indicator);
   btn.appendChild(tooltip);
 
   btn.addEventListener('click', () => {
@@ -202,30 +209,31 @@ function createNavIconButton(item, isActive, onNavigate, extraClass = '') {
 }
 
 /**
- * Construye el elemento DOM <aside class="admin-navbar"> con navegación lateral compacta
- * en escritorio/tableta y barra inferior compacta en móvil.
+ * Construye el elemento DOM <header class="admin-navbar"> horizontal en la parte superior.
  *
  * @param {Object} options
  * @param {string} options.activeSectionId - Identificador activo ('devices', 'cameras', 'alerts', 'reports', 'profile')
+ * @param {Object} [options.currentUser] - Datos del usuario en memoria ({ username, nombre_completo, rol })
  * @param {(sectionId: string) => void} options.onNavigate - Callback al seleccionar una sección
+ * @param {() => void} [options.onLogout] - Callback de cierre de sesión
  * @returns {HTMLElement}
  */
-export function renderAdminNavbar({ activeSectionId = 'devices', onNavigate } = {}) {
-  const sidebar = document.createElement('aside');
-  sidebar.className = 'admin-navbar';
-  sidebar.setAttribute('aria-label', 'Navegación principal del panel de administración');
+export function renderAdminNavbar({ activeSectionId = 'devices', currentUser = null, onNavigate, onLogout } = {}) {
+  const header = document.createElement('header');
+  header.className = 'admin-navbar';
+  header.setAttribute('aria-label', 'Navegación principal del panel de administración');
 
-  // 1. Parte superior: Logotipo circular oficial de VIGÍA con su propio tooltip
+  // 1. Logotipo circular oficial de VIGÍA a la izquierda
   const brandTooltipId = 'admin-nav-tooltip-brand';
   const brandLink = document.createElement('a');
   brandLink.href = '#devices';
   brandLink.className = 'admin-nav-brand';
-  brandLink.setAttribute('aria-label', 'VIGÍA Vision Systems — Ir a Gestión de Dispositivos');
+  brandLink.setAttribute('aria-label', 'VIGÍA Vision Systems — Ir al inicio');
   brandLink.setAttribute('aria-describedby', brandTooltipId);
   brandLink.addEventListener('click', (event) => {
     event.preventDefault();
     if (typeof onNavigate === 'function') {
-      onNavigate('devices');
+      onNavigate(currentUser?.rol === 'GUARDIA' ? 'cameras' : 'devices');
     }
   });
 
@@ -240,12 +248,12 @@ export function renderAdminNavbar({ activeSectionId = 'devices', onNavigate } = 
   brandTooltip.id = brandTooltipId;
   brandTooltip.setAttribute('role', 'tooltip');
   brandTooltip.className = 'admin-nav-tooltip';
-  brandTooltip.textContent = 'VIGÍA — Inicio (Dispositivos)';
+  brandTooltip.textContent = 'Inicio';
 
   brandLink.appendChild(brandImg);
   brandLink.appendChild(brandTooltip);
 
-  // 2. Parte central: Navegación principal (Dispositivos, Cámaras, Alertas, Informes)
+  // 2. Navegación central con cuatro secciones (Dispositivos, Cámaras, Alertas, Informes)
   const nav = document.createElement('nav');
   nav.className = 'admin-nav-primary';
   nav.setAttribute('aria-label', 'Secciones del administrador');
@@ -264,25 +272,78 @@ export function renderAdminNavbar({ activeSectionId = 'devices', onNavigate } = 
     ul.appendChild(li);
   });
 
-  // En móvil el botón de Perfil forma parte de la fila de acceso rápido;
-  // en escritorio se sitúa en el pie de la barra lateral mediante CSS flex.
-  const profileItem = ADMIN_SPECIAL_ROUTES.profile;
-  const profileFooter = document.createElement('div');
-  profileFooter.className = 'admin-nav-footer';
+  nav.appendChild(ul);
 
+  // 3. Extremo derecho: Contenedor con información de usuario, Perfil y Logout
+  const userActions = document.createElement('div');
+  userActions.className = 'admin-nav-user-actions';
+
+  if (currentUser) {
+    const userChip = document.createElement('div');
+    userChip.className = 'admin-nav-user-chip';
+    userChip.setAttribute('aria-label', `Usuario: ${currentUser.nombre_completo || currentUser.username}`);
+
+    const userName = document.createElement('span');
+    userName.className = 'admin-nav-username';
+    userName.textContent = currentUser.nombre_completo || currentUser.username;
+
+    const roleBadge = document.createElement('span');
+    const rolClean = String(currentUser.rol || 'USUARIO').toUpperCase();
+    roleBadge.className = `admin-nav-role-badge admin-nav-role-badge--${rolClean.toLowerCase()}`;
+    roleBadge.textContent = rolClean;
+
+    userChip.appendChild(userName);
+    userChip.appendChild(roleBadge);
+    userActions.appendChild(userChip);
+  }
+
+  // Acceso al Perfil
+  const profileItem = ADMIN_SPECIAL_ROUTES.profile;
   const profileBtn = createNavIconButton(
     profileItem,
     activeSectionId === 'profile',
     onNavigate,
     'admin-profile-btn'
   );
-  profileFooter.appendChild(profileBtn);
+  userActions.appendChild(profileBtn);
 
-  nav.appendChild(ul);
+  // Botón de Cerrar Sesión en la barra superior (Fase 3B)
+  const logoutBtn = document.createElement('button');
+  logoutBtn.type = 'button';
+  logoutBtn.className = 'admin-nav-btn admin-logout-btn';
+  logoutBtn.id = 'admin-logout-btn';
+  logoutBtn.setAttribute('aria-label', 'Cerrar Sesión');
+  const logoutTooltipId = 'admin-nav-tooltip-logout';
+  logoutBtn.setAttribute('aria-describedby', logoutTooltipId);
 
-  sidebar.appendChild(brandLink);
-  sidebar.appendChild(nav);
-  sidebar.appendChild(profileFooter);
+  const logoutSvg = createNavSvgIcon('logout');
 
-  return sidebar;
+  const logoutMobileLabel = document.createElement('span');
+  logoutMobileLabel.className = 'admin-nav-mobile-label';
+  logoutMobileLabel.textContent = 'Salir';
+
+  const logoutTooltip = document.createElement('span');
+  logoutTooltip.id = logoutTooltipId;
+  logoutTooltip.setAttribute('role', 'tooltip');
+  logoutTooltip.className = 'admin-nav-tooltip';
+  logoutTooltip.textContent = 'Cerrar Sesión';
+
+  logoutBtn.appendChild(logoutSvg);
+  logoutBtn.appendChild(logoutMobileLabel);
+  logoutBtn.appendChild(logoutTooltip);
+
+  logoutBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (typeof onLogout === 'function') {
+      onLogout();
+    }
+  });
+
+  userActions.appendChild(logoutBtn);
+
+  header.appendChild(brandLink);
+  header.appendChild(nav);
+  header.appendChild(userActions);
+
+  return header;
 }

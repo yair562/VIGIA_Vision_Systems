@@ -76,9 +76,10 @@ function setLoadingState(submitBtn, inputs, isLoading) {
  * Inicializa los eventos y validaciones de la vista de Inicio de Sesión.
  * @param {Document | HTMLElement} root
  * @param {Object} [options]
- * @param {(authData: Object) => void} [options.onLoginSuccess]
+ * @param {(userData: Object) => void} [options.onLoginSuccess]
+ * @param {Object} [options.apiService]
  */
-export function initLoginView(root = document, { onLoginSuccess } = {}) {
+export function initLoginView(root = document, { onLoginSuccess, apiService } = {}) {
   const form = root.querySelector('#login-form');
   const usernameInput = root.querySelector('#username-input');
   const passwordInput = root.querySelector('#password-input');
@@ -144,42 +145,51 @@ export function initLoginView(root = document, { onLoginSuccess } = {}) {
 
     (async () => {
       try {
-        const resp = await fetch('/api/v1/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: rawUsername,
-            password: rawPassword
-          })
-        });
+        let user;
+        if (apiService && typeof apiService.login === 'function') {
+          user = await apiService.login(rawUsername, rawPassword);
+        } else {
+          const resp = await fetch('/api/v1/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              username: rawUsername,
+              password: rawPassword
+            })
+          });
 
-        const data = await resp.json().catch(() => ({}));
-        // Por seguridad no se conserva la contraseña en memoria ni en el formulario
+          const data = await resp.json().catch(() => ({}));
+          if (!resp.ok || !data.ok || !data.user) {
+            const errorMsg = data.message || 'Credenciales de acceso inválidas.';
+            const err = new Error(errorMsg);
+            err.status = resp.status;
+            throw err;
+          }
+          user = data.user;
+        }
+
+        // Por seguridad nunca se conserva la contraseña en memoria ni en el formulario
         passwordInput.value = '';
         setLoadingState(submitBtn, inputs, false);
 
-        if (!resp.ok || !data.ok) {
-          const errMsg = data.message || 'Credenciales inválidas o servicio no disponible.';
-          renderFeedback(feedbackEl, errMsg, 'error');
-          return;
-        }
-
-        // Sesión confirmada por el servidor
+        // Sesión confirmada por el servidor (sin token en el cliente)
         if (typeof onLoginSuccess === 'function') {
-          onLoginSuccess(data);
+          onLoginSuccess(user);
         } else {
           renderFeedback(
             feedbackEl,
-            `Sesión iniciada como ${data.user?.nombre_completo || data.user?.username}.`,
+            `Sesión iniciada como ${user?.nombre_completo || user?.username}.`,
             'info'
           );
         }
-      } catch (netErr) {
+      } catch (err) {
         passwordInput.value = '';
         setLoadingState(submitBtn, inputs, false);
-        renderFeedback(feedbackEl, 'Error de conexión con el servidor de autenticación.', 'error');
+        const errMsg = err.message || 'Error de conexión con el servidor de autenticación.';
+        renderFeedback(feedbackEl, errMsg, 'error');
       }
     })();
   });

@@ -59,11 +59,11 @@ VIGIA_Dashboard/
 │       ├── services/
 │       │   └── device-service.js                 # Interfaz de servicio de dispositivos desacoplada
 │       ├── components/
-│       │   ├── admin-navbar.js                   # Barra de navegación superior reutilizable del administrador
+│       │   ├── admin-navbar.js                   # Barra de navegación horizontal superior minimalista con iconos SVG (VO-02A-R2)
 │       │   └── devices-table.js                  # Cuadrícula de 5 columnas con bloques rectangulares grises
 │       └── views/
 │           ├── login-view.js                     # Controlador de Inicio de Sesión (Sprint 01)
-│           └── devices-view.js                   # Vista de Gestión de Dispositivos (Sprint 02A)
+│           └── devices-view.js                   # Vista de Gestión de Dispositivos y área de trabajo amplia (Sprint 02A)
 └── Docs/
     ├── README.md                                 # Índice de la documentación exclusiva del frontend
     ├── PLAN_DESARROLLO_FRONTEND.md               # Hoja de ruta y planificación por sprints del frontend
@@ -71,9 +71,13 @@ VIGIA_Dashboard/
     ├── SISTEMA_DISENO.md                         # Tokens visuales, Modo Claro/Oscuro, componentes y responsive
     ├── NAVEGACION_Y_RUTAS.md                     # Secciones administrativas, rutas e identificadores
     ├── MODO_DEMO.md                              # Datos sintéticos, separación DEMO/API y previsualización
+    ├── auditorias/
+    │   ├── VO-02A_AUDITORIA_GESTION_DISPOSITIVOS.md
+    │   └── VO-02A-R1_CORRECCION_OBSERVACIONES.md
     └── sprints/
-        ├── SPRINT_01_INFRAESTRUCTURA_Y_LOGIN.md  # Informe técnico y evidencias del Sprint 01
-        └── SPRINT_02A_GESTION_DISPOSITIVOS.md    # Informe técnico y evidencias del Sprint 02A
+        ├── SPRINT_01_INFRAESTRUCTURA_Y_LOGIN.md       # Informe técnico y evidencias del Sprint 01
+        ├── SPRINT_02A_GESTION_DISPOSITIVOS.md         # Informe técnico y evidencias del Sprint 02A
+        └── SPRINT_02A_R2_REFINAMIENTO_VISUAL.md       # Informe de refinamiento visual y navegación minimalista (VO-02A-R2)
 ```
 
 ---
@@ -141,9 +145,10 @@ El frontend se sirve de forma integrada desde el servicio Flask de `VIGIA_API` (
 - **Sprints completados:**
   - **Sprint 01 — Infraestructura visual y pantalla de inicio de sesión (COMPLETADO).**
   - **Sprint 02A — Interfaz de Gestión de Dispositivos (Administrador — Modo DEMO) (COMPLETADO).**
+  - **VO-02A-R1 y VO-02A-R2 — Remediación de auditoría y refinamiento visual de navegación minimalista (COMPLETADO).**
 - **Funcionalidades disponibles:**
   - Pantalla de Inicio de Sesión fiel al wireframe aprobado, integrada con el logotipo oficial `producto_figura_dark.svg`.
-  - Estructura general del Administrador, barra de navegación superior reutilizable (`Dispositivos`, `Cámaras`, `Alertas`, `Informes`, `Perfil`) y pantalla **Gestión de Dispositivos** con cuadrícula de 5 columnas, 7 registros sintéticos DEMO, botones `Visualización de Cámaras` y `Agregar Dispositivos` (con formulario provisional DEMO) y soporte para Modo Claro y Modo Oscuro.
+  - Estructura general del Administrador conservando la **barra de navegación horizontal superior** (`header.admin-navbar`) con logotipo a la izquierda, 4 iconos SVG minimalistas centrales (`Dispositivos`, `Cámaras`, `Alertas`, `Informes`), icono SVG de `Perfil` a la derecha, tooltips discretos debajo de cada icono y área de trabajo amplia (`max-width: 1720px`) para **Gestión de Dispositivos** con cuadrícula de 5 columnas, 7 registros sintéticos DEMO, botones `Visualización de Cámaras`, `Agregar Dispositivos` y `Salir de DEMO / Ir al Inicio de Sesión`, en Modo Claro y Modo Oscuro.
   - Adaptación responsiva en móvil (`< 640px`), tableta (`640px – 1023px`) y escritorio (`>= 1024px`).
 
 ---
@@ -158,3 +163,4 @@ El frontend se sirve de forma integrada desde el servicio Flask de `VIGIA_API` (
 - [Modo DEMO (`Docs/MODO_DEMO.md`)](./Docs/MODO_DEMO.md)
 - [Reporte del Sprint 01 (`Docs/sprints/SPRINT_01_INFRAESTRUCTURA_Y_LOGIN.md`)](./Docs/sprints/SPRINT_01_INFRAESTRUCTURA_Y_LOGIN.md)
 - [Reporte del Sprint 02A (`Docs/sprints/SPRINT_02A_GESTION_DISPOSITIVOS.md`)](./Docs/sprints/SPRINT_02A_GESTION_DISPOSITIVOS.md)
+- [Refinamiento Visual VO-02A-R2 (`Docs/sprints/SPRINT_02A_R2_REFINAMIENTO_VISUAL.md`)](./Docs/sprints/SPRINT_02A_R2_REFINAMIENTO_VISUAL.md)

@@ -40,12 +40,13 @@ export function isFrontendDemoEnabled(doc = document) {
 }
 
 /**
- * Extrae el identificador de ruta solicitada y verifica si el modo DEMO está autorizado.
+ * Extrae el identificador de ruta solicitada y verifica si el modo DEMO o la sesión autenticada están autorizados.
  * @param {Object} options
- * @param {boolean} options.demoEnabled - Estado de habilitación del modo DEMO
+ * @param {boolean} [options.demoEnabled] - Estado de habilitación del modo DEMO
+ * @param {boolean} [options.isAuthenticated] - Estado de autenticación del usuario en memoria
  * @returns {{ routeId: string, blockedDemoAttempt: boolean, requestedRoute: string | null }}
  */
-export function resolveRouteState({ demoEnabled = isFrontendDemoEnabled() } = {}) {
+export function resolveRouteState({ demoEnabled = isFrontendDemoEnabled(), isAuthenticated = false } = {}) {
   const rawHash = (window.location.hash || '').replace(/^#\/?/, '').trim().toLowerCase();
   const params = new URLSearchParams(window.location.search);
   const queryWantsDemo = params.get('demo') === 'admin' || params.get('view') === 'devices';
@@ -57,7 +58,8 @@ export function resolveRouteState({ demoEnabled = isFrontendDemoEnabled() } = {}
       : null;
 
   if (requestedAdminRoute) {
-    if (!demoEnabled) {
+    // Si el usuario está autenticado en memoria o si el modo DEMO está habilitado por el servidor, permitir acceso
+    if (!isAuthenticated && !demoEnabled) {
       return {
         routeId: 'login',
         blockedDemoAttempt: true,
@@ -103,10 +105,13 @@ export function navigateToRoute(routeId) {
 /**
  * Inicializa el observador de rutas y notifica cada cambio.
  * @param {(routeId: string, routeState: { routeId: string, blockedDemoAttempt: boolean, requestedRoute: string | null }) => void} onRouteChange
+ * @param {Object} [options]
+ * @param {() => boolean} [options.getAuthState] - Función que devuelve si el usuario está autenticado en memoria
  */
-export function initRouter(onRouteChange) {
+export function initRouter(onRouteChange, { getAuthState } = {}) {
   const handleRoute = () => {
-    const state = resolveRouteState();
+    const isAuth = typeof getAuthState === 'function' ? Boolean(getAuthState()) : false;
+    const state = resolveRouteState({ isAuthenticated: isAuth });
     if (typeof onRouteChange === 'function') {
       onRouteChange(state.routeId, state);
     }
@@ -118,6 +123,7 @@ export function initRouter(onRouteChange) {
   return {
     navigateTo: navigateToRoute,
     getCurrentRoute: resolveCurrentRoute,
-    isDemoEnabled: isFrontendDemoEnabled
+    isDemoEnabled: isFrontendDemoEnabled,
+    notifyAuthChanged: handleRoute
   };
 }

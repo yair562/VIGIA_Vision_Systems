@@ -1,0 +1,11 @@
+{
+  "generation_id": "gen_20261102_054809_533691d9",
+  "target_ip": "127.0.0.1",
+  "ca_signed": true,
+  "ca_cert_file": "vigia_root_ca.crt",
+  "cert_file": "vigia_cert.pem",
+  "key_file": "vigia_key.pem",
+  "cert_relpath": "generations/gen_20261102_054809_533691d9/vigia_cert.pem",
+  "key_relpath": "generations/gen_20261102_054809_533691d9/vigia_key.pem",
+  "created_at": "2026-11-02T05:48:09.818876+00:00"
+}

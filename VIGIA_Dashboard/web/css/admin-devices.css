@@ -1,6 +1,6 @@
 /* ==========================================================================
    VIGÍA Vision Systems — Interfaz de Administración: Gestión de Dispositivos
-   Sprint 02A
+   Sprint 02A + Refinamiento Visual VO-02A-R2 (Navegación Superior Minimalista)
    ========================================================================== */
 
 /* Fondo general gris muy claro / blanco humo (o #121212 en modo oscuro) */
@@ -10,39 +10,48 @@
   width: 100%;
   background-color: var(--admin-page-bg);
   color: var(--admin-text-primary);
-  padding: clamp(0.75rem, 2.5vw, 2rem);
+  padding: clamp(0.65rem, 1.8vw, 1.35rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 }
 
-/* 3.1. Contenedor principal: tarjeta gris claro con bordes redondeados (~20px) */
+/* ==========================================================================
+   3.1. Contenedor principal: tarjeta gris claro con bordes redondeados (~20px)
+   Aprovecha el ancho disponible (hasta --admin-max-width: 1720px)
+   ========================================================================== */
 .admin-shell {
   width: 100%;
   max-width: var(--admin-max-width);
   background-color: var(--admin-shell-bg);
   border-radius: var(--admin-shell-radius);
-  padding: clamp(1rem, 2.5vw, 1.75rem);
+  padding: clamp(0.85rem, 1.8vw, 1.35rem);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 /* ==========================================================================
-   3.2. Barra de navegación superior reutilizable
+   3.2. Barra de navegación horizontal superior minimalista
+   ┌──────────────────────────────────────────────────────────────┐
+   │ LOGO       Dispositivos  Cámaras  Alertas  Informes   Perfil │
+   └──────────────────────────────────────────────────────────────┘
    ========================================================================== */
 .admin-navbar {
   width: 100%;
+  min-height: 50px;
+  padding: 0.15rem 0.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 /* 1. Logotipo circular a la izquierda */
 .admin-nav-brand {
+  position: relative;
   width: var(--admin-circle-size);
   height: var(--admin-circle-size);
   border-radius: 50%;
@@ -51,9 +60,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.55rem;
+  padding: 0.5rem;
   flex-shrink: 0;
   text-decoration: none;
+  transition: opacity 160ms ease;
+}
+
+.admin-nav-brand:hover {
+  opacity: 0.92;
 }
 
 .admin-nav-brand-img {
@@ -62,90 +76,209 @@
   object-fit: contain;
 }
 
-/* 2. Cuatro botones de navegación centrados */
+/* 2. Contenedor central de las 4 secciones de navegación */
+.admin-nav-primary {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .admin-nav-list {
   list-style: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.5rem, 1.5vw, 1rem);
-  flex-wrap: wrap;
-  flex: 1 1 auto;
+  gap: clamp(0.6rem, 2.2vw, 1.5rem);
+  margin: 0;
+  padding: 0;
+  flex-wrap: nowrap;
 }
 
 .admin-nav-item {
   display: inline-flex;
 }
 
-.admin-nav-btn {
-  min-width: 118px;
-  min-height: 40px;
-  padding: 0.45rem 1.25rem;
-  border-radius: var(--admin-pill-radius);
-  border: 2px solid transparent;
-  background-color: var(--admin-btn-bg);
-  color: var(--admin-text-primary);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  text-align: center;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.admin-nav-btn:hover {
-  background-color: var(--admin-btn-bg-hover);
-}
-
-/* Sección activa claramente identificada */
-.admin-nav-btn[aria-current="page"],
-.admin-nav-btn--active {
-  background-color: var(--admin-btn-bg-active);
-  border-color: var(--admin-text-primary);
-  font-weight: var(--font-weight-bold);
-}
-
-/* 3. Botón circular de Perfil a la derecha */
+/* 3. Botones de icono minimalistas (Dispositivos, Cámaras, Alertas, Informes y Perfil) */
+.admin-nav-btn,
 .admin-profile-btn {
-  width: var(--admin-circle-size);
-  height: var(--admin-circle-size);
-  border-radius: 50%;
-  border: 2px solid transparent;
-  background-color: var(--admin-btn-bg);
-  color: var(--admin-text-primary);
-  font-size: 0.75rem;
-  font-weight: var(--font-weight-bold);
+  position: relative;
+  width: var(--admin-nav-btn-size);
+  height: var(--admin-nav-btn-size);
+  min-width: var(--admin-nav-btn-size);
+  min-height: var(--admin-nav-btn-size);
+  padding: 0;
+  border-radius: var(--admin-nav-btn-radius);
+  border: none;
+  background-color: transparent;
+  color: var(--admin-nav-icon-color);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 0.25rem;
+  transition: background-color 170ms ease, color 170ms ease;
 }
 
+.admin-nav-btn:hover,
 .admin-profile-btn:hover {
-  background-color: var(--admin-btn-bg-hover);
+  background-color: var(--admin-nav-icon-hover-bg);
+  color: var(--admin-nav-icon-hover-color);
 }
 
+/* Estado activo: contraste nítido + fondo sutil + barra indicadora inferior */
+.admin-nav-btn[aria-current="page"],
+.admin-nav-btn--active,
 .admin-profile-btn[aria-current="page"],
 .admin-profile-btn--active {
-  background-color: var(--admin-btn-bg-active);
-  border-color: var(--admin-text-primary);
+  background-color: var(--admin-nav-icon-active-bg);
+  color: var(--admin-nav-icon-active-color);
+}
+
+.admin-nav-btn:disabled,
+.admin-profile-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Indicador geométrico inferior discreto para mostrar la sección activa (no depende solo del color) */
+.admin-nav-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 18px;
+  height: 2.5px;
+  border-radius: 9999px;
+  background-color: transparent;
+  transform: translateX(-50%) scaleX(0.3);
+  opacity: 0;
+  transition: opacity 170ms ease, transform 170ms ease, background-color 170ms ease;
+  pointer-events: none;
+}
+
+.admin-nav-btn[aria-current="page"] .admin-nav-indicator,
+.admin-nav-btn--active .admin-nav-indicator,
+.admin-profile-btn[aria-current="page"] .admin-nav-indicator,
+.admin-profile-btn--active .admin-nav-indicator {
+  background-color: var(--admin-nav-active-indicator);
+  opacity: 1;
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Icono SVG minimalista (22x22px) */
+.admin-nav-icon {
+  width: var(--admin-nav-icon-size);
+  height: var(--admin-nav-icon-size);
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Etiqueta corta visible en móvil (< 640px) */
+.admin-nav-mobile-label {
+  display: none;
 }
 
 /* ==========================================================================
-   3.3. Área de contenido: tarjeta interna blanca con bordes redondeados
+   Tooltips discretos debajo del icono (150-220ms con opacity y transform)
+   ========================================================================== */
+.admin-nav-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background-color: var(--admin-tooltip-bg);
+  color: var(--admin-tooltip-text);
+  border: 1px solid var(--admin-tooltip-border);
+  box-shadow: var(--admin-tooltip-shadow);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+  z-index: 40;
+}
+
+/* Evitar que el tooltip del perfil en el extremo derecho o del logo izquierdo se salga del borde */
+.admin-nav-brand .admin-nav-tooltip {
+  left: 0;
+  transform: translateX(0) translateY(-4px);
+}
+
+.admin-profile-btn .admin-nav-tooltip {
+  left: auto;
+  right: 0;
+  transform: translateX(0) translateY(-4px);
+}
+
+.admin-nav-btn:hover .admin-nav-tooltip,
+.admin-nav-btn:focus-visible .admin-nav-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.admin-nav-brand:hover .admin-nav-tooltip,
+.admin-nav-brand:focus-visible .admin-nav-tooltip,
+.admin-profile-btn:hover .admin-nav-tooltip,
+.admin-profile-btn:focus-visible .admin-nav-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0) translateY(0);
+}
+
+/* Respeto estricto a prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .admin-nav-btn,
+  .admin-profile-btn,
+  .admin-nav-brand,
+  .admin-nav-indicator,
+  .admin-nav-tooltip {
+    transition: none !important;
+  }
+
+  .admin-nav-tooltip,
+  .admin-nav-btn:hover .admin-nav-tooltip,
+  .admin-nav-btn:focus-visible .admin-nav-tooltip {
+    transform: translateX(-50%);
+  }
+
+  .admin-nav-brand .admin-nav-tooltip,
+  .admin-profile-btn .admin-nav-tooltip,
+  .admin-nav-brand:hover .admin-nav-tooltip,
+  .admin-nav-brand:focus-visible .admin-nav-tooltip,
+  .admin-profile-btn:hover .admin-nav-tooltip,
+  .admin-profile-btn:focus-visible .admin-nav-tooltip {
+    transform: translateX(0);
+  }
+}
+
+/* En dispositivos puramente táctiles sin cursor hover, evitar que el tooltip quede pegado */
+@media (hover: none) {
+  .admin-nav-btn:hover .admin-nav-tooltip,
+  .admin-profile-btn:hover .admin-nav-tooltip,
+  .admin-nav-brand:hover .admin-nav-tooltip {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* ==========================================================================
+   3.3. Área de contenido: tarjeta interna blanca proporcionada y ajustada al contenido
    ========================================================================== */
 .admin-content-card {
   width: 100%;
   background-color: var(--admin-panel-bg);
   border-radius: var(--admin-panel-radius);
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 .admin-card-header {
@@ -353,7 +486,7 @@
 .admin-action-pill-btn {
   min-width: 210px;
   min-height: 44px;
-  padding: 0.6rem 1.75rem;
+  padding: 0.55rem 1.65rem;
   border-radius: var(--admin-pill-radius);
   border: 1.5px solid transparent;
   background-color: var(--admin-btn-bg);
@@ -378,7 +511,7 @@
 /* Área de notificación en línea dentro del módulo administrativo */
 .admin-inline-notice {
   width: 100%;
-  padding: 0.85rem 1.15rem;
+  padding: 0.75rem 1.1rem;
   border-radius: 12px;
   border: 1.5px solid var(--status-info-border);
   background-color: var(--status-info-bg);
@@ -409,17 +542,17 @@
 }
 
 /* ==========================================================================
-   Panel Provisional DEMO: "Agregar Dispositivos" y "Detalle Provisional"
+   Panel Provisional DEMO: "Agregar Dispositivos"
    ========================================================================== */
 .admin-provisional-panel {
   width: 100%;
   background-color: var(--admin-data-block-bg);
   border-radius: var(--admin-column-radius);
-  padding: 1.25rem;
+  padding: 1.15rem;
   border: 1.5px solid var(--admin-border-subtle);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
 }
 
 .admin-provisional-header {
@@ -476,22 +609,29 @@
   flex-wrap: wrap;
 }
 
-/* Vista de sección en desarrollo para Cámaras, Alertas, Informes, Perfil y Visor */
+/* ==========================================================================
+   8. Compactar la tarjeta «Sección en desarrollo» (VO-02A-R2)
+   Ajustada a su contenido real, sin padding excesivo ni min-height arbitrario
+   ========================================================================== */
 .admin-under-construction {
-  padding: 2rem 1.25rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0.15rem auto;
+  padding: 1.15rem 1.35rem;
   background-color: var(--admin-data-block-bg);
   border-radius: var(--admin-column-radius);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
+  gap: 0.6rem;
 }
 
 .admin-under-construction-text {
-  max-width: 560px;
+  max-width: 520px;
   color: var(--admin-text-secondary);
   font-size: var(--font-size-body);
+  line-height: 1.45;
 }
 
 /* ==========================================================================
@@ -499,7 +639,7 @@
    ========================================================================== */
 .admin-footer {
   width: 100%;
-  padding-top: var(--space-xs);
+  padding-top: var(--space-2xs);
   text-align: center;
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-medium);
@@ -508,6 +648,7 @@
 
 /* ==========================================================================
    Responsividad: Tableta (640px a 1023px)
+   Conserva la barra horizontal superior intacta y optimiza espaciados
    ========================================================================== */
 @media (max-width: 1023px) {
   .devices-table {
@@ -527,25 +668,73 @@
 
 /* ==========================================================================
    Responsividad: Móvil (< 640px)
-   Adaptación a tarjetas de registro para no comprimir las 5 columnas
+   - Conserva la barra de navegación en la parte superior
+   - Mantiene áreas táctiles >= 44x44px con iconos SVG + etiquetas cortas visibles
+   - Transforma la tabla de 5 columnas a tarjetas legibles sin scroll horizontal
    ========================================================================== */
 @media (max-width: 639px) {
   .admin-navbar {
-    justify-content: space-between;
+    gap: 0.35rem;
   }
 
   .admin-nav-list {
-    order: 3;
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
 
-  .admin-nav-btn {
-    width: 100%;
-    min-width: 0;
-    padding: 0.5rem 0.75rem;
+  .admin-nav-btn,
+  .admin-profile-btn {
+    min-width: 46px;
+    min-height: 46px;
+    width: auto;
+    height: auto;
+    padding: 0.25rem 0.35rem;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .admin-nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Etiqueta corta visible en móvil debajo de cada icono para no depender de hover */
+  .admin-nav-mobile-label {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .admin-nav-btn[aria-current="page"] .admin-nav-mobile-label,
+  .admin-nav-btn--active .admin-nav-mobile-label,
+  .admin-profile-btn[aria-current="page"] .admin-nav-mobile-label,
+  .admin-profile-btn--active .admin-nav-mobile-label {
+    font-weight: var(--font-weight-bold);
+  }
+
+  .admin-nav-indicator {
+    bottom: 2px;
+    width: 14px;
+    height: 2px;
+  }
+
+  /* En pantallas muy estrechas (<= 380px), distribuir la fila de 4 iconos debajo del logo y perfil manteniendo la barra arriba */
+  @media (max-width: 380px) {
+    .admin-navbar {
+      flex-wrap: wrap;
+    }
+
+    .admin-nav-primary {
+      order: 3;
+      width: 100%;
+    }
+
+    .admin-nav-list {
+      width: 100%;
+      justify-content: space-around;
+    }
   }
 
   /* Transformación de la tabla de 5 columnas a tarjetas legibles en móvil */
@@ -609,3 +798,302 @@
   }
 }
 
+/* ==========================================================================
+   Fase 3B — Barra Superior: Acciones de Usuario y Cerrar Sesión
+   ========================================================================== */
+.admin-nav-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.admin-nav-user-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 0.25rem;
+  line-height: 1.2;
+}
+
+.admin-nav-username {
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--admin-text-primary);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-nav-role-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  margin-top: 0.15rem;
+}
+
+.admin-nav-role-badge--administrador {
+  background-color: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+}
+
+.admin-nav-role-badge--guardia {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.admin-nav-role-badge--auditor {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.admin-logout-btn:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* ==========================================================================
+   Fase 3B — Monitoreo de Cámaras Reales (PostgreSQL 16)
+   ========================================================================== */
+.admin-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #059669;
+  background-color: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 9999px;
+  padding: 0.2rem 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.camera-summary-bar {
+  font-size: var(--font-size-small);
+  color: var(--admin-text-secondary);
+  margin-bottom: 1rem;
+}
+
+.camera-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.camera-card {
+  background-color: var(--admin-card-bg);
+  border: 1px solid var(--admin-border-subtle);
+  border-radius: var(--border-radius-card);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.camera-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.camera-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--admin-border-subtle);
+  padding-bottom: 0.65rem;
+}
+
+.camera-card-title {
+  font-size: 1.05rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--admin-text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.camera-code-tag {
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text-secondary);
+  background-color: var(--admin-data-block-bg);
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--border-radius-pill);
+}
+
+.camera-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.camera-badge--active {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.camera-badge--inactive {
+  background-color: rgba(107, 114, 128, 0.15);
+  color: #4b5563;
+}
+
+.camera-card-areas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+}
+
+.camera-areas-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--admin-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.25rem 0;
+}
+
+.camera-no-areas {
+  font-size: var(--font-size-small);
+  color: var(--admin-text-secondary);
+  font-style: italic;
+  margin: 0;
+}
+
+.camera-areas-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.camera-area-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--admin-data-block-bg);
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--border-radius-input);
+  font-size: 0.825rem;
+}
+
+.camera-area-code {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--admin-text-primary);
+}
+
+.camera-area-name {
+  color: var(--admin-text-primary);
+  flex: 1;
+}
+
+.camera-area-type {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.camera-area-type--entrada {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #2563eb;
+}
+
+.camera-area-type--salida {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+.camera-area-type--bidireccional {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #7c3aed;
+}
+
+.camera-card-footer {
+  font-size: 0.72rem;
+  color: var(--admin-text-secondary);
+  font-family: monospace;
+  border-top: 1px solid var(--admin-border-subtle);
+  padding-top: 0.5rem;
+}
+
+/* ==========================================================================
+   Estados de Cámaras (Cargando, Vacío, 401, 403, 5xx)
+   ========================================================================== */
+.camera-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  gap: 1rem;
+}
+
+.camera-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3.5px solid var(--admin-border-subtle);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: camera-spin 0.8s linear infinite;
+}
+
+@keyframes camera-spin {
+  to { transform: rotate(360deg); }
+}
+
+.camera-state-icon {
+  color: var(--admin-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.camera-state--auth-error .camera-state-icon,
+.camera-state--server-error .camera-state-icon {
+  color: #ef4444;
+}
+
+.camera-state--forbidden .camera-state-icon {
+  color: #f59e0b;
+}
+
+.camera-empty-title,
+.camera-error-title {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--admin-text-primary);
+  margin: 0;
+}
+
+.camera-empty-desc,
+.camera-error-desc {
+  max-width: 500px;
+  font-size: 0.925rem;
+  color: var(--admin-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 639px) {
+  .admin-nav-username {
+    display: none;
+  }
+}

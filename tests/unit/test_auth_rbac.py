@@ -31,6 +31,7 @@ Cobertura requerida:
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 import unittest
@@ -53,12 +54,14 @@ from VIGIA_Core.repository.user_repository import (
     IUserRepository,
     InMemoryUserRepository,
     PsycopgUserRepository,
+    build_default_user_repository,
 )
 from VIGIA_Core.security.password_hasher import (
     DUMMY_ARGON2ID_HASH,
     hash_password,
     verify_password,
 )
+from VIGIA_Vision.config.topology_validator import AreaConfigDTO, CameraConfigDTO
 
 
 class TestArgon2PasswordHasher(unittest.TestCase):
@@ -301,11 +304,17 @@ class TestAuthRBACIntegration(unittest.TestCase):
         self.user_repo.create_user(self.auditor_user)
         self.user_repo.create_user(self.inactive_user)
 
+        self.mock_topo_repo = MagicMock()
+        self.mock_topo_repo.get_cameras.return_value = []
+        self.mock_topo_repo.get_areas.return_value = []
+
         self.app = create_ingest_app(
             user_repository=self.user_repo,
             session_manager=self.session_mgr,
             auth_service=self.auth_svc,
+            topology_repository=self.mock_topo_repo,
             auth_token="LEGACY_TEST_KEY_123",
+            allow_in_memory=True,
         )
         self.client = self.app.test_client()
 
@@ -321,24 +330,30 @@ class TestAuthRBACIntegration(unittest.TestCase):
     # -------------------------------------------------------------------------
 
     def test_pu_auth_09_login_admin_success(self):
-        """PU-AUTH-09: Login válido de administrador entrega HTTP 200 y rol ADMINISTRADOR."""
+        """PU-AUTH-09: Login válido de administrador entrega HTTP 200, rol ADMINISTRADOR y cookie HttpOnly sin token en body."""
         resp = self._login("admin", self.pwd_admin)
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertTrue(data["ok"])
-        self.assertIn("token", data)
+        self.assertNotIn("token", data)
         self.assertEqual(data["user"]["username"], "admin")
         self.assertEqual(data["user"]["rol"], "ADMINISTRADOR")
+        set_cookie = resp.headers.get("Set-Cookie", "")
+        self.assertIn("vigia_session=", set_cookie)
+        self.assertIn("HttpOnly", set_cookie)
+        self.assertIn("Path=/", set_cookie)
+        self.assertIn("SameSite=Strict", set_cookie)
 
     def test_pu_auth_10_login_guardia_success(self):
-        """PU-AUTH-10: Login válido de guardia entrega HTTP 200 y rol funcional GUARDIA."""
+        """PU-AUTH-10: Login válido de guardia entrega HTTP 200, rol funcional GUARDIA y cookie HttpOnly."""
         resp = self._login("guardia1", self.pwd_guardia)
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertTrue(data["ok"])
-        self.assertIn("token", data)
+        self.assertNotIn("token", data)
         self.assertEqual(data["user"]["username"], "guardia1")
         self.assertEqual(data["user"]["rol"], "GUARDIA")
+        self.assertIn("vigia_session=", resp.headers.get("Set-Cookie", ""))
 
     def test_pu_auth_11_wrong_password(self):
         """PU-AUTH-11: Contraseña incorrecta devuelve HTTP 401 con mensaje genérico."""
@@ -383,28 +398,20 @@ class TestAuthRBACIntegration(unittest.TestCase):
         self.assertEqual(resp.status_code, 401)
 
     def test_pu_auth_15_supervision_access_guardia(self):
-        """PU-AUTH-15: Acceso a supervisión operativo con rol GUARDIA entrega HTTP 200."""
-        login_res = self._login("guardia1", self.pwd_guardia).get_json()
-        token = login_res["token"]
+        """PU-AUTH-15: Acceso a supervisión operativo con rol GUARDIA mediante cookie entrega HTTP 200."""
+        self._login("guardia1", self.pwd_guardia)
 
-        resp = self.client.get(
-            "/api/v1/supervision/status",
-            headers={"Authorization": f"Bearer {token}"},
-        )
+        resp = self.client.get("/api/v1/supervision/status")
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertTrue(data["ok"])
         self.assertEqual(data["role"], "GUARDIA")
 
     def test_pu_auth_16_supervision_access_admin(self):
-        """PU-AUTH-16: Acceso a supervisión operativo con rol ADMINISTRADOR entrega HTTP 200."""
-        login_res = self._login("admin", self.pwd_admin).get_json()
-        token = login_res["token"]
+        """PU-AUTH-16: Acceso a supervisión operativo con rol ADMINISTRADOR mediante cookie entrega HTTP 200."""
+        self._login("admin", self.pwd_admin)
 
-        resp = self.client.get(
-            "/api/v1/supervision/status",
-            headers={"Authorization": f"Bearer {token}"},
-        )
+        resp = self.client.get("/api/v1/supervision/status")
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertTrue(data["ok"])
@@ -412,21 +419,16 @@ class TestAuthRBACIntegration(unittest.TestCase):
 
     def test_pu_auth_17_admin_access_denied_for_guardia(self):
         """PU-AUTH-17: Guardia intentando acceder a endpoints administrativos recibe HTTP 403 Forbidden."""
-        login_res = self._login("guardia1", self.pwd_guardia).get_json()
-        token = login_res["token"]
+        self._login("guardia1", self.pwd_guardia)
 
         # 1. Intentar listar usuarios
-        resp = self.client.get(
-            "/api/v1/admin/users",
-            headers={"Authorization": f"Bearer {token}"},
-        )
+        resp = self.client.get("/api/v1/admin/users")
         self.assertEqual(resp.status_code, 403)
         self.assertEqual(resp.get_json()["error"], "FORBIDDEN")
 
         # 2. Intentar crear un usuario
         resp_post = self.client.post(
             "/api/v1/admin/users",
-            headers={"Authorization": f"Bearer {token}"},
             data=json.dumps({
                 "username": "hacker_user",
                 "password": "Password123!",
@@ -439,63 +441,51 @@ class TestAuthRBACIntegration(unittest.TestCase):
 
     def test_pu_auth_18_client_role_tampering_prevented(self):
         """PU-AUTH-18: Manipulación de rol desde el cliente es ignorada (servidor manda)."""
-        login_res = self._login("guardia1", self.pwd_guardia).get_json()
-        token = login_res["token"]
+        self._login("guardia1", self.pwd_guardia)
 
-        # El cliente envía headers o parámetros pretendiendo ser ADMINISTRADOR
         resp = self.client.get(
             "/api/v1/admin/users?role=ADMINISTRADOR",
             headers={
-                "Authorization": f"Bearer {token}",
                 "X-User-Role": "ADMINISTRADOR",
                 "X-Role": "ADMINISTRADOR",
             },
         )
-        # El servidor consulta su SessionManager interno, detecta que es GUARDIA y responde 403
         self.assertEqual(resp.status_code, 403)
         self.assertEqual(resp.get_json()["error"], "FORBIDDEN")
 
     def test_pu_auth_19_session_expired(self):
         """PU-AUTH-19: Sesión con tiempo vencido es rechazada con HTTP 401."""
-        # Creamos una sesión con TTL de 1 segundo
         sess = self.session_mgr.create_session(self.admin_user, ttl_seconds=1)
-        token = sess.token
+        self.client.set_cookie("vigia_session", sess.token)
 
         time.sleep(1.1)
 
-        resp = self.client.get(
-            "/api/v1/auth/me",
-            headers={"Authorization": f"Bearer {token}"},
-        )
+        resp = self.client.get("/api/v1/auth/me")
         self.assertEqual(resp.status_code, 401)
         self.assertEqual(resp.get_json()["error"], "UNAUTHORIZED")
 
     def test_pu_auth_20_session_revocation_logout(self):
-        """PU-AUTH-20: Cierre de sesión (logout) invalida el token para peticiones posteriores."""
-        login_res = self._login("admin", self.pwd_admin).get_json()
-        token = login_res["token"]
+        """PU-AUTH-20: Cierre de sesión (logout) invalida la cookie para peticiones posteriores."""
+        self._login("admin", self.pwd_admin)
 
         # Validar que inicialmente funciona
-        me_resp = self.client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+        me_resp = self.client.get("/api/v1/auth/me")
         self.assertEqual(me_resp.status_code, 200)
 
         # Ejecutar logout
-        logout_resp = self.client.post("/api/v1/auth/logout", headers={"Authorization": f"Bearer {token}"})
+        logout_resp = self.client.post("/api/v1/auth/logout")
         self.assertEqual(logout_resp.status_code, 200)
 
         # Intento posterior debe ser 401
-        after_resp = self.client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+        after_resp = self.client.get("/api/v1/auth/me")
         self.assertEqual(after_resp.status_code, 401)
 
     def test_pu_auth_21_auditor_role_restrictions(self):
         """PU-AUTH-21: Rol AUDITOR no obtiene permisos de escritura administrativa por defecto."""
-        login_res = self._login("auditor1", self.pwd_auditor).get_json()
-        token = login_res["token"]
+        self._login("auditor1", self.pwd_auditor)
 
-        # Intentar crear usuario
         resp = self.client.post(
             "/api/v1/admin/users",
-            headers={"Authorization": f"Bearer {token}"},
             data=json.dumps({
                 "username": "nuevo_usuario",
                 "password": "Password123!",
@@ -505,6 +495,134 @@ class TestAuthRBACIntegration(unittest.TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, 403)
+
+    def test_pu_auth_22_cameras_endpoint_guardia_and_admin(self):
+        """PU-AUTH-22: GET /api/v1/cameras devuelve lista de cámaras sin uri_stream para GUARDIA y ADMINISTRADOR."""
+        cam_id = uuid4()
+        area_id = uuid4()
+        cam_dto = CameraConfigDTO(
+            id_camara=cam_id,
+            codigo="CAM-01",
+            nombre="Caseta Norte",
+            uri_stream="rtsp://secret_user:secret_pass@192.168.1.100:554/stream1",
+            activa=True,
+        )
+        area_dto = AreaConfigDTO(
+            id_area_vision=area_id,
+            id_camara=cam_id,
+            codigo="A-01",
+            nombre="Carril Entrada",
+            tipo_movimiento="ENTRADA",
+            x_min=100,
+            y_min=200,
+            x_max=800,
+            y_max=900,
+            activa=True,
+        )
+        self.mock_topo_repo.get_cameras.return_value = [cam_dto]
+        self.mock_topo_repo.get_areas.return_value = [area_dto]
+
+        # 1. Probar con GUARDIA
+        self._login("guardia1", self.pwd_guardia)
+        resp = self.client.get("/api/v1/cameras")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertTrue(data["ok"])
+        self.assertEqual(data["total"], 1)
+        cam_data = data["cameras"][0]
+        self.assertEqual(cam_data["id_camara"], str(cam_id))
+        self.assertEqual(cam_data["codigo"], "CAM-01")
+        self.assertEqual(cam_data["nombre"], "Caseta Norte")
+        # Invariante de seguridad: uri_stream NUNCA debe exponerse
+        self.assertNotIn("uri_stream", cam_data)
+        self.assertEqual(len(cam_data["areas"]), 1)
+        self.assertEqual(cam_data["areas"][0]["codigo"], "A-01")
+
+        # 2. Probar con ADMINISTRADOR
+        self._login("admin", self.pwd_admin)
+        resp_admin = self.client.get("/api/v1/cameras")
+        self.assertEqual(resp_admin.status_code, 200)
+        data_admin = resp_admin.get_json()
+        self.assertTrue(data_admin["ok"])
+        self.assertEqual(data_admin["total"], 1)
+        self.assertNotIn("uri_stream", data_admin["cameras"][0])
+
+    def test_pu_auth_23_cameras_endpoint_auditor_forbidden(self):
+        """PU-AUTH-23: GET /api/v1/cameras responde 403 Forbidden para rol AUDITOR."""
+        self._login("auditor1", self.pwd_auditor)
+        resp = self.client.get("/api/v1/cameras")
+        self.assertEqual(resp.status_code, 403)
+        data = resp.get_json()
+        self.assertEqual(data["error"], "FORBIDDEN")
+
+    def test_pu_auth_24_cameras_endpoint_unauthenticated(self):
+        """PU-AUTH-24: GET /api/v1/cameras sin cookie responde 401 Unauthorized."""
+        resp = self.client.get("/api/v1/cameras")
+        self.assertEqual(resp.status_code, 401)
+        data = resp.get_json()
+        self.assertEqual(data["error"], "UNAUTHORIZED")
+
+    def test_pu_auth_25_cameras_empty_response(self):
+        """PU-AUTH-25: GET /api/v1/cameras responde 200 con lista vacía y total: 0 si no hay cámaras."""
+        self.mock_topo_repo.get_cameras.return_value = []
+        self.mock_topo_repo.get_areas.return_value = []
+        self._login("admin", self.pwd_admin)
+        resp = self.client.get("/api/v1/cameras")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertTrue(data["ok"])
+        self.assertEqual(data["cameras"], [])
+        self.assertEqual(data["total"], 0)
+
+    def test_pu_auth_26_no_silent_fallback_to_memory(self):
+        """PU-AUTH-26: build_default_user_repository(allow_in_memory=False) falla rápido con DatabaseConnectionError ante fallo de DB."""
+        with patch.dict(os.environ, {"VIGIA_ALLOW_IN_MEMORY": "0"}):
+            with patch.object(PsycopgUserRepository, "_get_connection", side_effect=DatabaseConnectionError("Conexión rechazada a PostgreSQL")):
+                with self.assertRaises(DatabaseConnectionError):
+                    build_default_user_repository(allow_in_memory=False, connect_timeout=1)
+
+    def test_pu_auth_27_logout_idempotence(self):
+        """PU-AUTH-27: POST /api/v1/auth/logout sin sesión previa o sesión inexistente responde 200 OK y borra cookie."""
+        resp = self.client.post("/api/v1/auth/logout")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertTrue(data["ok"])
+        set_cookie = resp.headers.get("Set-Cookie", "")
+        self.assertIn("vigia_session=", set_cookie)
+        self.assertIn("Max-Age=0", set_cookie)
+
+    def test_pu_auth_28_csrf_protection(self):
+        """PU-AUTH-28: Solicitud mutacional con cookie y Origin no permitido es rechazada con HTTP 403 CSRF_ERROR."""
+        self._login("admin", self.pwd_admin)
+
+        # 1. Origin foráneo / malicioso
+        resp_malicious = self.client.post(
+            "/api/v1/admin/users",
+            data=json.dumps({
+                "username": "ataque_csrf",
+                "password": "Password123!",
+                "nombre_completo": "Ataque",
+                "rol": "OPERADOR",
+            }),
+            content_type="application/json",
+            headers={"Origin": "https://malicious-site.example.com"},
+        )
+        self.assertEqual(resp_malicious.status_code, 403)
+        self.assertEqual(resp_malicious.get_json()["error"], "CSRF_ERROR")
+
+        # 2. Origin confiable (e.g. Dashboard en http://localhost:8000)
+        resp_trusted = self.client.post(
+            "/api/v1/admin/users",
+            data=json.dumps({
+                "username": "usuario_legitimo",
+                "password": "Password123!",
+                "nombre_completo": "Legítimo",
+                "rol": "OPERADOR",
+            }),
+            content_type="application/json",
+            headers={"Origin": "http://localhost:8000"},
+        )
+        self.assertEqual(resp_trusted.status_code, 201)
 
 
 if __name__ == "__main__":
