@@ -146,6 +146,45 @@ export async function renderCamerasView({
   contentCard.appendChild(camerasSlot);
   shell.appendChild(contentCard);
 
+  // Registro de recursos activos para desmontaje limpio y protección de lifecycle
+  let viewGenerationToken = 0;
+  let isViewDestroyed = false;
+  let activePollInterval = null;
+  let isPollingInProgress = false;
+  const activeStreamImgs = [];
+
+  function cleanupActiveStreams() {
+    viewGenerationToken += 1;
+    if (activePollInterval) {
+      clearInterval(activePollInterval);
+      activePollInterval = null;
+    }
+    isPollingInProgress = false;
+    while (activeStreamImgs.length > 0) {
+      const img = activeStreamImgs.pop();
+      try {
+        img.onerror = null;
+        img.onload = null;
+        if (typeof img.removeAttribute === 'function') {
+          img.removeAttribute('src');
+        } else {
+          img.src = '';
+        }
+      } catch (_) {}
+    }
+  }
+
+  // Interceptar navegación para desmontaje limpio
+  const originalOnNavigate = onNavigate;
+  const wrappedOnNavigate = (route) => {
+    isViewDestroyed = true;
+    cleanupActiveStreams();
+    if (typeof originalOnNavigate === 'function') {
+      originalOnNavigate(route);
+    }
+  };
+  onNavigate = wrappedOnNavigate;
+
   // Pie de página
   const footer = document.createElement('footer');
   footer.className = 'admin-footer';
@@ -158,6 +197,7 @@ export async function renderCamerasView({
    * Renderiza el estado 1: Cargando
    */
   function renderLoadingState() {
+    cleanupActiveStreams();
     camerasSlot.innerHTML = '';
     const stateEl = document.createElement('div');
     stateEl.className = 'camera-state camera-state--loading';
@@ -177,11 +217,13 @@ export async function renderCamerasView({
   }
 
   /**
-   * Renderiza el estado 2: Datos disponibles (Cuadrícula de cámaras)
+   * Renderiza el estado 2: Datos disponibles (Cuadrícula de cámaras con streaming en vivo)
    * @param {Array<Object>} cameras
    * @param {number} total
    */
-  function renderDataState(cameras, total) {
+  async function renderDataState(cameras, total) {
+    cleanupActiveStreams();
+    const currentGeneration = viewGenerationToken;
     camerasSlot.innerHTML = '';
 
     const summary = document.createElement('div');
@@ -192,11 +234,16 @@ export async function renderCamerasView({
     const grid = document.createElement('div');
     grid.className = 'camera-grid';
 
+    // Mapa de elementos dinámicos por código de cámara para polling
+    const cameraCardRefs = new Map();
+
     cameras.forEach((cam) => {
       const card = document.createElement('article');
       card.className = 'camera-card';
       card.dataset.cameraId = cam.id_camara;
+      card.dataset.cameraCode = cam.codigo;
 
+      // Encabezado de la tarjeta
       const cardHead = document.createElement('header');
       cardHead.className = 'camera-card-header';
 
@@ -208,14 +255,82 @@ export async function renderCamerasView({
       camCode.className = 'camera-code-tag';
       camCode.textContent = cam.codigo;
 
-      const statusBadge = document.createElement('span');
-      statusBadge.className = cam.activa ? 'camera-badge camera-badge--active' : 'camera-badge camera-badge--inactive';
-      statusBadge.textContent = cam.activa ? 'Activa' : 'Inactiva';
+      const regBadge = document.createElement('span');
+      regBadge.className = cam.activa ? 'camera-badge camera-badge--active' : 'camera-badge camera-badge--inactive';
+      regBadge.textContent = cam.activa ? 'Activa' : 'Inactiva';
 
       cardHead.appendChild(camTitle);
       cardHead.appendChild(camCode);
-      cardHead.appendChild(statusBadge);
+      cardHead.appendChild(regBadge);
       card.appendChild(cardHead);
+
+      // --- VISOR DE STREAMING (CAM-01C / CAM-01E) ---
+      const mediaBox = document.createElement('div');
+      mediaBox.className = 'camera-card-media';
+
+      // Pastilla de estado operativo (controlada EXCLUSIVAMENTE por el backend)
+      const statusPill = document.createElement('span');
+      statusPill.className = 'camera-status-pill camera-status-pill--standby';
+      const statusDot = document.createElement('span');
+      statusDot.className = 'camera-status-dot';
+      const statusText = document.createElement('span');
+      statusText.className = 'camera-status-text';
+      statusText.textContent = 'EN ESPERA';
+      statusPill.appendChild(statusDot);
+      statusPill.appendChild(statusText);
+      mediaBox.appendChild(statusPill);
+
+      // Indicador independiente de error de reproducción dentro del visor (CAM-01E-01)
+      const playbackErrorOverlay = document.createElement('div');
+      playbackErrorOverlay.className = 'camera-playback-error';
+      playbackErrorOverlay.hidden = true;
+      const playbackBadge = document.createElement('span');
+      playbackBadge.className = 'camera-playback-badge';
+      playbackBadge.textContent = 'ERROR DE REPRODUCCIÓN';
+      const playbackMsg = document.createElement('span');
+      playbackMsg.textContent = 'No se pudo cargar el flujo de video en este navegador.';
+      playbackErrorOverlay.appendChild(playbackBadge);
+      playbackErrorOverlay.appendChild(playbackMsg);
+      mediaBox.appendChild(playbackErrorOverlay);
+
+      // Imagen para visualización MJPEG (/api/v1/cameras/<codigo>/stream)
+      const streamImg = document.createElement('img');
+      streamImg.className = 'camera-stream-img';
+      streamImg.alt = `Transmisión en vivo de ${cam.nombre || cam.codigo}`;
+      streamImg.src = apiService.getCameraLiveStreamUrl(cam.codigo);
+      activeStreamImgs.push(streamImg);
+
+      // Manejo independiente de errores de reproducción sin alterar la pastilla operativa
+      streamImg.addEventListener('error', () => {
+        playbackErrorOverlay.hidden = false;
+      });
+
+      streamImg.addEventListener('load', () => {
+        playbackErrorOverlay.hidden = true;
+      });
+
+      mediaBox.appendChild(streamImg);
+
+      // Franja inferior de detecciones YOLO (CAM-01E-02)
+      const detectionsOverlay = document.createElement('div');
+      detectionsOverlay.className = 'camera-detections-overlay';
+
+      const detInfo = document.createElement('div');
+      detInfo.className = 'camera-detection-info';
+      detInfo.textContent = 'DETECCIONES NO DISPONIBLES';
+
+      detectionsOverlay.appendChild(detInfo);
+      mediaBox.appendChild(detectionsOverlay);
+      card.appendChild(mediaBox);
+
+      // Guardar referencias para actualización reactiva vía polling
+      cameraCardRefs.set(cam.codigo, {
+        statusPill,
+        statusText,
+        detInfo,
+        playbackErrorOverlay,
+        streamImg
+      });
 
       // Áreas de Visión
       const areasSection = document.createElement('div');
@@ -273,6 +388,92 @@ export async function renderCamerasView({
     });
 
     camerasSlot.appendChild(grid);
+
+    // Función para actualizar estados de cámaras vía GET /api/v1/cameras/<codigo>/status
+    async function updateOperationalStatus() {
+      // Protección de lifecycle y concurrencia (CAM-01E-03 y CAM-01E-04)
+      if (isViewDestroyed || currentGeneration !== viewGenerationToken || isPollingInProgress) {
+        return;
+      }
+      isPollingInProgress = true;
+
+      try {
+        for (const [code, refs] of cameraCardRefs.entries()) {
+          if (isViewDestroyed || currentGeneration !== viewGenerationToken) {
+            break;
+          }
+
+          let statusData;
+          try {
+            statusData = await apiService.getCameraStatus(code);
+          } catch (_) {
+            // Ignorar fallas transitorias de red en polling sin degradar la vista
+            continue;
+          }
+
+          if (isViewDestroyed || currentGeneration !== viewGenerationToken || !statusData) {
+            continue;
+          }
+
+          const opState = statusData.operational_state || (statusData.is_transmitting ? 'TRANSMITIENDO' : 'EN_ESPERA');
+
+          // Actualizar pastilla de estado basada EXCLUSIVAMENTE en backend
+          refs.statusPill.className = 'camera-status-pill';
+          if (opState === 'TRANSMITIENDO') {
+            refs.statusPill.classList.add('camera-status-pill--transmitting');
+            refs.statusText.textContent = 'TRANSMITIENDO';
+          } else if (opState === 'SIN_SEÑAL') {
+            refs.statusPill.classList.add('camera-status-pill--nosignal');
+            refs.statusText.textContent = 'SIN SEÑAL';
+          } else if (opState === 'ENROLADA') {
+            refs.statusPill.classList.add('camera-status-pill--enrolled');
+            refs.statusText.textContent = 'ENROLADA';
+          } else if (opState === 'ERROR') {
+            refs.statusPill.classList.add('camera-status-pill--error');
+            refs.statusText.textContent = 'ERROR';
+          } else {
+            refs.statusPill.classList.add('camera-status-pill--standby');
+            refs.statusText.textContent = 'EN ESPERA';
+          }
+
+          // Actualizar información de detecciones reales (CAM-01E-02)
+          refs.detInfo.innerHTML = '';
+          if (opState === 'TRANSMITIENDO' && statusData.is_transmitting) {
+            if (statusData.vehicle_detected && statusData.tipo_vehiculo) {
+              const badge = document.createElement('span');
+              badge.className = 'camera-detection-badge';
+              const pct = typeof statusData.confianza === 'number' ? Math.round(statusData.confianza * 100) : null;
+              badge.textContent = `DETECTADO: ${statusData.tipo_vehiculo.toUpperCase()}${pct !== null ? ` (${pct}%)` : ''}`;
+              refs.detInfo.appendChild(badge);
+
+              if (statusData.in_roi) {
+                const roiBadge = document.createElement('span');
+                roiBadge.className = 'camera-detection-roi';
+                roiBadge.textContent = 'EN ZONA ROI';
+                refs.detInfo.appendChild(roiBadge);
+              }
+            } else if (statusData.status && statusData.status !== 'DESCONOCIDO' && statusData.status !== 'EN_ESPERA') {
+              // Inferencia confirmada por el coordinador sin detección de vehículos
+              refs.detInfo.textContent = 'Sin vehículos detectados';
+            } else {
+              refs.detInfo.textContent = 'DETECCIONES NO DISPONIBLES';
+            }
+          } else {
+            // Si no está transmitiendo, no presentar datos de detección como actuales
+            refs.detInfo.textContent = 'DETECCIONES NO DISPONIBLES';
+          }
+        }
+      } finally {
+        isPollingInProgress = false;
+      }
+    }
+
+    // Ejecutar actualización inicial y programar polling cada 3 segundos
+    await updateOperationalStatus();
+    activePollInterval = setInterval(updateOperationalStatus, 3000);
+    if (activePollInterval && typeof activePollInterval.unref === 'function') {
+      activePollInterval.unref();
+    }
   }
 
   /**
@@ -418,7 +619,7 @@ export async function renderCamerasView({
       if (!data || !Array.isArray(data.cameras) || data.cameras.length === 0) {
         renderEmptyState();
       } else {
-        renderDataState(data.cameras, data.total);
+        await renderDataState(data.cameras, data.total);
       }
     } catch (err) {
       if (err instanceof AuthError && err.status === 401) {

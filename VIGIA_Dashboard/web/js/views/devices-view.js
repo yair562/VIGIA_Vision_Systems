@@ -188,19 +188,46 @@ function createQrEnrollmentPanel({ deviceService, onEnrolled, onClose }) {
       imgWrapper.appendChild(qrImg);
       resultContainer.appendChild(imgWrapper);
 
-      const targetUrl = resp.enrollment_url || resp.pairing_url || '#';
+      const lanUrl = resp.lan_url || resp.enrollment_url || resp.pairing_url || '#';
+      const localUrl = resp.local_url || null;
       const infoBox = document.createElement('div');
       infoBox.style.fontSize = 'var(--font-size-small)';
       infoBox.style.color = 'var(--admin-text-secondary)';
       infoBox.innerHTML = `
         <p><strong>Cámara:</strong> ${resp.codigo_camara}</p>
         <p><strong>Expira:</strong> ${resp.expira_en}</p>
-        <p style="margin-top: 0.5rem; word-break: break-all;">
-          <strong>Enlace directo para pruebas:</strong><br>
-          <a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">
-            ${targetUrl}
-          </a>
-        </p>
+        <div style="margin-top: 0.75rem; padding: 0.75rem; background: #f8fafc; border: 1px solid var(--admin-border-color, #e2e8f0); border-radius: 8px;">
+          <p style="margin: 0; font-weight: 600; color: #1e293b;">
+            <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-right: 6px;"></span>
+            Dirección LAN codificada en el QR (acceso móvil):
+          </p>
+          <p style="margin: 0.25rem 0 0 0; word-break: break-all;">
+            <a href="${lanUrl}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-family: monospace;">
+              ${lanUrl}
+            </a>
+          </p>
+        </div>
+        ${localUrl ? `
+        <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: #ffffff; border: 1px solid var(--admin-border-color, #e2e8f0); border-radius: 8px;">
+          <p style="margin: 0; font-size: 0.85em; color: #64748b;">
+            <strong>Dirección local alternativa (este equipo):</strong>
+            <a href="${localUrl}" target="_blank" rel="noopener noreferrer" style="color: #64748b; text-decoration: underline; margin-left: 4px; font-family: monospace;">
+              ${localUrl}
+            </a>
+          </p>
+        </div>` : ''}
+        ${lanUrl.startsWith('https://') ? `
+        <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+          <p style="margin: 0; font-size: 0.85em; color: #166534; font-weight: 600;">
+            🔒 Certificado TLS / CA raíz local:
+          </p>
+          <p style="margin: 0.25rem 0 0 0; font-size: 0.8em; color: #15803d;">
+            Si el teléfono requiere confiar en la CA raíz de VIGÍA para activar la cámara:
+            <a href="/api/v1/tls/ca.crt" download="vigia_root_ca.crt" style="color: #15803d; font-weight: bold; text-decoration: underline; margin-left: 4px;">
+              Descargar vigia_root_ca.crt
+            </a>
+          </p>
+        </div>` : ''}
       `;
       resultContainer.appendChild(infoBox);
 

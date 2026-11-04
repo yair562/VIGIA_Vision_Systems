@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1256.7205 1231.3000000000002" width="1256.7205" height="1231.3000000000002" style="--bg:#18181B;--fg:#F4F4F5;--line:#71717A;--muted:#A1A1AA;--surface:#27272A;--border:#3F3F46;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="Start" data-to="ReadActive" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="335.40825,76.9 335.40825,124.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ReadActive" data-to="CheckCA" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="335.40825,161.8 335.40824999999995,209.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CheckCA" data-to="Abort" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="No" points="284.5740833333333,246.70000000000002 284.5740833333333,581.3000000000001 205.09949999999992,581.3000000000001 205.09949999999992,661.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CheckCA" data-to="CheckIP" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sí" points="386.2424166666666,246.70000000000002 386.2424166666666,258.70000000000005 586.6399999999999,258.70000000000005 586.6399999999999,339" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CheckIP" data-to="CheckValidity" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="492.41949999999986,375.9 492.41949999999986,734.5 264.81999999999994,734.5 264.81999999999994,755.15" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CheckIP" data-to="ServeActive" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Coincide IP y Vigencia OK --" points="586.6399999999999,375.9 586.6399999999999,751.1 526.1784999999999,751.1 526.1784999999999,831.4" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CheckIP" data-to="Staging" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="IP difiere o Próximo a Expirar --" points="680.8604999999998,375.9 680.8604999999998,411.9000000000001 850.2914999999998,411.9000000000001 850.2914999999998,492.20000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Staging" data-to="GenLeafKey" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="850.2914999999998,529.1 850.2914999999998,577.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GenLeafKey" data-to="SignLeaf" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="850.2914999999998,614 850.2914999999998,662" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SignLeaf" data-to="PreValidate" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="850.2914999999998,715.8 850.2914999999999,755.15" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PreValidate" data-to="Purge" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Fallo" points="794.1468333333332,842.75 794.1468333333332,904.3 668.228,904.3 668.228,976.1499999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PreValidate" data-to="AtomicSwitch" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Éxito" points="906.4361666666665,842.75 906.4361666666665,887.4 1032.3549999999998,887.4 1032.3549999999998,976.1499999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AtomicSwitch" data-to="SyncCanonical" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1032.3549999999998,1029.9499999999998 1032.3549999999998,1069.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SyncCanonical" data-to="Ret" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1032.3549999999998,1106.4 1032.3549999999998,1154.4" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="CheckCA" data-to="Abort" data-label="No">
+  <rect x="189.59949999999992" y="588.3000000000001" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="204.95849999999993" y="603.45" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">No</text>
+</g>
+<g class="edge-label" data-from="CheckCA" data-to="CheckIP" data-label="Sí">
+  <rect x="571.1399999999999" y="265.70000000000005" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="586.4989999999999" y="280.85" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sí</text>
+</g>
+<g class="edge-label" data-from="CheckIP" data-to="ServeActive" data-label="Coincide IP y Vigencia OK --">
+  <rect x="453.1784999999998" y="758.1" width="145.36" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="525.8584999999998" y="773.25" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Coincide IP y Vigencia OK --</text>
+</g>
+<g class="edge-label" data-from="CheckIP" data-to="Staging" data-label="IP difiere o Próximo a Expirar --">
+  <rect x="769.2914999999998" y="418.9000000000001" width="161.398" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="849.9904999999998" y="434.05000000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">IP difiere o Próximo a Expirar --</text>
+</g>
+<g class="edge-label" data-from="PreValidate" data-to="Purge" data-label="Fallo">
+  <rect x="647.228" y="911.3" width="41.41" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="667.933" y="926.4499999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Fallo</text>
+</g>
+<g class="edge-label" data-from="PreValidate" data-to="AtomicSwitch" data-label="Éxito">
+  <rect x="1011.8549999999999" y="894.4" width="40.221999999999994" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1031.966" y="909.55" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Éxito</text>
+</g>
+<g class="node" data-id="Start" data-label="Inicio del Servidor / Verificación de Certificados" data-shape="rectangle">
+  <rect x="176.23675000000003" y="40" width="318.34299999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="335.40825" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Inicio del Servidor / Verificación de Certificados</text>
+</g>
+<g class="node" data-id="ReadActive" data-label="Leer active_generation.json y vigia_root_ca.crt" data-shape="rectangle">
+  <rect x="174.75475000000006" y="124.9" width="321.3069999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="335.40825" y="143.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Leer active_generation.json y vigia_root_ca.crt</text>
+</g>
+<g class="node" data-id="CheckCA" data-label="¿Existe Root CA y coincide su clave privada?" data-shape="rectangle">
+  <rect x="182.90575" y="209.8" width="305.00499999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="335.40824999999995" y="228.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">¿Existe Root CA y coincide su clave privada?</text>
+</g>
+<g class="node" data-id="Abort" data-label="Abortar (Fail-Closed): Root CA ausente o corrupta" data-shape="rectangle">
+  <rect x="40" y="661.6" width="330.1989999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="205.09949999999995" y="680.0500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Abortar (Fail-Closed): Root CA ausente o corrupta</text>
+</g>
+<g class="node" data-id="CheckIP" data-label="Validar IP LAN detectada vs SAN en vigia_cert.pem activo" data-shape="rectangle">
+  <rect x="398.1989999999999" y="339" width="376.8819999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="586.6399999999999" y="357.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Validar IP LAN detectada vs SAN en vigia_cert.pem activo</text>
+</g>
+<g class="node" data-id="CheckValidity" data-label="Comprobar vigencia temporal (Margen &gt;= 7 días)" data-shape="rectangle">
+  <rect x="100.46149999999994" y="755.15" width="328.7169999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="264.81999999999994" y="773.6" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Comprobar vigencia temporal (Margen &gt;= 7 días)</text>
+</g>
+<g class="node" data-id="ServeActive" data-label="Usar Generación Activa sin Cambios" data-shape="rectangle">
+  <rect x="398.4994999999999" y="831.4" width="255.35799999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="526.1784999999999" y="849.85" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Usar Generación Activa sin Cambios</text>
+</g>
+<g class="node" data-id="Staging" data-label="1. Crear Staging: certs/generations/&lt;new_gen_id&gt;/" data-shape="rectangle">
+  <rect x="681.8574999999998" y="492.20000000000005" width="336.86799999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="850.2914999999998" y="510.65000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">1. Crear Staging: certs/generations/&lt;new_gen_id&gt;/</text>
+</g>
+<g class="node" data-id="GenLeafKey" data-label="2. Generar nueva clave RSA 2048 de Servidor" data-shape="rectangle">
+  <rect x="694.0839999999998" y="577.1" width="312.4149999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="850.2914999999998" y="595.5500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">2. Generar nueva clave RSA 2048 de Servidor</text>
+</g>
+<g class="node" data-id="SignLeaf" data-label="3. Emitir y Firmar nueva Hoja con Root CA Existente
+(SAN: localhost, 127.0.0.1, target_ip)" data-shape="rectangle">
+  <rect x="681.4869999999999" y="662" width="337.6089999999999" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="850.2914999999998" y="688.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="850.2914999999998" dy="-3.9000000000000012">3. Emitir y Firmar nueva Hoja con Root CA Existente</tspan><tspan x="850.2914999999998" dy="16.900000000000002">(SAN: localhost, 127.0.0.1, target_ip)</tspan></text>
+</g>
+<g class="node" data-id="PreValidate" data-label="4. Validación Preventiva Criptográfica en Memoria:
+- Match Clave Pública/Privada
+- Verificación de firma contra Root CA
+- SAN y Fechas correctas" data-shape="rectangle">
+  <rect x="681.8575" y="755.15" width="336.8679999999998" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="850.2914999999998" y="798.9499999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="850.2914999999998" dy="-20.8">4. Validación Preventiva Criptográfica en Memoria:</tspan><tspan x="850.2914999999998" dy="16.900000000000002">- Match Clave Pública/Privada</tspan><tspan x="850.2914999999998" dy="16.900000000000002">- Verificación de firma contra Root CA</tspan><tspan x="850.2914999999998" dy="16.900000000000002">- SAN y Fechas correctas</tspan></text>
+</g>
+<g class="node" data-id="Purge" data-label="Purgar Staging y Abortar (Generación previa intacta)" data-shape="rectangle">
+  <rect x="493.125" y="976.1499999999999" width="350.20599999999985" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="668.228" y="994.5999999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Purgar Staging y Abortar (Generación previa intacta)</text>
+</g>
+<g class="node" data-id="AtomicSwitch" data-label="5. Reemplazo Atómico de active_generation.json
+(os.replace con archivo temporal)" data-shape="rectangle">
+  <rect x="871.3309999999999" y="976.1499999999999" width="322.04799999999994" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1032.3549999999998" y="1003.0499999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1032.3549999999998" dy="-3.9000000000000012">5. Reemplazo Atómico de active_generation.json</tspan><tspan x="1032.3549999999998" dy="16.900000000000002">(os.replace con archivo temporal)</tspan></text>
+</g>
+<g class="node" data-id="SyncCanonical" data-label="6. Sincronizar archivos canónicos certs/vigia_cert.pem" data-shape="rectangle">
+  <rect x="847.9894999999999" y="1069.5" width="368.73099999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1032.3549999999998" y="1087.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">6. Sincronizar archivos canónicos certs/vigia_cert.pem</text>
+</g>
+<g class="node" data-id="Ret" data-label="Retornar rutas versionadas validadas" data-shape="rectangle">
+  <rect x="899.1184999999998" y="1154.4" width="266.47299999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1032.3549999999998" y="1172.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Retornar rutas versionadas validadas</text>
+</g>
+</svg>

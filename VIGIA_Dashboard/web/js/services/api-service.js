@@ -253,6 +253,47 @@ export function createApiService({ baseUrl, fetchFn } = {}) {
         cameras,
         total
       };
+    },
+
+    /**
+     * Consulta información de red y direcciones de acceso del sistema mediante GET /api/v1/system/network.
+     * @returns {Promise<Object>}
+     */
+    async getNetworkInfo() {
+      return request('/api/v1/system/network', {
+        method: 'GET'
+      });
+    },
+
+    /**
+     * Consulta el estado operativo y métricas de visión de una cámara mediante GET /api/v1/cameras/:codigo/status.
+     * @param {string} codigoCamara
+     * @returns {Promise<Object>}
+     */
+    async getCameraStatus(codigoCamara) {
+      return request(`/api/v1/cameras/${encodeURIComponent(codigoCamara)}/status`, {
+        method: 'GET'
+      });
+    },
+
+    /**
+     * Retorna la URL directa del flujo de video MJPEG para una cámara.
+     * @param {string} codigoCamara
+     * @returns {string}
+     */
+    getCameraLiveStreamUrl(codigoCamara) {
+      const base = getBase();
+      return `${base}/api/v1/cameras/${encodeURIComponent(codigoCamara)}/stream`;
+    },
+
+    /**
+     * Retorna la URL del fotograma JPEG más reciente para una cámara.
+     * @param {string} codigoCamara
+     * @returns {string}
+     */
+    getCameraLiveFrameUrl(codigoCamara) {
+      const base = getBase();
+      return `${base}/api/v1/cameras/${encodeURIComponent(codigoCamara)}/live`;
     }
   });
 }

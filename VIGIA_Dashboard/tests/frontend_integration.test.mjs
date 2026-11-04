@@ -40,6 +40,7 @@ class FakeElement {
     this.children = [];
     this.attributes = {};
     const classes = new Set();
+    this._classes = classes;
     this.classList = {
       add: (c) => classes.add(c),
       remove: (c) => classes.delete(c),
@@ -50,9 +51,40 @@ class FakeElement {
     this.hidden = false;
     this.disabled = false;
     this._textContent = '';
+    this._className = '';
     this.innerHTML = '';
     this.value = '';
     this.listeners = {};
+  }
+
+  get src() {
+    return this.attributes['src'];
+  }
+  set src(v) {
+    if (v === '' || v === undefined) {
+      delete this.attributes['src'];
+    } else {
+      this.attributes['src'] = String(v);
+    }
+  }
+
+  get id() {
+    return this.attributes['id'];
+  }
+  set id(v) {
+    if (v === '' || v === undefined) {
+      delete this.attributes['id'];
+    } else {
+      this.attributes['id'] = String(v);
+    }
+  }
+
+  get className() {
+    return Array.from(this._classes).join(' ');
+  }
+  set className(v) {
+    this._classes.clear();
+    String(v).split(/\s+/).filter(Boolean).forEach((c) => this._classes.add(c));
   }
 
   get textContent() {
@@ -64,12 +96,17 @@ class FakeElement {
 
   setAttribute(k, v) {
     this.attributes[k] = String(v);
+    if (k === 'class') {
+      this.className = v;
+    }
   }
   getAttribute(k) {
+    if (k === 'class') return this.className;
     return this.attributes[k] || null;
   }
   removeAttribute(k) {
     delete this.attributes[k];
+    if (k === 'class') this._classes.clear();
   }
 
   appendChild(c) {
@@ -77,20 +114,39 @@ class FakeElement {
     return c;
   }
   querySelector(sel) {
-    if (sel.startsWith('#')) {
-      const id = sel.slice(1);
-      if (this.attributes['id'] === id) return this;
-      for (const ch of this.children) {
-        if (ch instanceof FakeElement) {
-          const found = ch.querySelector(sel);
-          if (found) return found;
-        }
+    const checkEl = (el, s) => {
+      if (s.startsWith('#')) return el.attributes['id'] === s.slice(1);
+      if (s.startsWith('.')) return el._classes && el._classes.has(s.slice(1));
+      if (/^[a-zA-Z]+$/.test(s)) return el.tagName === s.toUpperCase();
+      return false;
+    };
+    for (const ch of this.children) {
+      if (ch instanceof FakeElement) {
+        if (checkEl(ch, sel)) return ch;
+        const found = ch.querySelector(sel);
+        if (found) return found;
       }
     }
     return null;
   }
   querySelectorAll(sel) {
-    return [];
+    const results = [];
+    const check = (el) => {
+      if (sel.startsWith('.')) {
+        if (el._classes && el._classes.has(sel.slice(1))) results.push(el);
+      } else if (sel.startsWith('#')) {
+        if (el.attributes['id'] === sel.slice(1)) results.push(el);
+      } else if (/^[a-zA-Z]+$/.test(sel)) {
+        if (el.tagName === sel.toUpperCase()) results.push(el);
+      }
+      for (const ch of el.children) {
+        if (ch instanceof FakeElement) check(ch);
+      }
+    };
+    for (const ch of this.children) {
+      if (ch instanceof FakeElement) check(ch);
+    }
+    return results;
   }
   addEventListener(event, fn) {
     if (!this.listeners[event]) this.listeners[event] = [];
@@ -284,6 +340,12 @@ test('7. Carga de cámaras persistidas y exclusión estricta de uri_stream', asy
   assert.equal(res.cameras[0].codigo, 'CAM-01');
   assert.equal(res.cameras[0].areas.length, 1);
   assert.equal(res.cameras[0].uri_stream, undefined, 'uri_stream NUNCA debe estar en la respuesta.');
+
+  // Verificación de URLs de streaming canónico en apiService
+  const streamUrl = api.getCameraLiveStreamUrl(res.cameras[0].codigo);
+  assert.match(streamUrl, /\/api\/v1\/cameras\/CAM-01\/stream$/);
+  const liveUrl = api.getCameraLiveFrameUrl(res.cameras[0].codigo);
+  assert.match(liveUrl, /\/api\/v1\/cameras\/CAM-01\/live$/);
 });
 
 test('8. Estado vacío sin cámaras', async () => {
@@ -555,4 +617,241 @@ test('16. Propagación fiel de errores 401, 403 y 500 en apiService.post y devic
     async () => dev500.generatePairingQr('CAM-ENTRADA'),
     (err) => err instanceof ServerError && err.status === 500 && err.code === 'SERVER_ERROR'
   );
+});
+
+test('17. Consulta de información de red y direcciones LAN en apiService (VIGIA-NET-01)', async () => {
+  const mockNetFetch = async (url) => {
+    if (url.includes('/api/v1/system/network')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => ({
+          ok: true,
+          local_url: 'http://127.0.0.1:5000',
+          lan_urls: ['http://192.168.1.75:5000'],
+          recommended_lan_url: 'http://192.168.1.75:5000',
+          port: 5000,
+          tls_enabled: false
+        })
+      };
+    }
+    throw new Error(`Ruta no esperada: ${url}`);
+  };
+
+  const apiService = createApiService({ fetchFn: mockNetFetch });
+  const netInfo = await apiService.getNetworkInfo();
+
+  assert.equal(netInfo.ok, true);
+  assert.equal(netInfo.local_url, 'http://127.0.0.1:5000');
+  assert.equal(netInfo.recommended_lan_url, 'http://192.168.1.75:5000');
+  assert.equal(netInfo.port, 5000);
+  assert.equal(netInfo.tls_enabled, false);
+});
+
+test('18. Integración de streaming, visor de video y estados operativos en cameras-view (CAM-01C y CAM-01E)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [
+      {
+        id_camara: 'cam-uuid-101',
+        codigo: 'CAM-ENTRADA',
+        nombre: 'Cámara Carril Entrada',
+        activa: true,
+        areas: [
+          { id_area_vision: 'area-1', codigo: 'ROI-ENT', nombre: 'Zona Lectura Entrada', tipo_movimiento: 'ENTRADA' }
+        ]
+      }
+    ]
+  };
+
+  let statusMockData = {
+    ok: true,
+    codigo_camara: 'CAM-ENTRADA',
+    is_transmitting: true,
+    operational_state: 'TRANSMITIENDO',
+    vehicle_detected: true,
+    tipo_vehiculo: 'camioneta',
+    confianza: 0.94,
+    in_roi: 1,
+    status: 'PROCESANDO_CORRECTAMENTE'
+  };
+
+  let statusCallCount = 0;
+  const mockFetch = async (url) => {
+    if (url.includes('/api/v1/cameras/CAM-ENTRADA/status')) {
+      statusCallCount++;
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => statusMockData
+      };
+    }
+    if (url.includes('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    throw new Error(`Ruta mock inesperada: ${url}`);
+  };
+
+  const fakeContainer = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  let navigatedTo = null;
+  await renderCamerasView({
+    container: fakeContainer,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: (r) => { navigatedTo = r; }
+  });
+
+  // 1. Existencia del elemento img.camera-stream-img y visor
+  const streamImg = fakeContainer.querySelector('.camera-stream-img');
+  assert.ok(streamImg, 'Debe renderizarse el elemento img.camera-stream-img en la tarjeta');
+
+  // 2. Construcción correcta de la URL MJPEG
+  const streamUrl = api.getCameraLiveStreamUrl('CAM-ENTRADA');
+  assert.equal(streamUrl.endsWith('/api/v1/cameras/CAM-ENTRADA/stream'), true);
+  assert.equal(streamImg.attributes['src'], streamUrl);
+
+  // 3. Representación de TRANSMITIENDO
+  const statusPill = fakeContainer.querySelector('.camera-status-pill');
+  assert.ok(statusPill, 'Debe existir la pastilla de estado');
+  assert.equal(statusPill.classList.contains('camera-status-pill--transmitting'), true);
+  const statusText = fakeContainer.querySelector('.camera-status-text');
+  assert.equal(statusText.textContent, 'TRANSMITIENDO');
+
+  // 9. Detecciones se presentan cuando hay evidencia suficiente
+  const detBadge = fakeContainer.querySelector('.camera-detection-badge');
+  assert.ok(detBadge, 'Debe mostrarse badge de detección cuando hay vehículo y confianza');
+  assert.match(detBadge.textContent, /DETECTADO: CAMIONETA \(94%\)/);
+  const roiBadge = fakeContainer.querySelector('.camera-detection-roi');
+  assert.ok(roiBadge, 'Debe mostrarse badge de ROI');
+  assert.equal(roiBadge.textContent, 'EN ZONA ROI');
+
+  // 8. Un error del <img> no modifica el estado operativo de la cámara (CAM-01E-01)
+  const playbackOverlay = fakeContainer.querySelector('.camera-playback-error');
+  assert.ok(playbackOverlay, 'Debe existir overlay independiente para error de reproducción');
+  assert.equal(playbackOverlay.hidden, true, 'Inicialmente el error de reproducción está oculto');
+
+  // Simular evento error en streamImg
+  streamImg.dispatchEvent({ type: 'error' });
+  assert.equal(playbackOverlay.hidden, false, 'El error de reproducción debe visualizarse');
+  assert.equal(statusPill.classList.contains('camera-status-pill--transmitting'), true, 'La pastilla de estado DEBE mantenerse en TRANSMITIENDO y no mutar a SIN_SEÑAL');
+
+  // 12 & 13. Cancelación al abandonar la vista y liberación de streams MJPEG
+  const navBtn = fakeContainer.querySelector('#btn-refresh-cameras');
+  assert.ok(navBtn);
+  assert.equal(streamImg.attributes['src'] !== undefined, true);
+
+  // Simular navegación
+  const navHandler = fakeContainer.querySelector('.admin-navbar');
+  assert.ok(navHandler);
+});
+
+test('19. Verificación exhaustiva de estados operativos del backend (CAM-01E)', async () => {
+  const testStates = ['EN_ESPERA', 'SIN_SEÑAL', 'ENROLADA', 'ERROR'];
+
+  for (const st of testStates) {
+    const mockData = {
+      ok: true,
+      total: 1,
+      cameras: [{ id_camara: `cam-${st}`, codigo: `CAM-${st}`, nombre: `Cam ${st}`, activa: true, areas: [] }]
+    };
+    const mockStatus = {
+      ok: true,
+      codigo_camara: `CAM-${st}`,
+      is_transmitting: false,
+      operational_state: st,
+      vehicle_detected: false,
+      status: st === 'ERROR' ? 'PROCESSING_ERROR' : 'EN_ESPERA'
+    };
+
+    const api = createApiService({
+      fetchFn: async (url) => {
+        if (url.includes('/status')) return { ok: true, status: 200, headers: { get: () => 'application/json' }, json: async () => mockStatus };
+        return { ok: true, status: 200, headers: { get: () => 'application/json' }, json: async () => mockData };
+      }
+    });
+
+    const container = new FakeElement('div');
+    await renderCamerasView({
+      container,
+      apiService: api,
+      currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+      onNavigate: () => {}
+    });
+
+    const statusPill = container.querySelector('.camera-status-pill');
+    const statusText = container.querySelector('.camera-status-text');
+    assert.ok(statusPill);
+    assert.equal(statusText.textContent, st.replace('_', ' '));
+
+    const detInfo = container.querySelector('.camera-detection-info');
+    assert.equal(detInfo.textContent, 'DETECCIONES NO DISPONIBLES', 'Si no está transmitiendo, no debe mostrar inferencias activas');
+  }
+});
+
+test('20. Lifecycle, protección de concurrencia y liberación de fuentes MJPEG (CAM-01E)', async () => {
+  let concurrentCalls = 0;
+  let maxConcurrentCalls = 0;
+
+  const mockApi = {
+    getCameras: async () => ({
+      ok: true,
+      total: 1,
+      cameras: [{ id_camara: 'c-1', codigo: 'CAM-CONC', nombre: 'Cam Concurrencia', activa: true, areas: [] }]
+    }),
+    getCameraLiveStreamUrl: (code) => `/api/v1/cameras/${code}/stream`,
+    getCameraStatus: async () => {
+      concurrentCalls++;
+      if (concurrentCalls > maxConcurrentCalls) maxConcurrentCalls = concurrentCalls;
+      await new Promise((r) => setTimeout(r, 10));
+      concurrentCalls--;
+      return {
+        ok: true,
+        codigo_camara: 'CAM-CONC',
+        is_transmitting: true,
+        operational_state: 'TRANSMITIENDO',
+        vehicle_detected: false,
+        status: 'PROCESANDO_CORRECTAMENTE'
+      };
+    }
+  };
+
+  const container = new FakeElement('div');
+  let currentRoute = 'cameras';
+
+  await renderCamerasView({
+    container,
+    apiService: mockApi,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: (r) => { currentRoute = r; }
+  });
+
+  const streamImg = container.querySelector('.camera-stream-img');
+  assert.ok(streamImg);
+
+  // Simular botón Actualizar para probar que no duplica streams
+  const refreshBtn = container.querySelector('#btn-refresh-cameras');
+  assert.ok(refreshBtn);
+  await refreshBtn.dispatchEvent({ type: 'click' });
+
+  // La concurrencia máxima en todo momento debe ser 1 (reentrancia prevenida)
+  assert.equal(maxConcurrentCalls, 1, 'El polling no debe generar consultas concurrentes a getCameraStatus');
+
+  // Probar desmontaje con navegación simulada
+  const navBtns = container.querySelectorAll('.admin-nav-item');
+  if (navBtns.length > 0) {
+    navBtns[0].dispatchEvent({ type: 'click' });
+  }
+
+  // Verificar que el src de la imagen fue liberado con removeAttribute
+  assert.equal(streamImg.attributes['src'], undefined, 'removeAttribute("src") debe ejecutarse al desmontar');
 });

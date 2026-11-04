@@ -25,12 +25,14 @@ import datetime
 import functools
 import hashlib
 import hmac
+import http.server
 import ipaddress
 import json
 import logging
 import os
 import shutil
 import socket
+import ssl
 import subprocess
 import sys
 import threading
@@ -56,9 +58,9 @@ except ModuleNotFoundError:
         raise SystemExit(subprocess.call([str(_venv_python), *sys.argv]))
     raise
 import numpy as np
-from flask import Flask, g, jsonify, request, send_from_directory
+from flask import Flask, Response, g, jsonify, request, send_from_directory
 from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
-from werkzeug.serving import run_simple
+from werkzeug.serving import ThreadedWSGIServer, load_ssl_context, run_simple as _werkzeug_run_simple
 
 from VIGIA_API.security.auth_service import AuthService
 from VIGIA_API.security.session_manager import SessionManager, UserSession
@@ -90,6 +92,7 @@ from VIGIA_Vision.config.topology_validator import (
 )
 from VIGIA_Vision.detection.roi_and_preprocess import (
     FrameValidationError,
+    project_normalized_roi,
     validate_bgr_frame,
 )
 from VIGIA_Vision.detection.yolo_detector import (
@@ -101,6 +104,7 @@ from VIGIA_Vision.runtime.coordinator import IVehicleDetector, VisionEngineCoord
 from VIGIA_Vision.runtime.evidence_storage import (
     IEvidenceStorageService,
     LocalDiskEvidenceStorage,
+    render_annotated_frame,
 )
 
 logger = logging.getLogger(__name__)
@@ -245,6 +249,51 @@ def build_vision_engine_coordinator(
     return coordinator
 
 
+
+# =========================================================================
+# ESTADO EN TIEMPO REAL Y TRANSMISIÓN CONTINUA DE CÁMARAS (VIGIA-CAM-01)
+# =========================================================================
+_latest_camera_frames: Dict[str, Dict[str, Any]] = {}
+_camera_conditions: Dict[str, threading.Condition] = {}
+_camera_conditions_lock = threading.Lock()
+_last_persist_timestamps: Dict[str, float] = {}
+_standby_cache: Dict[Tuple[str, str], bytes] = {}
+
+
+def _get_camera_condition(codigo_camara: str) -> threading.Condition:
+    """Retorna o inicializa de forma atómica la variable de condición para una cámara."""
+    with _camera_conditions_lock:
+        if codigo_camara not in _camera_conditions:
+            _camera_conditions[codigo_camara] = threading.Condition()
+        return _camera_conditions[codigo_camara]
+
+
+def _generate_standby_jpeg(codigo_camara: str, message: str = "EN ESPERA DE TRANSMISION") -> bytes:
+    """Genera un fotograma JPEG sintético con la estética corporativa de VIGÍA para el estado de espera."""
+    cache_key = (codigo_camara, message)
+    if cache_key in _standby_cache:
+        return _standby_cache[cache_key]
+
+    width, height = 640, 360
+    img = np.zeros((height, width, 3), dtype=np.uint8)
+    img[:] = (26, 17, 13)  # Fondo oscuro corporativo
+
+    # Borde sutil
+    cv2.rectangle(img, (12, 12), (width - 12, height - 12), (55, 40, 25), 2)
+    # Título institucional
+    cv2.putText(img, "VIGIA VISION SYSTEMS", (36, 55), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (180, 180, 180), 2)
+    cv2.putText(img, f"CANAL: {codigo_camara}", (36, 105), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (90, 215, 110), 2)
+    # Estado
+    cv2.putText(img, f"ESTADO: {message}", (36, 175), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (90, 170, 250), 2)
+    cv2.putText(img, "Pulse 'Abrir camara' en el telefono enrolado", (36, 245), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (150, 150, 150), 1)
+    cv2.putText(img, "Transmision y percepcion visual continua", (36, 315), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (110, 110, 110), 1)
+
+    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 80])
+    data = buf.tobytes() if ok else b""
+    _standby_cache[cache_key] = data
+    return data
+
+
 def create_ingest_app(
     coordinator: Optional[VisionEngineCoordinator] = None,
     auth_token: Optional[str] = None,
@@ -260,6 +309,9 @@ def create_ingest_app(
     allow_in_memory: Optional[bool] = None,
     initialize_vision_engine: Optional[bool] = None,
     retry_dedup_ttl_seconds: float = DEFAULT_RETRY_DEDUP_TTL_SECONDS,
+    enable_tls: Optional[bool] = None,
+    dev_port: Optional[int] = None,
+    certs_dir: Optional[Union[str, Path]] = None,
 ) -> Flask:
     """
     Fábrica de la aplicación web Flask para el servicio de ingesta de VIGIA_API.
@@ -320,6 +372,21 @@ def create_ingest_app(
         raw_demo = os.environ.get("VIGIA_ENABLE_FRONTEND_DEMO", "").strip().lower()
         resolved_demo = raw_demo in {"1", "true", "yes", "on"}
     app.config["FRONTEND_DEMO_ENABLED"] = resolved_demo
+
+    # Resolver estado de TLS y puerto de desarrollo (VIGIA-TLS-01)
+    if enable_tls is not None:
+        resolved_tls = bool(enable_tls)
+    else:
+        raw_tls = os.environ.get("VIGIA_ENABLE_TLS", "").strip().lower()
+        resolved_tls = raw_tls in {"1", "true", "yes", "on"}
+    app.config["TLS_ENABLED"] = resolved_tls
+
+    if dev_port is not None:
+        resolved_port = int(dev_port)
+    else:
+        default_port = 8443 if resolved_tls else 5000
+        resolved_port = int(os.environ.get("VIGIA_DEV_PORT", str(default_port)))
+    app.config["DEV_PORT"] = resolved_port
 
     # Resolver modo en memoria explícito (prohibido fallback silencioso)
     if allow_in_memory is not None:
@@ -399,11 +466,15 @@ def create_ingest_app(
     app.config["BRAND_SVG_DIR"] = (
         repo_root / "Docs" / "GEST_PROY_SOFT" / "02_Logos_accesibilidad" / "svg"
     ).resolve()
-    app.config["CERTS_DIR"] = (repo_root / "certs").resolve()
+    if certs_dir is not None:
+        app.config["CERTS_DIR"] = Path(certs_dir).resolve()
+    else:
+        app.config["CERTS_DIR"] = (repo_root / "certs").resolve()
 
     # Lock para serializar atómicamente push_frame + process_camera_step y caché de deduplicación
     process_lock = threading.RLock()
     persisted_retry_cache: Dict[Tuple[str, str], Dict[str, Any]] = {}
+    camera_persist_states: Dict[str, Dict[str, Any]] = {}
 
     @app.errorhandler(RequestEntityTooLarge)
     def handle_entity_too_large(exc: Exception):  # type: ignore
@@ -1148,8 +1219,12 @@ def create_ingest_app(
                 }
             )
 
+        now_ts = time.time()
         camera_list = []
         for cam in cameras:
+            cam_code = cam.codigo.strip().upper()
+            cam_entry = _latest_camera_frames.get(cam_code)
+            is_tx = bool(cam_entry and (now_ts - cam_entry.get("timestamp", 0.0) < 4.0))
             camera_list.append(
                 {
                     "id_camara": str(cam.id_camara),
@@ -1157,6 +1232,17 @@ def create_ingest_app(
                     "nombre": cam.nombre,
                     "activa": bool(cam.activa),
                     "areas": areas_by_cam.get(cam.id_camara, []),
+                    "is_transmitting": is_tx,
+                    "last_frame_seconds_ago": round(now_ts - cam_entry.get("timestamp", 0.0), 1) if cam_entry else None,
+                    "operational_status": "TRANSMITIENDO" if is_tx else ("EN_ESPERA" if cam.activa else "INACTIVA"),
+                    "latest_metrics": {
+                        "status": cam_entry.get("status", "SIN_SENAL"),
+                        "vehicle_detected": cam_entry.get("vehicle_detected", False),
+                        "vehicle_type": cam_entry.get("tipo_vehiculo"),
+                        "confianza": cam_entry.get("confianza"),
+                        "in_roi": cam_entry.get("in_roi", 0),
+                        "sequence": cam_entry.get("sequence"),
+                    } if cam_entry else None,
                 }
             )
 
@@ -1176,6 +1262,7 @@ def create_ingest_app(
         """
         Recibe un fotograma capturado por un dispositivo móvil para la cámara indicada.
         """
+        start_push_time = time.time()
         if request.method == "OPTIONS":
             return "", 204
 
@@ -1423,7 +1510,21 @@ def create_ingest_app(
             # Si es un reintento de un fotograma ya persistido, no volver a escribir en disco ni en BD.
             # Si no es reintento y el coordinador cuenta con repositorio de detecciones configurado,
             # activar la persistencia para detecciones vehiculares válidas dentro del ROI.
-            persist_flag = bool(has_persistence_configured and not is_duplicate_retry)
+            # Separación canónica: Idempotencia vs. Deduplicación vs. Decisión de Persistencia (CAM-01A)
+            cam_persist_state = camera_persist_states.setdefault(
+                codigo_camara, {"last_persist_ts": 0.0, "had_vehicle": False}
+            )
+            if explicit_idemp_key:
+                # Solicitud deliberada con identificador único: no se bloquea por intervalo
+                persist_debounce_ok = True
+            else:
+                last_ts = float(cam_persist_state.get("last_persist_ts", 0.0))
+                debounce_ttl = float(app.config.get("STREAM_PERSIST_DEBOUNCE_SECONDS", 3.0))
+                time_elapsed_ok = (now_mono - last_ts) >= debounce_ttl
+                new_arrival = not bool(cam_persist_state.get("had_vehicle", False))
+                persist_debounce_ok = bool(time_elapsed_ok or new_arrival)
+
+            persist_flag = bool(has_persistence_configured and not is_duplicate_retry and persist_debounce_ok)
 
             if not slot.source.is_opened():
                 slot.source.open()
@@ -1535,12 +1636,16 @@ def create_ingest_app(
                         500,
                     )
 
+                cam_persist_state["last_persist_ts"] = now_mono
+                _last_persist_timestamps[codigo_camara] = now_mono
                 persisted_retry_cache[cache_key] = {
                     "ts_monotonic": time.monotonic(),
                     "id_deteccion": str(envelope.id_deteccion),
                     "original_evidence_path": envelope.original_evidence_path,
                     "annotated_evidence_path": envelope.annotated_evidence_path,
                 }
+
+            cam_persist_state["had_vehicle"] = bool(vr.vehicle_detected)
 
         persisted_id = (
             str(envelope.id_deteccion)
@@ -1557,6 +1662,35 @@ def create_ingest_app(
             if envelope.annotated_evidence_path is not None
             else (cached_entry["annotated_evidence_path"] if cached_entry is not None else None)
         )
+
+        # Actualizar fotograma anotado para streaming en tiempo real en Dashboard (VIGIA-CAM-01)
+        try:
+            pixel_roi = None
+            if slot.area is not None:
+                pixel_roi = project_normalized_roi(slot.area, frame_width=w, frame_height=h)
+            dets = envelope.detections_in_roi if envelope else ()
+            annotated_bgr = render_annotated_frame(frame_bgr, detections_in_roi=dets, pixel_roi=pixel_roi)
+            ok_enc, enc_bytes = cv2.imencode(".jpg", annotated_bgr, [cv2.IMWRITE_JPEG_QUALITY, 80])
+            live_jpeg = enc_bytes.tobytes() if ok_enc else raw_bytes
+        except Exception as annot_exc:
+            logger.warning("Fallo al anotar fotograma para streaming en cámara '%s': %s", codigo_camara, annot_exc)
+            live_jpeg = raw_bytes
+
+        cam_code_clean = codigo_camara.strip().upper()
+        cam_cond = _get_camera_condition(cam_code_clean)
+        with cam_cond:
+            _latest_camera_frames[cam_code_clean] = {
+                "jpeg": live_jpeg,
+                "sequence": envelope.frame_sequence or seq,
+                "timestamp": time.time(),
+                "status": vr.status.value,
+                "vehicle_detected": bool(vr.vehicle_detected),
+                "tipo_vehiculo": vr.vehicle_type_pred,
+                "confianza": vr.vehicle_confidence,
+                "in_roi": envelope.metrics.in_roi_now if envelope else 0,
+                "latency_ms": round((time.time() - start_push_time) * 1000),
+            }
+            cam_cond.notify_all()
 
         return jsonify(
             {
@@ -1584,6 +1718,214 @@ def create_ingest_app(
                 "timestamp": vr.timestamp.isoformat() if vr.timestamp else None,
             }
         )
+
+
+    # =========================================================================
+    # ENDPOINTS DE VISUALIZACIÓN EN VIVO Y MONITOREO DE CÁMARAS (VIGIA-CAM-01)
+    # =========================================================================
+
+    def _is_camera_registered(codigo: str) -> bool:
+        coord = app.config.get("COORDINATOR")
+        if coord and coord.registry:
+            try:
+                coord.registry.get_slot(codigo)
+                return True
+            except UnregisteredCameraError:
+                return False
+        topo = app.config.get("TOPOLOGY_REPOSITORY")
+        if topo:
+            try:
+                cams = topo.get_all_cameras()
+                return any(c.codigo.strip().upper() == codigo for c in cams)
+            except Exception:
+                pass
+        return True
+
+    @app.route("/api/v1/cameras/<codigo_camara>/live", methods=["GET"])
+    def get_camera_live_frame(codigo_camara: str):
+        """
+        Retorna el fotograma JPEG anotado más reciente de la cámara con metadatos en encabezados.
+        Si la cámara no está transmitiendo, entrega el fotograma de espera correspondiente.
+        """
+        codigo_clean = codigo_camara.strip().upper()
+        if not _is_camera_registered(codigo_clean):
+            return (
+                jsonify(
+                    {
+                        "ok": False,
+                        "error": "CAMERA_NOT_FOUND",
+                        "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
+                    }
+                ),
+                404,
+            )
+
+        cond = _get_camera_condition(codigo_clean)
+        with cond:
+            frame_info = _latest_camera_frames.get(codigo_clean)
+            now = time.time()
+            is_fresh = bool(frame_info and (now - frame_info.get("timestamp", 0.0) < 4.0))
+
+            if is_fresh and frame_info:
+                headers = {
+                    "Content-Type": "image/jpeg",
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "X-Vision-Status": str(frame_info.get("status", "SIN_DATOS")),
+                    "X-Vehicle-Detected": "true" if frame_info.get("vehicle_detected") else "false",
+                    "X-Vehicle-Type": str(frame_info.get("tipo_vehiculo") or "NINGUNO"),
+                    "X-Vehicle-Confidence": str(frame_info.get("confianza") or "0.0"),
+                    "X-In-ROI": str(frame_info.get("in_roi", 0)),
+                    "X-Frame-Sequence": str(frame_info.get("sequence", 0)),
+                    "X-Last-Frame-Age": f"{now - frame_info['timestamp']:.2f}",
+                }
+                return Response(frame_info["jpeg"], mimetype="image/jpeg", headers=headers)
+            else:
+                standby_msg = "SIN SENAL" if frame_info else "EN ESPERA DE TRANSMISION"
+                standby = _generate_standby_jpeg(codigo_clean, standby_msg)
+                headers = {
+                    "Content-Type": "image/jpeg",
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "X-Vision-Status": "SIN_SENAL" if frame_info else "EN_ESPERA",
+                    "X-Vehicle-Detected": "false",
+                    "X-In-ROI": "0",
+                }
+                return Response(standby, mimetype="image/jpeg", headers=headers)
+
+    @app.route("/api/v1/cameras/<codigo_camara>/stream", methods=["GET"])
+    def stream_camera_mjpeg(codigo_camara: str):
+        """
+        Emite un flujo continuo MJPEG (multipart/x-mixed-replace) con los fotogramas anotados
+        en tiempo real para visualización directa en el Dashboard (VIGIA-CAM-01).
+        """
+        codigo_clean = codigo_camara.strip().upper()
+        if not _is_camera_registered(codigo_clean):
+            return (
+                jsonify(
+                    {
+                        "ok": False,
+                        "error": "CAMERA_NOT_FOUND",
+                        "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
+                    }
+                ),
+                404,
+            )
+
+        def generate_mjpeg():
+            cond = _get_camera_condition(codigo_clean)
+            last_seq = -1
+            standby_sent_time = 0.0
+
+            try:
+                while True:
+                    jpeg_data = None
+                    with cond:
+                        frame_info = _latest_camera_frames.get(codigo_clean)
+                        now = time.time()
+                        is_fresh = bool(frame_info and (now - frame_info.get("timestamp", 0.0) < 4.0))
+
+                        if is_fresh and frame_info.get("sequence") != last_seq:
+                            last_seq = frame_info["sequence"]
+                            jpeg_data = frame_info["jpeg"]
+                        else:
+                            cond.wait(timeout=1.0)
+                            frame_info = _latest_camera_frames.get(codigo_clean)
+                            now = time.time()
+                            is_fresh = bool(frame_info and (now - frame_info.get("timestamp", 0.0) < 4.0))
+                            if is_fresh and frame_info.get("sequence") != last_seq:
+                                last_seq = frame_info["sequence"]
+                                jpeg_data = frame_info["jpeg"]
+                            elif not is_fresh and (now - standby_sent_time > 1.0):
+                                jpeg_data = _generate_standby_jpeg(codigo_clean, "EN ESPERA DE TRANSMISION")
+                                standby_sent_time = now
+
+                    if jpeg_data:
+                        yield (
+                            b"--frame\r\n"
+                            b"Content-Type: image/jpeg\r\n"
+                            b"Content-Length: " + str(len(jpeg_data)).encode("ascii") + b"\r\n\r\n"
+                            + jpeg_data + b"\r\n"
+                        )
+            except (GeneratorExit, ConnectionResetError, BrokenPipeError, OSError):
+                logger.debug("Cliente desconectado de flujo MJPEG para '%s'", codigo_clean)
+                return
+
+        return Response(
+            generate_mjpeg(),
+            mimetype="multipart/x-mixed-replace; boundary=frame",
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+
+    @app.route("/api/v1/cameras/<codigo_camara>/status", methods=["GET"])
+    def get_camera_operational_status(codigo_camara: str):
+        """
+        Retorna el estado operativo en tiempo real de la cámara y sus indicadores de visión.
+        """
+        codigo_clean = codigo_camara.strip().upper()
+        if not _is_camera_registered(codigo_clean):
+            return (
+                jsonify(
+                    {
+                        "ok": False,
+                        "error": "CAMERA_NOT_FOUND",
+                        "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
+                    }
+                ),
+                404,
+            )
+
+        cond = _get_camera_condition(codigo_clean)
+        with cond:
+            frame_info = _latest_camera_frames.get(codigo_clean)
+            now = time.time()
+            is_transmitting = bool(frame_info and (now - frame_info.get("timestamp", 0.0) < 4.0))
+
+            operational_state = "EN_ESPERA"
+            if frame_info:
+                age = now - frame_info.get("timestamp", 0.0)
+                last_vis_status = frame_info.get("status", "")
+                if last_vis_status in ("CAMERA_ERROR", "PROCESSING_ERROR", "PERSISTENCE_ERROR"):
+                    operational_state = "ERROR"
+                elif age < 4.0:
+                    operational_state = "TRANSMITIENDO"
+                else:
+                    operational_state = "SIN_SEÑAL"
+            else:
+                pairing_repo = app.config.get("PAIRING_REPOSITORY")
+                has_enrolled_device = False
+                if pairing_repo:
+                    try:
+                        active_devs = pairing_repo.list_active_devices()
+                        has_enrolled_device = any(
+                            d.codigo_camara.strip().upper() == codigo_clean for d in active_devs
+                        )
+                    except Exception:
+                        pass
+                operational_state = "ENROLADA" if has_enrolled_device else "EN_ESPERA"
+
+            return jsonify(
+                {
+                    "ok": True,
+                    "codigo_camara": codigo_clean,
+                    "is_transmitting": is_transmitting,
+                    "operational_state": operational_state,
+                    "last_frame_seconds_ago": round(now - frame_info["timestamp"], 2) if frame_info else None,
+                    "status": (
+                        frame_info.get("status", "DESCONOCIDO")
+                        if is_transmitting
+                        else "EN_ESPERA"
+                    ),
+                    "vehicle_detected": frame_info.get("vehicle_detected", False) if is_transmitting else False,
+                    "tipo_vehiculo": frame_info.get("tipo_vehiculo") if is_transmitting else None,
+                    "confianza": frame_info.get("confianza") if is_transmitting else None,
+                    "in_roi": frame_info.get("in_roi", 0) if is_transmitting else 0,
+                    "sequence": frame_info.get("sequence") if frame_info else None,
+                }
+            )
+
 
     # =========================================================================
     # ENDPOINTS DE ENROLAMIENTO QR Y GESTIÓN DE DISPOSITIVOS (MOB-QR-01)
@@ -1636,9 +1978,45 @@ def create_ingest_app(
             logger.error("Error al crear pairing request: %s", exc)
             return jsonify({"ok": False, "error": "PAIRING_CREATION_FAILED", "message": str(exc)}), 500
 
-        host = request.host
-        scheme = "https" if request.is_secure or app.config.get("TLS_ENABLED") else request.scheme
-        pairing_url = f"{scheme}://{host}/mobile?claim={raw_claim_token}&cam={target_cam.codigo}"
+        port = int(app.config.get("DEV_PORT") or os.environ.get("VIGIA_DEV_PORT", "5000"))
+        tls_enabled = bool(request.is_secure or app.config.get("TLS_ENABLED"))
+
+        try:
+            urls = resolve_access_urls(port=port, tls_enabled=tls_enabled, app_config=app.config)
+        except ValueError as val_err:
+            return jsonify({
+                "ok": False,
+                "error": "INVALID_CONFIGURATION",
+                "message": f"Configuración de URL de acceso inválida: {val_err}"
+            }), 400
+
+        qr_base_url = urls.get("effective_qr_base_url")
+        if not qr_base_url:
+            return jsonify({
+                "ok": False,
+                "error": "NO_LAN_ADDRESS_AVAILABLE",
+                "message": (
+                    "No se detectó una interfaz de red LAN física activa accesible para dispositivos móviles. "
+                    "Conecte el equipo a una red Wi-Fi/Ethernet o configure 'VIGIA_PUBLIC_BASE_URL' en Software/.env."
+                )
+            }), 503
+
+        # Rechazo explícito de loopback / 0.0.0.0 para enrolamiento móvil (VIGIA-NET-01)
+        import urllib.parse
+        parsed_qr = urllib.parse.urlsplit(qr_base_url)
+        qr_host = (parsed_qr.hostname or "").lower()
+        if qr_host in ("127.0.0.1", "localhost", "0.0.0.0") and not app.config.get("TESTING"):
+            return jsonify({
+                "ok": False,
+                "error": "INVALID_QR_BASE_URL",
+                "message": (
+                    f"La dirección '{qr_base_url}' no es accesible desde un teléfono móvil. "
+                    "Configure 'VIGIA_PUBLIC_BASE_URL' con la IP LAN del equipo en Software/.env."
+                )
+            }), 400
+
+        pairing_url = f"{qr_base_url}/mobile?claim={raw_claim_token}&cam={target_cam.codigo}"
+        local_pairing_url = f"{urls['local_url']}/mobile?claim={raw_claim_token}&cam={target_cam.codigo}"
 
         qr = qrcode.QRCode(
             version=1,
@@ -1662,6 +2040,8 @@ def create_ingest_app(
             "claim_token": raw_claim_token,
             "pairing_url": pairing_url,
             "enrollment_url": pairing_url,
+            "lan_url": pairing_url,
+            "local_url": local_pairing_url,
             "qr_image_data": qr_base64,
             "qr_base64_data_url": qr_base64,
             "expira_en": req_dto.expira_en.isoformat(),
@@ -1913,6 +2293,77 @@ def create_ingest_app(
             },
         )
 
+    @app.route("/api/v1/tls/ca.crl", methods=["GET", "HEAD"])
+    def download_local_ca_crl():
+        """
+        Entrega la Lista de Revocación de Certificados (CRL) X.509 de VIGÍA (VIGIA-TLS-02D)
+        en formato binario DER (RFC 5280) con tipo MIME application/pkix-crl.
+        """
+        certs_dir: Path = app.config["CERTS_DIR"]
+        crl_file = (certs_dir / CRL_FILENAME).resolve()
+        if not crl_file.is_file():
+            try:
+                crl_file = ensure_crl_is_valid(certs_dir)
+            except Exception as exc:
+                logger.error("Error al asegurar CRL en endpoint Flask: %s", exc)
+                return (
+                    jsonify(
+                        {
+                            "ok": False,
+                            "error": "CRL_NOT_FOUND",
+                            "message": f"No fue posible generar o recuperar la CRL local: {exc}",
+                        }
+                    ),
+                    404,
+                )
+        if request.method == "HEAD":
+            resp = Response(b"", status=200, mimetype="application/pkix-crl")
+            resp.headers["Content-Length"] = str(crl_file.stat().st_size)
+            resp.headers["Cache-Control"] = "public, max-age=3600"
+            resp.headers["X-Content-Type-Options"] = "nosniff"
+            return resp
+        return (
+            crl_file.read_bytes(),
+            200,
+            {
+                "Content-Type": "application/pkix-crl",
+                "Content-Disposition": f'attachment; filename="{CRL_FILENAME}"',
+                "Cache-Control": "public, max-age=3600",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
+
+    @app.route("/api/v1/system/network", methods=["GET"])
+    def get_system_network_info():
+        """
+        Retorna las direcciones de red de acceso local y LAN de VIGÍA Vision Systems (VIGIA-NET-01).
+        Endpoint de solo lectura, sin credenciales, secretos ni tokens.
+        """
+        port = int(app.config.get("DEV_PORT") or os.environ.get("VIGIA_DEV_PORT", "5000"))
+        tls_enabled = bool(request.is_secure or app.config.get("TLS_ENABLED"))
+
+        urls = resolve_access_urls(port=port, tls_enabled=tls_enabled, app_config=app.config)
+
+        return jsonify({
+            "ok": True,
+            "local_url": urls["local_url"],
+            "lan_urls": urls["lan_urls"],
+            "recommended_lan_url": urls["recommended_lan_url"],
+            "public_base_url": urls["public_base_url"],
+            "effective_qr_base_url": urls["effective_qr_base_url"],
+            "port": urls["port"],
+            "tls_enabled": urls["tls_enabled"],
+            "interfaces": [
+                {
+                    "name": c["interface"],
+                    "ip": c["ip"],
+                    "url": f"{'https' if tls_enabled else 'http'}://{c['ip']}:{port}",
+                    "is_recommended": c.get("is_recommended", False),
+                }
+                for c in urls["candidates"]
+            ],
+        }), 200
+
     return app
 
 
@@ -1920,203 +2371,14 @@ class TLSConfigError(ValueError):
     """Excepción para errores de configuración, formato o coherencia de certificados TLS."""
 
 
-class NetworkDiscoveryError(Exception):
-    """Excepción para errores en la identificación o resolución de interfaces de red."""
-
-
-def is_usable_ipv4(ip_str: str) -> bool:
-    """
-    Verifica si una cadena es una IPv4 utilizable para comunicación de red local.
-    Excluye loopback (127.0.0.0/8), APIPA/link-local (169.254.0.0/16), 0.0.0.0 y multicast.
-    """
-    if not ip_str or not isinstance(ip_str, str):
-        return False
-    try:
-        ip_obj = ipaddress.IPv4Address(ip_str.strip())
-        return not (
-            ip_obj.is_loopback
-            or ip_obj.is_link_local
-            or ip_obj.is_unspecified
-            or ip_obj.is_multicast
-        )
-    except (ipaddress.AddressValueError, ValueError):
-        return False
-
-
-def get_windows_wlan_interfaces() -> Dict[str, str]:
-    """
-    Consulta las interfaces inalámbricas 802.11 registradas en Windows mediante netsh wlan.
-    Retorna un diccionario {nombre_interfaz: estado} (ej. {'Wi-Fi': 'connected'}).
-    """
-    try:
-        res = subprocess.run(
-            ["netsh", "wlan", "show", "interfaces"],
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=3,
-        )
-        if res.returncode != 0:
-            return {}
-        interfaces: Dict[str, str] = {}
-        current_name: Optional[str] = None
-        for line in res.stdout.splitlines():
-            line_str = line.strip()
-            if line_str.startswith("Name") or line_str.startswith("Nombre"):
-                parts = line_str.split(":", 1)
-                if len(parts) == 2:
-                    current_name = parts[1].strip()
-            elif line_str.startswith("State") or line_str.startswith("Estado"):
-                parts = line_str.split(":", 1)
-                if len(parts) == 2 and current_name:
-                    interfaces[current_name] = parts[1].strip().lower()
-        return interfaces
-    except Exception as exc:
-        logger.debug("Error al ejecutar netsh wlan show interfaces: %s", exc)
-        return {}
-
-
-def discover_wifi_ipv4(preferred_interface: Optional[str] = None) -> Tuple[str, str]:
-    """
-    Identifica de manera fiable la interfaz Wi-Fi física activa y su dirección IPv4 utilizable en Windows.
-
-    Excluye:
-    - Direcciones de loopback (127.0.0.0/8).
-    - Direcciones APIPA / link-local (169.254.0.0/16).
-    - Direcciones no asignadas o 0.0.0.0.
-    - Adaptadores Ethernet, virtuales (WSL, VMware, VirtualBox), VPN o Bluetooth.
-
-    Reglas estrictas:
-    - No sustituye automáticamente por Ethernet si no hay Wi-Fi utilizable.
-    - Si existen múltiples interfaces Wi-Fi con IPv4 válida y no se indica una preferida,
-      detiene el arranque solicitando selección explícita.
-    - Si la Wi-Fi está desconectada o no tiene IPv4 utilizable, lanza NetworkDiscoveryError.
-
-    Retorna
-    -------
-    Tuple[str, str]
-        (nombre_interfaz, direccion_ipv4)
-    """
-    import psutil
-
-    # 1. Resolver interfaz preferida (argumento o variable de entorno)
-    target_pref = preferred_interface or os.environ.get("VIGIA_WIFI_INTERFACE")
-    if target_pref:
-        target_pref = target_pref.strip()
-
-    # 2. Consultar interfaces de red mediante psutil
-    all_addrs = psutil.net_if_addrs()
-    all_stats = psutil.net_if_stats()
-
-    # 3. Consultar interfaces registradas en Windows WLAN Service
-    wlan_states = get_windows_wlan_interfaces()
-
-    # 4. Identificar adaptadores candidatos que sean genuinamente Wi-Fi
-    wifi_candidates: Dict[str, str] = {}
-
-    for if_name, addr_list in all_addrs.items():
-        lower_name = if_name.lower()
-
-        # Filtrar exclusiones de adaptadores que NO son Wi-Fi
-        if any(
-            exc in lower_name
-            for exc in [
-                "ethernet",
-                "vethernet",
-                "vmware",
-                "virtualbox",
-                "bluetooth",
-                "loopback",
-                "pseudo",
-                "tap",
-                "tun",
-                "vpn",
-            ]
-        ):
-            continue
-
-        # Debe ser reconocida por netsh wlan o tener patrón de nombre Wi-Fi
-        is_wlan = if_name in wlan_states or any(
-            pattern in lower_name
-            for pattern in ["wi-fi", "wifi", "wlan", "wireless", "inalámbric"]
-        )
-        if not is_wlan:
-            continue
-
-        # Comprobar si la interfaz está activa/conectada
-        st = all_stats.get(if_name)
-        is_up = st.isup if st else False
-        netsh_state = wlan_states.get(if_name, "")
-        if netsh_state in ["disconnected", "desconectado"]:
-            is_up = False
-
-        if not is_up:
-            continue
-
-        # Buscar dirección IPv4 utilizable
-        for addr in addr_list:
-            if getattr(addr.family, "name", "") == "AF_INET" or addr.family == socket.AF_INET:
-                if is_usable_ipv4(addr.address):
-                    wifi_candidates[if_name] = addr.address
-                    break
-
-    # 5. Aplicar reglas de resolución
-    if target_pref:
-        if target_pref in wifi_candidates:
-            return target_pref, wifi_candidates[target_pref]
-        raise NetworkDiscoveryError(
-            f"La interfaz Wi-Fi preferida '{target_pref}' no está disponible, conectada o no "
-            f"posee una dirección IPv4 utilizable. Interfaces Wi-Fi detectadas: {list(wifi_candidates.keys())}."
-        )
-
-    if not wifi_candidates:
-        raise NetworkDiscoveryError(
-            "No se encontró ninguna interfaz Wi-Fi activa con dirección IPv4 utilizable. "
-            "Asegúrese de que el adaptador Wi-Fi esté encendido y conectado a la red local. "
-            "Por política de seguridad no se permite la sustitución automática por Ethernet."
-        )
-
-    if len(wifi_candidates) > 1:
-        candidates_str = ", ".join(f"'{k}' ({v})" for k, v in wifi_candidates.items())
-        raise NetworkDiscoveryError(
-            f"Se detectaron múltiples interfaces Wi-Fi candidatas con IPv4 activa: {candidates_str}. "
-            "Detención de seguridad: especifique la interfaz requerida mediante el parámetro "
-            "'preferred_interface' o la variable de entorno 'VIGIA_WIFI_INTERFACE'."
-        )
-
-    selected_name, selected_ip = next(iter(wifi_candidates.items()))
-    return selected_name, selected_ip
-
-
-def get_local_ipv4_addresses() -> Set[str]:
-    """
-    Retorna el conjunto de direcciones IPv4 locales asignadas a interfaces de red activas.
-    Incluye siempre '127.0.0.1' (loopback local).
-    Combina la API de adaptadores del sistema (psutil/IP Helper) con la resolución de host.
-    """
-    addresses: Set[str] = {"127.0.0.1"}
-    # 1. Consultar adaptadores mediante psutil (IP Helper API de Windows)
-    try:
-        import psutil
-        for if_name, addr_list in psutil.net_if_addrs().items():
-            for addr in addr_list:
-                if getattr(addr.family, "name", "") == "AF_INET" or addr.family == socket.AF_INET:
-                    if addr.address:
-                        addresses.add(addr.address)
-    except Exception as exc:
-        logger.debug("Error al consultar adaptadores mediante psutil: %s", exc)
-
-    # 2. Complementar con socket.getaddrinfo para resolución de nombres locales
-    try:
-        hostname = socket.gethostname()
-        for info in socket.getaddrinfo(hostname, None, family=socket.AF_INET):
-            ip_val = info[4][0]
-            if ip_val:
-                addresses.add(ip_val)
-    except Exception as exc:
-        logger.debug("Error al consultar adaptadores locales mediante getaddrinfo: %s", exc)
-
-    return addresses
+# Utilidades de descubrimiento de red delegadas a VIGIA_Core.network.lan_detector (VIGIA-NET-02)
+from VIGIA_Core.network.lan_detector import (
+    NetworkDiscoveryError,
+    discover_wifi_ipv4,
+    get_local_ipv4_addresses,
+    get_windows_wlan_interfaces,
+    is_usable_ipv4,
+)
 
 
 def validate_listen_ip(ip_str: str) -> str:
@@ -2250,6 +2512,9 @@ def validate_tls_certificate_pair(
 
 
 MANIFEST_FILENAME = "active_generation.json"
+CRL_FILENAME = "vigia_root_ca.crl"
+CRL_STATE_FILENAME = "crl_state.json"
+DEFAULT_CRL_HTTP_PORT = 5080
 
 
 def resolve_active_tls_pair(
@@ -2620,10 +2885,431 @@ def generate_vigia_tls_certificate(
     return cert_p, key_p
 
 
+def load_crl_state(cert_dir: Union[str, Path]) -> Dict[str, Any]:
+    """
+    Carga de forma segura el estado persistente de la CRL (crl_state.json).
+    Si el archivo no existe o está corrupto, intenta recuperar la secuencia y certificados
+    revocados leyendo vigia_root_ca.crl (DER). Si tampoco existe, inicializa un estado limpio.
+    """
+    from cryptography import x509
+
+    base_dir = Path(cert_dir).resolve()
+    state_file = base_dir / CRL_STATE_FILENAME
+    crl_file = base_dir / CRL_FILENAME
+
+    if state_file.is_file():
+        try:
+            data = json.loads(state_file.read_text(encoding="utf-8"))
+            if isinstance(data, dict) and "crl_number" in data and "revoked_serials" in data:
+                return data
+        except Exception as exc:
+            logger.warning(
+                "Archivo %s corrupto o ilegible (%s). Intentando recuperación desde %s...",
+                state_file.name,
+                exc,
+                crl_file.name,
+            )
+
+    # Recuperación desde CRL DER si existe
+    if crl_file.is_file():
+        try:
+            der_bytes = crl_file.read_bytes()
+            crl = x509.load_der_x509_crl(der_bytes)
+            recovered_num = 1
+            try:
+                crl_num_ext = crl.extensions.get_extension_for_oid(x509.ExtensionOID.CRL_NUMBER)
+                recovered_num = int(crl_num_ext.value.crl_number)
+            except Exception:
+                pass
+
+            recovered_revoked: List[Dict[str, Any]] = []
+            for r in crl:
+                rev_dt = getattr(r, "revocation_date_utc", None) or r.revocation_date
+                if rev_dt.tzinfo is None:
+                    rev_dt = rev_dt.replace(tzinfo=datetime.timezone.utc)
+                recovered_revoked.append(
+                    {
+                        "serial_number": int(r.serial_number),
+                        "revocation_date": rev_dt.isoformat(),
+                        "reason": "keyCompromise",
+                    }
+                )
+
+            logger.info(
+                "Estado CRL recuperado desde archivo DER existente: secuencia #%d, %d serial(es) revocados.",
+                recovered_num,
+                len(recovered_revoked),
+            )
+            return {
+                "crl_number": recovered_num,
+                "revoked_serials": recovered_revoked,
+            }
+        except Exception as der_err:
+            logger.warning("Fallo al recuperar estado desde CRL DER: %s", der_err)
+
+    return {
+        "crl_number": 0,
+        "revoked_serials": [],
+    }
+
+
+def save_crl_state_atomic(cert_dir: Union[str, Path], state_data: Dict[str, Any]) -> Path:
+    """
+    Persiste atómicamente el estado de la CRL en crl_state.json mediante archivo temporal.
+    """
+    base_dir = Path(cert_dir).resolve()
+    base_dir.mkdir(parents=True, exist_ok=True)
+    state_file = base_dir / CRL_STATE_FILENAME
+    tmp_file = base_dir / f".{CRL_STATE_FILENAME}.tmp.{uuid.uuid4().hex[:8]}"
+    try:
+        tmp_file.write_text(json.dumps(state_data, indent=2), encoding="utf-8")
+        os.replace(tmp_file, state_file)
+    finally:
+        if tmp_file.exists():
+            tmp_file.unlink(missing_ok=True)
+    return state_file
+
+
+def generate_vigia_crl(
+    cert_dir: Union[str, Path],
+    crl_number: Optional[int] = None,
+    revoked_serials: Optional[List[Dict[str, Any]]] = None,
+    valid_days: int = 7,
+) -> Tuple[Path, Path]:
+    """
+    Genera atómicamente la Lista de Revocación de Certificados (CRL) X.509 v2 de VIGÍA (RFC 5280).
+    Firmada con la clave privada de vigia_root_ca_key.pem y hashes.SHA256().
+    Incorpora extensiones AuthorityKeyIdentifier y CRLNumber de secuencia monótona estricta.
+    Retorna (crl_file_path, state_file_path).
+    """
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+
+    base_dir = Path(cert_dir).resolve()
+    ca_cert_p = base_dir / "vigia_root_ca.crt"
+    ca_key_p = base_dir / "vigia_root_ca_key.pem"
+    crl_file_p = base_dir / CRL_FILENAME
+
+    if not ca_cert_p.is_file() or not ca_key_p.is_file():
+        raise FileNotFoundError(
+            f"No se encontraron los archivos de la Root CA en '{base_dir}'. "
+            "Se requiere vigia_root_ca.crt y vigia_root_ca_key.pem."
+        )
+
+    ca_cert = x509.load_pem_x509_certificate(ca_cert_p.read_bytes())
+    ca_key = serialization.load_pem_private_key(ca_key_p.read_bytes(), password=None)
+
+    current_state = load_crl_state(base_dir)
+
+    if crl_number is not None:
+        effective_num = int(crl_number)
+    else:
+        effective_num = int(current_state.get("crl_number", 0)) + 1
+
+    if revoked_serials is not None:
+        effective_revoked = list(revoked_serials)
+    else:
+        effective_revoked = list(current_state.get("revoked_serials", []))
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    this_update = now - datetime.timedelta(minutes=5)
+    next_update = now + datetime.timedelta(days=max(1, valid_days))
+
+    builder = (
+        x509.CertificateRevocationListBuilder()
+        .issuer_name(ca_cert.subject)
+        .last_update(this_update)
+        .next_update(next_update)
+    )
+
+    # AuthorityKeyIdentifier extensión coincidente con el SKI de la Root CA
+    aki = x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key())
+    builder = builder.add_extension(aki, critical=False)
+
+    # CRLNumber extensión monótona
+    builder = builder.add_extension(x509.CRLNumber(effective_num), critical=False)
+
+    reason_mapping = {
+        "unspecified": x509.ReasonFlags.unspecified,
+        "keycompromise": x509.ReasonFlags.key_compromise,
+        "key_compromise": x509.ReasonFlags.key_compromise,
+        "cacompromise": x509.ReasonFlags.ca_compromise,
+        "ca_compromise": x509.ReasonFlags.ca_compromise,
+        "affiliationchanged": x509.ReasonFlags.affiliation_changed,
+        "affiliation_changed": x509.ReasonFlags.affiliation_changed,
+        "superseded": x509.ReasonFlags.superseded,
+        "cessationofoperation": x509.ReasonFlags.cessation_of_operation,
+        "cessation_of_operation": x509.ReasonFlags.cessation_of_operation,
+        "certificatehold": x509.ReasonFlags.certificate_hold,
+        "certificate_hold": x509.ReasonFlags.certificate_hold,
+        "privilegewithdrawn": x509.ReasonFlags.privilege_withdrawn,
+        "privilege_withdrawn": x509.ReasonFlags.privilege_withdrawn,
+        "aacompromise": x509.ReasonFlags.aa_compromise,
+        "aa_compromise": x509.ReasonFlags.aa_compromise,
+        "removefromcrl": x509.ReasonFlags.remove_from_crl,
+        "remove_from_crl": x509.ReasonFlags.remove_from_crl,
+    }
+
+    for item in effective_revoked:
+        s_num = int(item["serial_number"])
+        rev_dt_raw = item.get("revocation_date")
+        if isinstance(rev_dt_raw, str):
+            rev_dt = datetime.datetime.fromisoformat(rev_dt_raw)
+        elif isinstance(rev_dt_raw, datetime.datetime):
+            rev_dt = rev_dt_raw
+        else:
+            rev_dt = now
+        if rev_dt.tzinfo is None:
+            rev_dt = rev_dt.replace(tzinfo=datetime.timezone.utc)
+
+        raw_reason = str(item.get("reason", "key_compromise")).strip().lower()
+        reason_flag = reason_mapping.get(raw_reason, x509.ReasonFlags.key_compromise)
+
+        rev_builder = (
+            x509.RevokedCertificateBuilder()
+            .serial_number(s_num)
+            .revocation_date(rev_dt)
+            .add_extension(x509.CRLReason(reason_flag), critical=False)
+        )
+        builder = builder.add_revoked_certificate(rev_builder.build())
+
+    crl = builder.sign(ca_key, hashes.SHA256())
+    crl_der = crl.public_bytes(serialization.Encoding.DER)
+
+    tmp_crl_p = base_dir / f".{CRL_FILENAME}.tmp.{uuid.uuid4().hex[:8]}"
+    try:
+        tmp_crl_p.write_bytes(crl_der)
+        os.replace(tmp_crl_p, crl_file_p)
+    finally:
+        if tmp_crl_p.exists():
+            tmp_crl_p.unlink(missing_ok=True)
+
+    new_state = {
+        "crl_number": effective_num,
+        "last_updated": now.isoformat(),
+        "this_update": this_update.isoformat(),
+        "next_update": next_update.isoformat(),
+        "revoked_serials": effective_revoked,
+    }
+    state_p = save_crl_state_atomic(base_dir, new_state)
+
+    logger.info(
+        "CRL X.509 emitida exitosamente: secuencia #%d, %d certificado(s) revocado(s), próxima actualización: %s",
+        effective_num,
+        len(effective_revoked),
+        next_update.isoformat(),
+    )
+    return crl_file_p, state_p
+
+
+def ensure_crl_is_valid(cert_dir: Union[str, Path], renew_window_days: int = 2) -> Path:
+    """
+    Comprueba si existe la CRL y si su validez temporal está dentro del umbral seguro.
+    Si no existe o si restan menos de renew_window_days antes de nextUpdate, la regenera.
+    """
+    from cryptography import x509
+
+    base_dir = Path(cert_dir).resolve()
+    crl_path = base_dir / CRL_FILENAME
+
+    needs_generation = False
+    if not crl_path.is_file():
+        needs_generation = True
+    else:
+        try:
+            crl_bytes = crl_path.read_bytes()
+            crl = x509.load_der_x509_crl(crl_bytes)
+            nu = getattr(crl, "next_update_utc", None) or crl.next_update
+            if nu.tzinfo is None:
+                nu = nu.replace(tzinfo=datetime.timezone.utc)
+            now = datetime.datetime.now(datetime.timezone.utc)
+            if nu - now < datetime.timedelta(days=max(0, renew_window_days)):
+                logger.info(
+                    "CRL próxima a expirar o expirada (nextUpdate: %s). Regenerando...",
+                    nu.isoformat(),
+                )
+                needs_generation = True
+        except Exception as exc:
+            logger.warning("Fallo al inspeccionar CRL existente (%s). Regenerando...", exc)
+            needs_generation = True
+
+    if needs_generation:
+        crl_path, _ = generate_vigia_crl(base_dir)
+
+    return crl_path
+
+
+def revoke_certificate(
+    cert_dir: Union[str, Path],
+    serial_number: int,
+    reason: str = "keyCompromise",
+) -> Tuple[Path, Path]:
+    """
+    Registra un número de serie como revocado, incrementa monótonamente la secuencia
+    y reemite de inmediato la CRL firmada por la Root CA.
+    """
+    base_dir = Path(cert_dir).resolve()
+    state = load_crl_state(base_dir)
+    revoked = list(state.get("revoked_serials", []))
+
+    serial_int = int(serial_number)
+    already_present = any(int(r.get("serial_number", -1)) == serial_int for r in revoked)
+    if not already_present:
+        now = datetime.datetime.now(datetime.timezone.utc)
+        revoked.append(
+            {
+                "serial_number": serial_int,
+                "revocation_date": now.isoformat(),
+                "reason": reason,
+            }
+        )
+
+    return generate_vigia_crl(base_dir, revoked_serials=revoked)
+
+
+class CRLRequestHandler(http.server.BaseHTTPRequestHandler):
+    """
+    Manejador HTTP estricto y minimalista para publicación y distribución de CRL (RFC 5280).
+    Acepta exclusivamente solicitudes GET y HEAD para /api/v1/tls/ca.crl y /api/v1/tls/ca.crt.
+    Rechaza cualquier otro método con HTTP 405 y cualquier otra ruta con HTTP 404.
+    Protege absolutamente contra divulgación de claves privadas o archivos del sistema.
+    """
+    server: "CRLHttpServer"
+
+    def do_GET(self) -> None:
+        self._serve_resource(send_body=True)
+
+    def do_HEAD(self) -> None:
+        self._serve_resource(send_body=False)
+
+    def _serve_resource(self, send_body: bool) -> None:
+        clean_path = self.path.split("?")[0].rstrip("/")
+        if clean_path == "/api/v1/tls/ca.crl":
+            crl_path = self.server.certs_dir / CRL_FILENAME
+            if not crl_path.is_file():
+                try:
+                    crl_path = ensure_crl_is_valid(self.server.certs_dir)
+                except Exception as exc:
+                    logger.error("Error al asegurar CRL para cliente HTTP: %s", exc)
+                    self.send_error(500, f"Error al generar CRL: {exc}")
+                    return
+            try:
+                data = crl_path.read_bytes()
+            except OSError as exc:
+                self.send_error(500, f"Error al leer CRL: {exc}")
+                return
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/pkix-crl")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "public, max-age=3600")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("Connection", "close")
+            self.end_headers()
+            if send_body:
+                self.wfile.write(data)
+
+        elif clean_path == "/api/v1/tls/ca.crt":
+            ca_path = self.server.certs_dir / "vigia_root_ca.crt"
+            if not ca_path.is_file():
+                self.send_error(404, "Certificado Root CA no encontrado")
+                return
+            try:
+                data = ca_path.read_bytes()
+            except OSError as exc:
+                self.send_error(500, f"Error al leer Root CA: {exc}")
+                return
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/x-x509-ca-cert")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "public, max-age=86400")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("Connection", "close")
+            self.end_headers()
+            if send_body:
+                self.wfile.write(data)
+        else:
+            self.send_error(404, "Not Found")
+
+    def do_POST(self) -> None:
+        self.send_response(405)
+        self.send_header("Allow", "GET, HEAD")
+        self.end_headers()
+
+    def do_PUT(self) -> None:
+        self.send_response(405)
+        self.send_header("Allow", "GET, HEAD")
+        self.end_headers()
+
+    def do_DELETE(self) -> None:
+        self.send_response(405)
+        self.send_header("Allow", "GET, HEAD")
+        self.end_headers()
+
+    def do_OPTIONS(self) -> None:
+        self.send_response(405)
+        self.send_header("Allow", "GET, HEAD")
+        self.end_headers()
+
+    def do_PATCH(self) -> None:
+        self.send_response(405)
+        self.send_header("Allow", "GET, HEAD")
+        self.end_headers()
+
+    def log_message(self, format: str, *args: Any) -> None:
+        logger.debug("CRL-HTTP: " + format, *args)
+
+
+class CRLHttpServer(http.server.ThreadingHTTPServer):
+    """
+    Servidor HTTP dedicado para distribución de CRL y Root CA sobre red local (RFC 5280).
+    Se ejecuta como hilo demonio desacoplado de Werkzeug para evitar interdependencias circulares TLS.
+    """
+    daemon_threads = True
+    allow_reuse_address = True
+
+    def __init__(self, server_address: Tuple[str, int], certs_dir: Union[str, Path]):
+        self.certs_dir = Path(certs_dir).resolve()
+        super().__init__(server_address, CRLRequestHandler)
+        self._thread: Optional[threading.Thread] = None
+
+    def start_in_background(self) -> None:
+        self._thread = threading.Thread(
+            target=self.serve_forever,
+            name="VigiaCRLHttpServerThread",
+            daemon=True,
+        )
+        self._thread.start()
+        logger.info(
+            "Servidor de distribución CRL iniciado en http://%s:%d/api/v1/tls/ca.crl",
+            self.server_address[0],
+            self.server_address[1],
+        )
+
+    def stop(self) -> None:
+        self.shutdown()
+        self.server_close()
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=3.0)
+        logger.info("Servidor de distribución CRL detenido correctamente.")
+
+
+def start_crl_http_server(
+    certs_dir: Union[str, Path],
+    host: str = "0.0.0.0",
+    port: int = 5080,
+) -> CRLHttpServer:
+    server = CRLHttpServer((host, port), certs_dir)
+    server.start_in_background()
+    return server
+
+
 def generate_vigia_local_ca_bundle(
     target_ip: str,
     cert_dir: Union[str, Path],
     valid_days: int = 90,
+    crl_http_port: Optional[int] = None,
     overwrite: bool = False,
 ) -> Tuple[Path, Path, Path]:
     """
@@ -2713,6 +3399,9 @@ def generate_vigia_local_ca_bundle(
         )
         ca_cert_p.write_bytes(ca_cert.public_bytes(serialization.Encoding.PEM))
 
+    # Asegurar existencia y validez de la Lista de Revocación de Certificados (CRL) privada (VIGIA-TLS-02D)
+    ensure_crl_is_valid(base_dir)
+
     # 2. Generar certificado hoja de servidor en directorio versionado y firmarlo con la Root CA
     gen_id = f"gen_{now.strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
     gen_dir = base_dir / "generations" / gen_id
@@ -2743,6 +3432,18 @@ def generate_vigia_local_ca_bundle(
 
         srv_ski = x509.SubjectKeyIdentifier.from_public_key(srv_key.public_key())
         ca_aki = x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key())
+        effective_crl_port = crl_http_port or int(
+            os.environ.get("VIGIA_CRL_HTTP_PORT", str(DEFAULT_CRL_HTTP_PORT))
+        )
+        cdp_uri = f"http://{target_ip.strip()}:{effective_crl_port}/api/v1/tls/ca.crl"
+        cdp_ext = x509.CRLDistributionPoints([
+            x509.DistributionPoint(
+                full_name=[x509.UniformResourceIdentifier(cdp_uri)],
+                relative_name=None,
+                crl_issuer=None,
+                reasons=None,
+            )
+        ])
         srv_cert = (
             x509.CertificateBuilder()
             .subject_name(srv_subject)
@@ -2770,6 +3471,7 @@ def generate_vigia_local_ca_bundle(
             .add_extension(srv_ski, critical=False)
             .add_extension(ca_aki, critical=False)
             .add_extension(x509.SubjectAlternativeName(san_entries), critical=False)
+            .add_extension(cdp_ext, critical=False)
             .sign(ca_key, hashes.SHA256())
         )
 
@@ -2806,6 +3508,8 @@ def generate_vigia_local_ca_bundle(
         "key_file": str(staged_key_p.name),
         "cert_relpath": f"generations/{gen_id}/{staged_cert_p.name}",
         "key_relpath": f"generations/{gen_id}/{staged_key_p.name}",
+        "cdp_url": cdp_uri,
+        "crl_port": effective_crl_port,
         "created_at": now.isoformat(),
     }
     tmp_manifest.write_text(json.dumps(manifest_data, indent=2), encoding="utf-8")
@@ -2846,64 +3550,15 @@ def validate_private_lan_or_loopback_ip(ip_str: str) -> str:
     return cleaned
 
 
-def discover_lan_ipv4(preferred_interface: Optional[str] = None) -> Tuple[str, str]:
-    """
-    Resuelve la interfaz de red local (LAN) física activa y su dirección IPv4 privada RFC 1918.
-    Prioriza Wi-Fi activa mediante ``discover_wifi_ipv4`` y, si la Wi-Fi está desconectada
-    pero el equipo está conectado al router local por Ethernet física, selecciona la interfaz
-    LAN física activa excluyendo adaptadores virtuales (WSL, Hyper-V, VMware, VirtualBox, VPN).
-    """
-    try:
-        return discover_wifi_ipv4(preferred_interface=preferred_interface)
-    except NetworkDiscoveryError:
-        if preferred_interface:
-            raise
-
-    import psutil
-
-    all_addrs = psutil.net_if_addrs()
-    all_stats = psutil.net_if_stats()
-    lan_candidates: Dict[str, str] = {}
-
-    for if_name, addr_list in all_addrs.items():
-        lower_name = if_name.lower()
-        if any(
-            exc in lower_name
-            for exc in [
-                "vethernet",
-                "wsl",
-                "hyper-v",
-                "vmware",
-                "virtualbox",
-                "bluetooth",
-                "loopback",
-                "pseudo",
-                "tap",
-                "tun",
-                "vpn",
-                "docker",
-            ]
-        ):
-            continue
-
-        st = all_stats.get(if_name)
-        if not (st and st.isup):
-            continue
-
-        for addr in addr_list:
-            if getattr(addr.family, "name", "") == "AF_INET" or addr.family == socket.AF_INET:
-                if is_usable_ipv4(addr.address):
-                    ip_obj = ipaddress.IPv4Address(addr.address)
-                    if ip_obj.is_private:
-                        lan_candidates[if_name] = addr.address
-                        break
-
-    if not lan_candidates:
-        raise NetworkDiscoveryError(
-            "No se encontró ninguna interfaz Wi-Fi ni LAN física activa con IPv4 privada utilizable."
-        )
-    selected_name, selected_ip = next(iter(lan_candidates.items()))
-    return selected_name, selected_ip
+# Utilidades de resolucion de LAN y URLs delegadas a VIGIA_Core.network.lan_detector (VIGIA-NET-02)
+from VIGIA_Core.network.lan_detector import (
+    NoLanAddressError,
+    discover_all_lan_candidates,
+    discover_lan_ipv4,
+    get_default_route_ip,
+    resolve_access_urls,
+    validate_public_base_url,
+)
 
 
 def regenerate_vigia_tls_certificate(
@@ -2930,6 +3585,82 @@ def regenerate_vigia_tls_certificate(
     )
 
 
+
+class NonBlockingTLSThreadedServer(ThreadedWSGIServer):
+    """
+    Servidor WSGI multihilo con negociación TLS delegada a los hilos de trabajo (VIGIA-NET-03).
+
+    Evita que el bucle de aceptación principal (accept) se bloquee de forma síncrona
+    ante conexiones TCP sin TLS inmediato (como Test-NetConnection, inspecciones pasivas
+    de red o conexiones especulativas de navegadores modernos).
+    """
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        app: Any,
+        ssl_context: Any = None,
+        **kwargs: Any,
+    ) -> None:
+        raw_ctx = ssl_context
+        if isinstance(raw_ctx, tuple):
+            raw_ctx = load_ssl_context(*raw_ctx)
+        super().__init__(host, port, app, ssl_context=None, **kwargs)
+        self.ssl_context = raw_ctx
+
+    def finish_request(self, request: Any, client_address: Any) -> None:
+        if self.ssl_context is not None:
+            request.settimeout(10.0)
+            try:
+                request = self.ssl_context.wrap_socket(request, server_side=True)
+            except (ssl.SSLError, OSError):
+                try:
+                    request.close()
+                except Exception:
+                    pass
+                return
+            request.settimeout(None)
+        super().finish_request(request, client_address)
+
+
+def run_simple(
+    hostname: str,
+    port: int,
+    application: Any,
+    use_reloader: bool = False,
+    use_debugger: bool = False,
+    threaded: bool = True,
+    ssl_context: Any = None,
+    **kwargs: Any,
+) -> None:
+    """
+    Arranca el servidor WSGI de VIGÍA. Si ssl_context está habilitado y threaded=True,
+    utiliza NonBlockingTLSThreadedServer para aislar las negociaciones TLS en hilos de trabajo.
+    """
+    if threaded and ssl_context is not None:
+        srv = NonBlockingTLSThreadedServer(
+            host=hostname,
+            port=port,
+            app=application,
+            ssl_context=ssl_context,
+            **kwargs,
+        )
+        srv.log_startup()
+        srv.serve_forever()
+    else:
+        _werkzeug_run_simple(
+            hostname=hostname,
+            port=port,
+            application=application,
+            use_reloader=use_reloader,
+            use_debugger=use_debugger,
+            threaded=threaded,
+            ssl_context=ssl_context,
+            **kwargs,
+        )
+
+
 def run_ingest_server(
     app: Flask,
     host: Optional[str] = None,
@@ -2939,6 +3670,7 @@ def run_ingest_server(
     validate_host: bool = True,
     auto_discover_wifi: bool = False,
     preferred_interface: Optional[str] = None,
+    target_ip: Optional[str] = None,
 ) -> None:
     """
     Inicia el servidor WSGI de VIGIA_API mediante Werkzeug con soporte nativo de TLS.
@@ -2958,15 +3690,16 @@ def run_ingest_server(
             host,
         )
 
-    if validate_host:
+    if validate_host and host != "0.0.0.0":
         host = validate_listen_ip(host)
 
     ssl_context = None
     if ssl_cert:
+        cert_target = target_ip or (host if host != "0.0.0.0" else None)
         resolved_cert, resolved_key = resolve_active_tls_pair(
             cert_dir_or_cert_path=ssl_cert,
             key_path=ssl_key,
-            target_ip=host,
+            target_ip=cert_target,
         )
         ssl_context = (str(resolved_cert), str(resolved_key))
 
@@ -3041,7 +3774,22 @@ if __name__ == "__main__":
             key_file = certs_dir / "vigia_key.pem"
             regen = os.environ.get("VIGIA_REGENERATE_CERT", "").strip().lower() in {"1", "true", "yes"}
 
-            if not cert_file.exists() or not key_file.exists() or regen:
+            # Verificar si el certificado activo cuenta con la extensión CDP requerida para CRL (VIGIA-TLS-02D)
+            has_cdp = False
+            if cert_file.exists():
+                try:
+                    from cryptography import x509
+                    active_leaf = x509.load_pem_x509_certificate(cert_file.read_bytes())
+                    active_leaf.extensions.get_extension_for_oid(x509.ExtensionOID.CRL_DISTRIBUTION_POINTS)
+                    has_cdp = True
+                except Exception:
+                    has_cdp = False
+
+            if not cert_file.exists() or not key_file.exists() or not has_cdp or regen:
+                if not has_cdp and cert_file.exists():
+                    logger.info("Certificado TLS no contiene CDP. Renovando par de servidor preservando Root CA...")
+                else:
+                    logger.info("Generando par de certificados TLS inicial para %s...", listen_ip)
                 generate_vigia_local_ca_bundle(
                     target_ip=listen_ip,
                     cert_dir=certs_dir,
@@ -3050,32 +3798,65 @@ if __name__ == "__main__":
             else:
                 try:
                     resolve_active_tls_pair(cert_file, key_file, target_ip=listen_ip)
-                except TLSConfigError:
-                    if regen:
-                        generate_vigia_local_ca_bundle(
-                            target_ip=listen_ip,
-                            cert_dir=certs_dir,
-                            overwrite=True,
-                        )
-                    else:
-                        raise
+                except TLSConfigError as tls_err:
+                    logger.warning(
+                        "Certificado TLS no válido para la IP actual %s (%s). "
+                        "Renovando certificado de servidor preservando la Root CA existente...",
+                        listen_ip,
+                        tls_err,
+                    )
+                    generate_vigia_local_ca_bundle(
+                        target_ip=listen_ip,
+                        cert_dir=certs_dir,
+                        overwrite=True,
+                    )
 
-            logger.info(
-                "Iniciando VIGÍA en modo HTTPS LAN seguro (%s: https://%s:%d | CA raíz: https://%s:%d/api/v1/tls/ca.crt)",
-                if_label,
-                listen_ip,
-                tls_port,
-                listen_ip,
-                tls_port,
-            )
-            run_ingest_server(
-                app=dev_app,
-                host=listen_ip,
-                port=tls_port,
-                ssl_cert=cert_file,
-                ssl_key=key_file,
-                validate_host=True,
-            )
+            # Iniciar servidor HTTP dedicado para distribución de CRL (RFC 5280)
+            crl_port = int(os.environ.get("VIGIA_CRL_HTTP_PORT", str(DEFAULT_CRL_HTTP_PORT)))
+            crl_server = None
+            try:
+                crl_server = start_crl_http_server(
+                    certs_dir=certs_dir,
+                    host="0.0.0.0",
+                    port=crl_port,
+                )
+            except Exception as crl_err:
+                logger.warning("No fue posible iniciar el servidor HTTP CRL en el puerto %d: %s", crl_port, crl_err)
+
+            bind_host = raw_host if (raw_host and raw_host == "0.0.0.0") else listen_ip
+
+            urls_info = resolve_access_urls(port=tls_port, tls_enabled=True, app_config=dev_app.config)
+            sys.stdout.write("\n" + "=" * 70 + "\n")
+            sys.stdout.write("VIGÍA Vision Systems — Servidor HTTPS LAN Seguro\n")
+            sys.stdout.write(f"- Local:            {urls_info['local_url']}\n")
+            if urls_info['recommended_lan_url']:
+                sys.stdout.write(f"- LAN:              {urls_info['recommended_lan_url']}\n")
+                sys.stdout.write(f"- Dashboard local:  {urls_info['local_url']}/app\n")
+                sys.stdout.write(f"- Dashboard LAN:    {urls_info['recommended_lan_url']}/app\n")
+                sys.stdout.write(f"- Enrolamiento QR:  {urls_info['effective_qr_base_url']}/mobile\n")
+                sys.stdout.write(f"- Descarga Root CA: {urls_info['recommended_lan_url']}/api/v1/tls/ca.crt\n")
+                sys.stdout.write(f"- Servidor CRL:     http://{listen_ip}:{crl_port}/api/v1/tls/ca.crl\n")
+            else:
+                sys.stdout.write("- LAN:              No disponible (sin interfaz física activa)\n")
+                sys.stdout.write(f"- Dashboard local:  {urls_info['local_url']}/app\n")
+                sys.stdout.write("- Enrolamiento QR:  Configure 'VIGIA_PUBLIC_BASE_URL' en Software/.env\n")
+                sys.stdout.write(f"- Servidor CRL:     http://127.0.0.1:{crl_port}/api/v1/tls/ca.crl\n")
+            sys.stdout.write("=" * 70 + "\n\n")
+            sys.stdout.flush()
+
+            try:
+                run_ingest_server(
+                    app=dev_app,
+                    host=bind_host,
+                    port=tls_port,
+                    ssl_cert=cert_file,
+                    ssl_key=key_file,
+                    validate_host=True,
+                    target_ip=listen_ip,
+                )
+            finally:
+                if crl_server:
+                    crl_server.stop()
         except (TLSConfigError, NetworkDiscoveryError, ValueError, FileNotFoundError) as tls_err:
             sys.stderr.write(f"ERROR DE CONFIGURACIÓN TLS / RED LOCAL: {tls_err}\n")
             sys.exit(1)
@@ -3088,6 +3869,25 @@ if __name__ == "__main__":
                 sys.stderr.write(f"ERROR DE SEGURIDAD DE RED: {ip_err}\n")
                 sys.exit(1)
         dev_port = int(os.environ.get("VIGIA_DEV_PORT", "5000"))
+
+        # Banner informativo de direcciones de acceso (VIGIA-NET-01)
+        urls_info = resolve_access_urls(port=dev_port, tls_enabled=False)
+        sys.stdout.write("\n" + "=" * 70 + "\n")
+        sys.stdout.write("VIGÍA Vision Systems — Direcciones de acceso\n")
+        sys.stdout.write(f"- Local:           {urls_info['local_url']}\n")
+        if urls_info['recommended_lan_url']:
+            sys.stdout.write(f"- LAN:             {urls_info['recommended_lan_url']}\n")
+            sys.stdout.write(f"- Dashboard local: {urls_info['local_url']}/app\n")
+            sys.stdout.write(f"- Dashboard LAN:   {urls_info['recommended_lan_url']}/app\n")
+            sys.stdout.write(f"- Enrolamiento QR: {urls_info['effective_qr_base_url']}/mobile\n")
+        else:
+            sys.stdout.write("- LAN:             No disponible (sin interfaz física activa)\n")
+            sys.stdout.write(f"- Dashboard local: {urls_info['local_url']}/app\n")
+            sys.stdout.write("- Dashboard LAN:   No disponible\n")
+            sys.stdout.write("- Enrolamiento QR: Configure 'VIGIA_PUBLIC_BASE_URL' en Software/.env\n")
+        sys.stdout.write("=" * 70 + "\n\n")
+        sys.stdout.flush()
+
         run_simple(
             hostname=dev_host,
             port=dev_port,

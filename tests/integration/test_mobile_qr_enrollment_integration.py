@@ -140,6 +140,8 @@ class TestMobileQREnrollmentIntegration(unittest.TestCase):
 
     def setUp(self) -> None:
         self.temp_dir = Path(tempfile.mkdtemp(prefix="vigia_qr_test_"))
+        self.certs_dir = self.temp_dir / "certs"
+        self.certs_dir.mkdir(parents=True, exist_ok=True)
         self.settings = VisionEngineSettings(
             vehicle_confidence_threshold=0.70,
             mobile_frame_ttl_seconds=3.0,
@@ -157,6 +159,7 @@ class TestMobileQREnrollmentIntegration(unittest.TestCase):
             topology_repository=self.topo_repo,
             pairing_repository=self.pairing_repo,
             allow_in_memory=False,
+            certs_dir=self.certs_dir,
         )
         self.client = self.app.test_client()
 
