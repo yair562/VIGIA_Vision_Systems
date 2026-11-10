@@ -1,0 +1,2115 @@
+{
+  "metadata": {
+    "benchmark_title": "VIGIA-OPT-CUDA-01: Benchmark Comparativo YOLO11n CPU vs CUDA",
+    "timestamp_utc": "2026-11-05T04:57:54.343837+00:00",
+    "model_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\yolo11n.pt",
+    "imgsz": 640,
+    "images_count": 10,
+    "warmup_iterations": 10,
+    "iterations_per_image": 10
+  },
+  "environment": {
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_version": "12.4",
+    "cuda_available": true,
+    "device_count": 1,
+    "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "compute_capability": "8.9",
+    "cudnn_version": 90100,
+    "vram_total_mb": 6140.5
+  },
+  "cpu_benchmark": {
+    "device": "cpu",
+    "half_precision": false,
+    "load_time_ms": 41.54,
+    "warmup_time_ms": 2481.57,
+    "warmup_iterations": 10,
+    "total_inferences_measured": 100,
+    "timings_ms": {
+      "preprocess": {
+        "mean": 0.984,
+        "p50": 0.941,
+        "p90": 1.156,
+        "p95": 1.219,
+        "min": 0.801,
+        "max": 2.998
+      },
+      "inference": {
+        "mean": 15.016,
+        "p50": 15.176,
+        "p90": 17.162,
+        "p95": 17.689,
+        "min": 12.46,
+        "max": 30.601
+      },
+      "postprocess": {
+        "mean": 0.513,
+        "p50": 0.456,
+        "p90": 0.513,
+        "p95": 0.596,
+        "min": 0.381,
+        "max": 3.33
+      },
+      "total_per_image": {
+        "mean": 16.854,
+        "p50": 16.945,
+        "p90": 19.345,
+        "p95": 19.902,
+        "min": 14.047,
+        "max": 37.456
+      }
+    },
+    "vram_metrics_mb": {
+      "allocated": 0.0,
+      "peak": 0.0
+    },
+    "detections": {
+      "20261104T163435_585610Z_5f6dd24bfe47_orig.jpg": [
+        {
+          "cls_id": 7,
+          "class_name": "truck",
+          "confidence": 0.7275,
+          "bbox": [
+            192.55,
+            407.4,
+            443.58,
+            599.72
+          ]
+        }
+      ],
+      "20261104T200530_515339Z_98cfa78a543c_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8481,
+          "bbox": [
+            286.58,
+            455.61,
+            700.11,
+            641.44
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.5816,
+          "bbox": [
+            22.72,
+            453.45,
+            717.6,
+            1277.43
+          ]
+        }
+      ],
+      "20261104T200533_518325Z_5abe7852985c_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8722,
+          "bbox": [
+            214.71,
+            494.54,
+            652.0,
+            647.84
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.4497,
+          "bbox": [
+            0.0,
+            438.09,
+            720.0,
+            1280.0
+          ]
+        }
+      ],
+      "20261104T200536_530141Z_b89dd61b722f_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8387,
+          "bbox": [
+            215.15,
+            507.28,
+            653.32,
+            658.2
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.6757,
+          "bbox": [
+            0.0,
+            480.66,
+            719.6,
+            1279.01
+          ]
+        }
+      ],
+      "20261104T200539_523805Z_f0f5f36b9edf_orig.jpg": [
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.8434,
+          "bbox": [
+            50.74,
+            274.23,
+            718.37,
+            1278.83
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.826,
+          "bbox": [
+            308.22,
+            510.09,
+            667.88,
+            692.41
+          ]
+        }
+      ],
+      "20261104T200609_153564Z_11711852483f_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9533,
+          "bbox": [
+            420.4,
+            117.73,
+            718.3,
+            346.65
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.909,
+          "bbox": [
+            1.36,
+            84.53,
+            297.66,
+            383.53
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7843,
+          "bbox": [
+            132.06,
+            462.54,
+            572.9,
+            661.12
+          ]
+        }
+      ],
+      "20261104T200623_170858Z_2aa4b786e295_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9645,
+          "bbox": [
+            0.0,
+            153.04,
+            345.61,
+            329.63
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9141,
+          "bbox": [
+            325.05,
+            108.72,
+            719.74,
+            290.06
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7712,
+          "bbox": [
+            170.99,
+            417.13,
+            567.41,
+            608.82
+          ]
+        },
+        {
+          "cls_id": 63,
+          "class_name": "laptop",
+          "confidence": 0.3642,
+          "bbox": [
+            260.67,
+            0.63,
+            710.44,
+            151.59
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.3491,
+          "bbox": [
+            568.54,
+            0.19,
+            715.61,
+            129.86
+          ]
+        }
+      ],
+      "20261104T200629_160285Z_ee10c21b5cf9_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9366,
+          "bbox": [
+            219.39,
+            179.65,
+            557.05,
+            335.27
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.8554,
+          "bbox": [
+            1.16,
+            165.83,
+            218.12,
+            398.43
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7239,
+          "bbox": [
+            330.81,
+            371.7,
+            674.43,
+            563.77
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.4244,
+          "bbox": [
+            546.02,
+            228.57,
+            720.0,
+            353.51
+          ]
+        }
+      ],
+      "20261104T200632_170714Z_99eb0b41d0e5_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.8555,
+          "bbox": [
+            186.43,
+            242.38,
+            507.34,
+            402.87
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.7363,
+          "bbox": [
+            1.5,
+            217.41,
+            181.08,
+            420.77
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7075,
+          "bbox": [
+            275.1,
+            431.11,
+            602.13,
+            627.21
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.6842,
+          "bbox": [
+            503.37,
+            313.05,
+            719.62,
+            440.78
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.426,
+          "bbox": [
+            28.95,
+            0.71,
+            596.69,
+            264.26
+          ]
+        }
+      ],
+      "20261104T200635_171060Z_9b60a94695b0_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9117,
+          "bbox": [
+            182.88,
+            265.18,
+            496.11,
+            428.94
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.8111,
+          "bbox": [
+            490.04,
+            343.82,
+            718.47,
+            471.49
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.7604,
+          "bbox": [
+            0.72,
+            244.38,
+            173.1,
+            436.41
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7244,
+          "bbox": [
+            267.38,
+            453.28,
+            589.75,
+            655.92
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.546,
+          "bbox": [
+            108.45,
+            0.8,
+            609.77,
+            297.64
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.2938,
+          "bbox": [
+            465.19,
+            0.46,
+            720.0,
+            358.63
+          ]
+        }
+      ]
+    }
+  },
+  "cuda_fp32_benchmark": {
+    "device": "cuda:0",
+    "half_precision": false,
+    "load_time_ms": 33.75,
+    "warmup_time_ms": 801.57,
+    "warmup_iterations": 10,
+    "total_inferences_measured": 100,
+    "timings_ms": {
+      "preprocess": {
+        "mean": 0.711,
+        "p50": 0.695,
+        "p90": 0.825,
+        "p95": 0.854,
+        "min": 0.556,
+        "max": 1.07
+      },
+      "inference": {
+        "mean": 7.98,
+        "p50": 7.672,
+        "p90": 8.052,
+        "p95": 8.139,
+        "min": 7.175,
+        "max": 34.728
+      },
+      "postprocess": {
+        "mean": 1.232,
+        "p50": 1.053,
+        "p90": 1.174,
+        "p95": 1.361,
+        "min": 0.879,
+        "max": 16.533
+      },
+      "total_per_image": {
+        "mean": 10.229,
+        "p50": 9.722,
+        "p90": 10.368,
+        "p95": 10.754,
+        "min": 9.114,
+        "max": 52.462
+      }
+    },
+    "vram_metrics_mb": {
+      "allocated": 52.3,
+      "peak": 75.78
+    },
+    "detections": {
+      "20261104T163435_585610Z_5f6dd24bfe47_orig.jpg": [
+        {
+          "cls_id": 7,
+          "class_name": "truck",
+          "confidence": 0.7275,
+          "bbox": [
+            192.57,
+            407.4,
+            443.58,
+            599.74
+          ]
+        }
+      ],
+      "20261104T200530_515339Z_98cfa78a543c_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.848,
+          "bbox": [
+            286.58,
+            455.62,
+            700.13,
+            641.44
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.5826,
+          "bbox": [
+            22.77,
+            453.62,
+            717.61,
+            1277.38
+          ]
+        }
+      ],
+      "20261104T200533_518325Z_5abe7852985c_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.872,
+          "bbox": [
+            214.69,
+            494.55,
+            651.98,
+            647.84
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.4508,
+          "bbox": [
+            0.0,
+            437.72,
+            720.0,
+            1280.0
+          ]
+        }
+      ],
+      "20261104T200536_530141Z_b89dd61b722f_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8381,
+          "bbox": [
+            215.15,
+            507.28,
+            653.3,
+            658.23
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.6753,
+          "bbox": [
+            0.0,
+            480.51,
+            719.64,
+            1279.01
+          ]
+        }
+      ],
+      "20261104T200539_523805Z_f0f5f36b9edf_orig.jpg": [
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.8437,
+          "bbox": [
+            50.85,
+            274.1,
+            718.43,
+            1278.75
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8255,
+          "bbox": [
+            308.27,
+            510.14,
+            667.89,
+            692.42
+          ]
+        }
+      ],
+      "20261104T200609_153564Z_11711852483f_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9533,
+          "bbox": [
+            420.43,
+            117.73,
+            718.31,
+            346.66
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.9091,
+          "bbox": [
+            1.34,
+            84.58,
+            297.68,
+            383.53
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7838,
+          "bbox": [
+            132.07,
+            462.5,
+            572.92,
+            661.11
+          ]
+        }
+      ],
+      "20261104T200623_170858Z_2aa4b786e295_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9645,
+          "bbox": [
+            0.0,
+            153.04,
+            345.61,
+            329.61
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9145,
+          "bbox": [
+            325.04,
+            108.75,
+            719.77,
+            290.06
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7709,
+          "bbox": [
+            171.0,
+            417.12,
+            567.36,
+            608.82
+          ]
+        },
+        {
+          "cls_id": 63,
+          "class_name": "laptop",
+          "confidence": 0.3634,
+          "bbox": [
+            260.65,
+            0.63,
+            710.42,
+            151.55
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.3492,
+          "bbox": [
+            568.55,
+            0.19,
+            715.63,
+            129.86
+          ]
+        }
+      ],
+      "20261104T200629_160285Z_ee10c21b5cf9_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9369,
+          "bbox": [
+            219.4,
+            179.65,
+            557.1,
+            335.29
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.8557,
+          "bbox": [
+            1.17,
+            165.8,
+            218.09,
+            398.42
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7249,
+          "bbox": [
+            330.83,
+            371.71,
+            674.42,
+            563.78
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.4259,
+          "bbox": [
+            546.01,
+            228.56,
+            720.0,
+            353.52
+          ]
+        }
+      ],
+      "20261104T200632_170714Z_99eb0b41d0e5_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.8565,
+          "bbox": [
+            186.4,
+            242.36,
+            507.33,
+            402.89
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.7359,
+          "bbox": [
+            1.51,
+            217.44,
+            181.12,
+            420.79
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.708,
+          "bbox": [
+            275.08,
+            431.08,
+            602.21,
+            627.21
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.6855,
+          "bbox": [
+            503.35,
+            313.02,
+            719.63,
+            440.79
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.4247,
+          "bbox": [
+            28.85,
+            0.7,
+            596.74,
+            264.25
+          ]
+        }
+      ],
+      "20261104T200635_171060Z_9b60a94695b0_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9118,
+          "bbox": [
+            182.87,
+            265.18,
+            496.11,
+            428.93
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.812,
+          "bbox": [
+            490.05,
+            343.83,
+            718.48,
+            471.48
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.76,
+          "bbox": [
+            0.72,
+            244.39,
+            173.13,
+            436.43
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7249,
+          "bbox": [
+            267.36,
+            453.25,
+            589.74,
+            655.92
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.545,
+          "bbox": [
+            108.5,
+            0.8,
+            609.75,
+            297.69
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.2939,
+          "bbox": [
+            465.17,
+            0.43,
+            720.0,
+            358.59
+          ]
+        }
+      ]
+    }
+  },
+  "cuda_fp16_benchmark": {
+    "device": "cuda:0",
+    "half_precision": true,
+    "load_time_ms": 38.56,
+    "warmup_time_ms": 504.21,
+    "warmup_iterations": 10,
+    "total_inferences_measured": 100,
+    "timings_ms": {
+      "preprocess": {
+        "mean": 0.639,
+        "p50": 0.619,
+        "p90": 0.761,
+        "p95": 0.862,
+        "min": 0.455,
+        "max": 1.021
+      },
+      "inference": {
+        "mean": 8.223,
+        "p50": 7.69,
+        "p90": 8.121,
+        "p95": 8.259,
+        "min": 6.892,
+        "max": 63.151
+      },
+      "postprocess": {
+        "mean": 1.041,
+        "p50": 1.017,
+        "p90": 1.149,
+        "p95": 1.182,
+        "min": 0.861,
+        "max": 2.033
+      },
+      "total_per_image": {
+        "mean": 10.171,
+        "p50": 9.597,
+        "p90": 10.227,
+        "p95": 10.703,
+        "min": 8.616,
+        "max": 66.353
+      }
+    },
+    "vram_metrics_mb": {
+      "allocated": 45.47,
+      "peak": 57.9
+    },
+    "detections": {
+      "20261104T163435_585610Z_5f6dd24bfe47_orig.jpg": [
+        {
+          "cls_id": 7,
+          "class_name": "truck",
+          "confidence": 0.728,
+          "bbox": [
+            192.5,
+            407.5,
+            443.5,
+            600.0
+          ]
+        }
+      ],
+      "20261104T200530_515339Z_98cfa78a543c_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8481,
+          "bbox": [
+            286.25,
+            455.5,
+            700.0,
+            641.5
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.5767,
+          "bbox": [
+            22.5,
+            453.75,
+            717.5,
+            1278.0
+          ]
+        }
+      ],
+      "20261104T200533_518325Z_5abe7852985c_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8726,
+          "bbox": [
+            214.5,
+            494.25,
+            652.0,
+            648.0
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.4485,
+          "bbox": [
+            0.0,
+            438.0,
+            720.0,
+            1280.0
+          ]
+        }
+      ],
+      "20261104T200536_530141Z_b89dd61b722f_orig.jpg": [
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8398,
+          "bbox": [
+            215.38,
+            507.75,
+            653.5,
+            658.0
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.6738,
+          "bbox": [
+            0.0,
+            480.0,
+            719.5,
+            1279.0
+          ]
+        }
+      ],
+      "20261104T200539_523805Z_f0f5f36b9edf_orig.jpg": [
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.8428,
+          "bbox": [
+            50.5,
+            274.75,
+            718.5,
+            1279.0
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.8267,
+          "bbox": [
+            308.0,
+            509.75,
+            668.0,
+            692.0
+          ]
+        }
+      ],
+      "20261104T200609_153564Z_11711852483f_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9541,
+          "bbox": [
+            420.5,
+            117.75,
+            718.5,
+            346.75
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.9092,
+          "bbox": [
+            1.25,
+            84.5,
+            297.75,
+            383.5
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7852,
+          "bbox": [
+            132.0,
+            462.75,
+            573.0,
+            661.0
+          ]
+        }
+      ],
+      "20261104T200623_170858Z_2aa4b786e295_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9644,
+          "bbox": [
+            0.0,
+            153.0,
+            345.5,
+            329.5
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9141,
+          "bbox": [
+            324.75,
+            108.75,
+            719.0,
+            290.0
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.772,
+          "bbox": [
+            171.0,
+            417.0,
+            567.5,
+            609.0
+          ]
+        },
+        {
+          "cls_id": 63,
+          "class_name": "laptop",
+          "confidence": 0.3667,
+          "bbox": [
+            260.5,
+            0.5,
+            710.0,
+            151.5
+          ]
+        },
+        {
+          "cls_id": 0,
+          "class_name": "person",
+          "confidence": 0.3442,
+          "bbox": [
+            568.5,
+            0.12,
+            715.5,
+            129.88
+          ]
+        }
+      ],
+      "20261104T200629_160285Z_ee10c21b5cf9_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9365,
+          "bbox": [
+            219.5,
+            179.75,
+            557.0,
+            335.25
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.856,
+          "bbox": [
+            1.25,
+            166.0,
+            218.0,
+            398.5
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.7251,
+          "bbox": [
+            330.5,
+            371.5,
+            674.5,
+            563.5
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.4263,
+          "bbox": [
+            546.0,
+            228.5,
+            720.0,
+            353.5
+          ]
+        }
+      ],
+      "20261104T200632_170714Z_99eb0b41d0e5_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.855,
+          "bbox": [
+            186.5,
+            242.12,
+            507.5,
+            403.0
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.7358,
+          "bbox": [
+            1.5,
+            217.38,
+            181.12,
+            420.5
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.709,
+          "bbox": [
+            275.0,
+            430.75,
+            602.0,
+            627.0
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.686,
+          "bbox": [
+            503.5,
+            313.0,
+            719.5,
+            441.0
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.4263,
+          "bbox": [
+            29.0,
+            0.75,
+            597.0,
+            264.25
+          ]
+        }
+      ],
+      "20261104T200635_171060Z_9b60a94695b0_orig.jpg": [
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.9116,
+          "bbox": [
+            183.0,
+            265.0,
+            496.0,
+            429.0
+          ]
+        },
+        {
+          "cls_id": 64,
+          "class_name": "mouse",
+          "confidence": 0.8115,
+          "bbox": [
+            490.0,
+            343.5,
+            718.0,
+            471.5
+          ]
+        },
+        {
+          "cls_id": 66,
+          "class_name": "keyboard",
+          "confidence": 0.7593,
+          "bbox": [
+            0.75,
+            244.5,
+            173.12,
+            436.5
+          ]
+        },
+        {
+          "cls_id": 2,
+          "class_name": "car",
+          "confidence": 0.728,
+          "bbox": [
+            267.5,
+            453.0,
+            590.0,
+            656.0
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.5449,
+          "bbox": [
+            108.12,
+            0.75,
+            610.0,
+            297.5
+          ]
+        },
+        {
+          "cls_id": 62,
+          "class_name": "tv",
+          "confidence": 0.2942,
+          "bbox": [
+            465.0,
+            0.5,
+            720.0,
+            358.75
+          ]
+        }
+      ]
+    }
+  },
+  "speedup_summary": {
+    "inference_speedup_fp32": 1.88,
+    "inference_speedup_fp16": 1.83,
+    "total_e2e_speedup_fp32": 1.65,
+    "total_e2e_speedup_fp16": 1.66,
+    "cpu_inference_mean_ms": 15.016,
+    "cuda_fp32_inference_mean_ms": 7.98,
+    "cuda_fp16_inference_mean_ms": 8.223,
+    "cpu_total_mean_ms": 16.854,
+    "cuda_fp32_total_mean_ms": 10.229,
+    "cuda_fp16_total_mean_ms": 10.171
+  },
+  "detection_comparison_fp32": {
+    "total_images_compared": 10,
+    "total_matched_detections": 32,
+    "class_mismatches": 0,
+    "mae_confidence": 0.000531,
+    "mae_box_coords_pixels": 0.0248,
+    "mean_iou_overlap": 0.99971,
+    "exact_numerical_equivalence": false,
+    "per_image": [
+      {
+        "image": "20261104T163435_585610Z_5f6dd24bfe47_orig.jpg",
+        "cpu_count": 1,
+        "cuda_count": 1,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "truck",
+            "cuda_class": "truck",
+            "class_match": true,
+            "cpu_conf": 0.7275,
+            "cuda_conf": 0.7275,
+            "conf_diff": 0.0,
+            "iou": 0.9998,
+            "coord_mae_px": 0.01
+          }
+        ]
+      },
+      {
+        "image": "20261104T200530_515339Z_98cfa78a543c_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.8481,
+            "cuda_conf": 0.848,
+            "conf_diff": 0.0001,
+            "iou": 0.9999,
+            "coord_mae_px": 0.007
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.5816,
+            "cuda_conf": 0.5826,
+            "conf_diff": 0.001,
+            "iou": 0.9996,
+            "coord_mae_px": 0.07
+          }
+        ]
+      },
+      {
+        "image": "20261104T200533_518325Z_5abe7852985c_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.8722,
+            "cuda_conf": 0.872,
+            "conf_diff": 0.0002,
+            "iou": 0.9998,
+            "coord_mae_px": 0.012
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.4497,
+            "cuda_conf": 0.4508,
+            "conf_diff": 0.0011,
+            "iou": 0.9996,
+            "coord_mae_px": 0.092
+          }
+        ]
+      },
+      {
+        "image": "20261104T200536_530141Z_b89dd61b722f_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.8387,
+            "cuda_conf": 0.8381,
+            "conf_diff": 0.0006,
+            "iou": 0.9998,
+            "coord_mae_px": 0.013
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.6757,
+            "cuda_conf": 0.6753,
+            "conf_diff": 0.0004,
+            "iou": 0.9998,
+            "coord_mae_px": 0.047
+          }
+        ]
+      },
+      {
+        "image": "20261104T200539_523805Z_f0f5f36b9edf_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.8434,
+            "cuda_conf": 0.8437,
+            "conf_diff": 0.0003,
+            "iou": 0.9995,
+            "coord_mae_px": 0.095
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.826,
+            "cuda_conf": 0.8255,
+            "conf_diff": 0.0005,
+            "iou": 0.9995,
+            "coord_mae_px": 0.03
+          }
+        ]
+      },
+      {
+        "image": "20261104T200609_153564Z_11711852483f_orig.jpg",
+        "cpu_count": 3,
+        "cuda_count": 3,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9533,
+            "cuda_conf": 0.9533,
+            "conf_diff": 0.0,
+            "iou": 0.9998,
+            "coord_mae_px": 0.013
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.909,
+            "cuda_conf": 0.9091,
+            "conf_diff": 0.0001,
+            "iou": 0.9997,
+            "coord_mae_px": 0.022
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7843,
+            "cuda_conf": 0.7838,
+            "conf_diff": 0.0005,
+            "iou": 0.9997,
+            "coord_mae_px": 0.02
+          }
+        ]
+      },
+      {
+        "image": "20261104T200623_170858Z_2aa4b786e295_orig.jpg",
+        "cpu_count": 5,
+        "cuda_count": 5,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9645,
+            "cuda_conf": 0.9645,
+            "conf_diff": 0.0,
+            "iou": 0.9999,
+            "coord_mae_px": 0.005
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9141,
+            "cuda_conf": 0.9145,
+            "conf_diff": 0.0004,
+            "iou": 0.9997,
+            "coord_mae_px": 0.017
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7712,
+            "cuda_conf": 0.7709,
+            "conf_diff": 0.0003,
+            "iou": 0.9998,
+            "coord_mae_px": 0.017
+          },
+          {
+            "cpu_class": "laptop",
+            "cuda_class": "laptop",
+            "class_match": true,
+            "cpu_conf": 0.3642,
+            "cuda_conf": 0.3634,
+            "conf_diff": 0.0008,
+            "iou": 0.9996,
+            "coord_mae_px": 0.02
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.3491,
+            "cuda_conf": 0.3492,
+            "conf_diff": 0.0001,
+            "iou": 0.9998,
+            "coord_mae_px": 0.007
+          }
+        ]
+      },
+      {
+        "image": "20261104T200629_160285Z_ee10c21b5cf9_orig.jpg",
+        "cpu_count": 4,
+        "cuda_count": 4,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9366,
+            "cuda_conf": 0.9369,
+            "conf_diff": 0.0003,
+            "iou": 0.9997,
+            "coord_mae_px": 0.02
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.8554,
+            "cuda_conf": 0.8557,
+            "conf_diff": 0.0003,
+            "iou": 0.9996,
+            "coord_mae_px": 0.02
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7239,
+            "cuda_conf": 0.7249,
+            "conf_diff": 0.001,
+            "iou": 0.9998,
+            "coord_mae_px": 0.012
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.4244,
+            "cuda_conf": 0.4259,
+            "conf_diff": 0.0015,
+            "iou": 0.9998,
+            "coord_mae_px": 0.007
+          }
+        ]
+      },
+      {
+        "image": "20261104T200632_170714Z_99eb0b41d0e5_orig.jpg",
+        "cpu_count": 5,
+        "cuda_count": 5,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.8555,
+            "cuda_conf": 0.8565,
+            "conf_diff": 0.001,
+            "iou": 0.9996,
+            "coord_mae_px": 0.02
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.7363,
+            "cuda_conf": 0.7359,
+            "conf_diff": 0.0004,
+            "iou": 0.9995,
+            "coord_mae_px": 0.025
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7075,
+            "cuda_conf": 0.708,
+            "conf_diff": 0.0005,
+            "iou": 0.9995,
+            "coord_mae_px": 0.033
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.6842,
+            "cuda_conf": 0.6855,
+            "conf_diff": 0.0013,
+            "iou": 0.9995,
+            "coord_mae_px": 0.018
+          },
+          {
+            "cpu_class": "tv",
+            "cuda_class": "tv",
+            "class_match": true,
+            "cpu_conf": 0.426,
+            "cuda_conf": 0.4247,
+            "conf_diff": 0.0013,
+            "iou": 0.9997,
+            "coord_mae_px": 0.042
+          }
+        ]
+      },
+      {
+        "image": "20261104T200635_171060Z_9b60a94695b0_orig.jpg",
+        "cpu_count": 6,
+        "cuda_count": 6,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9117,
+            "cuda_conf": 0.9118,
+            "conf_diff": 0.0001,
+            "iou": 0.9999,
+            "coord_mae_px": 0.005
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.8111,
+            "cuda_conf": 0.812,
+            "conf_diff": 0.0009,
+            "iou": 0.9998,
+            "coord_mae_px": 0.01
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.7604,
+            "cuda_conf": 0.76,
+            "conf_diff": 0.0004,
+            "iou": 0.9997,
+            "coord_mae_px": 0.015
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7244,
+            "cuda_conf": 0.7249,
+            "conf_diff": 0.0005,
+            "iou": 0.9998,
+            "coord_mae_px": 0.015
+          },
+          {
+            "cpu_class": "tv",
+            "cuda_class": "tv",
+            "class_match": true,
+            "cpu_conf": 0.546,
+            "cuda_conf": 0.545,
+            "conf_diff": 0.001,
+            "iou": 0.9997,
+            "coord_mae_px": 0.03
+          },
+          {
+            "cpu_class": "tv",
+            "cuda_class": "tv",
+            "class_match": true,
+            "cpu_conf": 0.2938,
+            "cuda_conf": 0.2939,
+            "conf_diff": 0.0001,
+            "iou": 0.9997,
+            "coord_mae_px": 0.023
+          }
+        ]
+      }
+    ]
+  },
+  "detection_comparison_fp16": {
+    "total_images_compared": 10,
+    "total_matched_detections": 32,
+    "class_mismatches": 0,
+    "mae_confidence": 0.001144,
+    "mae_box_coords_pixels": 0.1476,
+    "mean_iou_overlap": 0.99776,
+    "exact_numerical_equivalence": false,
+    "per_image": [
+      {
+        "image": "20261104T163435_585610Z_5f6dd24bfe47_orig.jpg",
+        "cpu_count": 1,
+        "cuda_count": 1,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "truck",
+            "cuda_class": "truck",
+            "class_match": true,
+            "cpu_conf": 0.7275,
+            "cuda_conf": 0.728,
+            "conf_diff": 0.0005,
+            "iou": 0.9975,
+            "coord_mae_px": 0.127
+          }
+        ]
+      },
+      {
+        "image": "20261104T200530_515339Z_98cfa78a543c_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.8481,
+            "cuda_conf": 0.8481,
+            "conf_diff": 0.0,
+            "iou": 0.998,
+            "coord_mae_px": 0.152
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.5816,
+            "cuda_conf": 0.5767,
+            "conf_diff": 0.0049,
+            "iou": 0.9985,
+            "coord_mae_px": 0.297
+          }
+        ]
+      },
+      {
+        "image": "20261104T200533_518325Z_5abe7852985c_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.8722,
+            "cuda_conf": 0.8726,
+            "conf_diff": 0.0004,
+            "iou": 0.9966,
+            "coord_mae_px": 0.165
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.4497,
+            "cuda_conf": 0.4485,
+            "conf_diff": 0.0012,
+            "iou": 0.9999,
+            "coord_mae_px": 0.022
+          }
+        ]
+      },
+      {
+        "image": "20261104T200536_530141Z_b89dd61b722f_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.8387,
+            "cuda_conf": 0.8398,
+            "conf_diff": 0.0011,
+            "iou": 0.9946,
+            "coord_mae_px": 0.27
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.6757,
+            "cuda_conf": 0.6738,
+            "conf_diff": 0.0019,
+            "iou": 0.999,
+            "coord_mae_px": 0.193
+          }
+        ]
+      },
+      {
+        "image": "20261104T200539_523805Z_f0f5f36b9edf_orig.jpg",
+        "cpu_count": 2,
+        "cuda_count": 2,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.8434,
+            "cuda_conf": 0.8428,
+            "conf_diff": 0.0006,
+            "iou": 0.9988,
+            "coord_mae_px": 0.265
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.826,
+            "cuda_conf": 0.8267,
+            "conf_diff": 0.0007,
+            "iou": 0.995,
+            "coord_mae_px": 0.272
+          }
+        ]
+      },
+      {
+        "image": "20261104T200609_153564Z_11711852483f_orig.jpg",
+        "cpu_count": 3,
+        "cuda_count": 3,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9533,
+            "cuda_conf": 0.9541,
+            "conf_diff": 0.0008,
+            "iou": 0.9985,
+            "coord_mae_px": 0.105
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.909,
+            "cuda_conf": 0.9092,
+            "conf_diff": 0.0002,
+            "iou": 0.9991,
+            "coord_mae_px": 0.065
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7843,
+            "cuda_conf": 0.7852,
+            "conf_diff": 0.0009,
+            "iou": 0.998,
+            "coord_mae_px": 0.123
+          }
+        ]
+      },
+      {
+        "image": "20261104T200623_170858Z_2aa4b786e295_orig.jpg",
+        "cpu_count": 5,
+        "cuda_count": 5,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9645,
+            "cuda_conf": 0.9644,
+            "conf_diff": 0.0001,
+            "iou": 0.9987,
+            "coord_mae_px": 0.07
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9141,
+            "cuda_conf": 0.9141,
+            "conf_diff": 0.0,
+            "iou": 0.9969,
+            "coord_mae_px": 0.283
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7712,
+            "cuda_conf": 0.772,
+            "conf_diff": 0.0008,
+            "iou": 0.9981,
+            "coord_mae_px": 0.102
+          },
+          {
+            "cpu_class": "laptop",
+            "cuda_class": "laptop",
+            "class_match": true,
+            "cpu_conf": 0.3642,
+            "cuda_conf": 0.3667,
+            "conf_diff": 0.0025,
+            "iou": 0.9972,
+            "coord_mae_px": 0.208
+          },
+          {
+            "cpu_class": "person",
+            "cuda_class": "person",
+            "class_match": true,
+            "cpu_conf": 0.3491,
+            "cuda_conf": 0.3442,
+            "conf_diff": 0.0049,
+            "iou": 0.9983,
+            "coord_mae_px": 0.06
+          }
+        ]
+      },
+      {
+        "image": "20261104T200629_160285Z_ee10c21b5cf9_orig.jpg",
+        "cpu_count": 4,
+        "cuda_count": 4,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9366,
+            "cuda_conf": 0.9365,
+            "conf_diff": 0.0001,
+            "iou": 0.9988,
+            "coord_mae_px": 0.07
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.8554,
+            "cuda_conf": 0.856,
+            "conf_diff": 0.0006,
+            "iou": 0.998,
+            "coord_mae_px": 0.112
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7239,
+            "cuda_conf": 0.7251,
+            "conf_diff": 0.0012,
+            "iou": 0.9965,
+            "coord_mae_px": 0.213
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.4244,
+            "cuda_conf": 0.4263,
+            "conf_diff": 0.0019,
+            "iou": 0.9992,
+            "coord_mae_px": 0.025
+          }
+        ]
+      },
+      {
+        "image": "20261104T200632_170714Z_99eb0b41d0e5_orig.jpg",
+        "cpu_count": 5,
+        "cuda_count": 5,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.8555,
+            "cuda_conf": 0.855,
+            "conf_diff": 0.0005,
+            "iou": 0.9969,
+            "coord_mae_px": 0.155
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.7363,
+            "cuda_conf": 0.7358,
+            "conf_diff": 0.0005,
+            "iou": 0.9983,
+            "coord_mae_px": 0.085
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7075,
+            "cuda_conf": 0.709,
+            "conf_diff": 0.0015,
+            "iou": 0.9964,
+            "coord_mae_px": 0.2
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.6842,
+            "cuda_conf": 0.686,
+            "conf_diff": 0.0018,
+            "iou": 0.9967,
+            "coord_mae_px": 0.13
+          },
+          {
+            "cpu_class": "tv",
+            "cuda_class": "tv",
+            "class_match": true,
+            "cpu_conf": 0.426,
+            "cuda_conf": 0.4263,
+            "conf_diff": 0.0003,
+            "iou": 0.9992,
+            "coord_mae_px": 0.102
+          }
+        ]
+      },
+      {
+        "image": "20261104T200635_171060Z_9b60a94695b0_orig.jpg",
+        "cpu_count": 6,
+        "cuda_count": 6,
+        "count_equal": true,
+        "matches": [
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.9117,
+            "cuda_conf": 0.9116,
+            "conf_diff": 0.0001,
+            "iou": 0.9978,
+            "coord_mae_px": 0.118
+          },
+          {
+            "cpu_class": "mouse",
+            "cuda_class": "mouse",
+            "class_match": true,
+            "cpu_conf": 0.8111,
+            "cuda_conf": 0.8115,
+            "conf_diff": 0.0004,
+            "iou": 0.9952,
+            "coord_mae_px": 0.21
+          },
+          {
+            "cpu_class": "keyboard",
+            "cuda_class": "keyboard",
+            "class_match": true,
+            "cpu_conf": 0.7604,
+            "cuda_conf": 0.7593,
+            "conf_diff": 0.0011,
+            "iou": 0.9986,
+            "coord_mae_px": 0.065
+          },
+          {
+            "cpu_class": "car",
+            "cuda_class": "car",
+            "class_match": true,
+            "cpu_conf": 0.7244,
+            "cuda_conf": 0.728,
+            "conf_diff": 0.0036,
+            "iou": 0.9971,
+            "coord_mae_px": 0.183
+          },
+          {
+            "cpu_class": "tv",
+            "cuda_class": "tv",
+            "class_match": true,
+            "cpu_conf": 0.546,
+            "cuda_conf": 0.5449,
+            "conf_diff": 0.0011,
+            "iou": 0.9982,
+            "coord_mae_px": 0.188
+          },
+          {
+            "cpu_class": "tv",
+            "cuda_class": "tv",
+            "class_match": true,
+            "cpu_conf": 0.2938,
+            "cuda_conf": 0.2942,
+            "conf_diff": 0.0004,
+            "iou": 0.9988,
+            "coord_mae_px": 0.088
+          }
+        ]
+      }
+    ]
+  }
+}

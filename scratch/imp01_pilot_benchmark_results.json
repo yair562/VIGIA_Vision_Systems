@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "benchmark_name": "VIGIA-VISION-IMP-01_PILOT_BENCHMARK",
+    "timestamp_utc": "2026-11-05T04:10:44.630952+00:00",
+    "spool_mode": "NVME",
+    "cameras": [
+      "CAM-ENTRADA",
+      "CAM-SALIDA"
+    ],
+    "total_frames_enqueued": 500,
+    "frames_per_camera": 250,
+    "wall_time_seconds": 2.9069,
+    "effective_throughput_fps": 172.0
+  },
+  "latencies_ms": {
+    "T_enq": {
+      "count": 500,
+      "p50": 1.78310000046622,
+      "p90": 9.630620003736114,
+      "p95": 10.237475009489572,
+      "p99": 11.522119002329417,
+      "mean": 4.093015799851855,
+      "max": 12.792399997124448
+    },
+    "T_wait": {
+      "count": 500,
+      "p50": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "p99": 0.0,
+      "mean": 0.0,
+      "max": 0.0
+    },
+    "T_persist": {
+      "count": 500,
+      "p50": 0.0,
+      "p90": 16.00000000325963,
+      "p95": 16.00000000325963,
+      "p99": 16.00000000325963,
+      "mean": 6.997999999934109,
+      "max": 16.00000000325963
+    },
+    "T_sql": {
+      "count": 500,
+      "p50": 0.0,
+      "p90": 16.00000000325963,
+      "p95": 16.00000000325963,
+      "p99": 16.00000000325963,
+      "mean": 4.032000000006519,
+      "max": 16.00000000325963
+    },
+    "T_cycle": {
+      "count": 500,
+      "p50": 14.999999999417923,
+      "p90": 16.00000000325963,
+      "p95": 16.00000000325963,
+      "p99": 16.00000000325963,
+      "mean": 11.029999999940628,
+      "max": 29.999999998835847
+    },
+    "theoretical_sync_blocking": {
+      "mean": 11.03,
+      "p95": 32.0
+    }
+  },
+  "speedup_metrics": {
+    "sync_equiv_blocking_mean_ms": 11.03,
+    "async_enq_blocking_mean_ms": 4.093,
+    "speedup_mean_factor": 2.69,
+    "speedup_p95_factor": 3.13
+  },
+  "memory_stability": {
+    "initial_rss_mb": 41.13,
+    "final_rss_mb": 43.46,
+    "delta_rss_mb": 2.33,
+    "ols_beta_1_per_frame_mb": -0.006272,
+    "ols_beta_1_per_100_frames_mb": -0.6272,
+    "se_newey_west": 0.004895,
+    "t_stat": -1.2812,
+    "p_value_one_tailed": 0.8999,
+    "newey_west_lags": 2,
+    "verdict": "ESTABLE"
+  },
+  "cold_start_reconciliation": {
+    "num_spools_tested": 100,
+    "spools_recovered": 100,
+    "spools_corrupt": 0,
+    "elapsed_seconds": 1.64,
+    "elapsed_ms": 1634.0,
+    "passed_benchmark_latency": true,
+    "orphan_files_remaining": 0
+  },
+  "dlq_reconciliation": {
+    "dlq_scanned": 20,
+    "dlq_reprocessed": 20,
+    "dlq_failed": 0,
+    "elapsed_ms": 372.31
+  },
+  "acceptance_criteria_matrix": {
+    "C1_zero_frame_loss_under_crash": "CUMPLIDO (Validado formalmente por test_05 y test_06)",
+    "C2_bounded_queue_and_backpressure_429": "CUMPLIDO (Capacidad máx 64, test_12 confirma 429)",
+    "C3_causal_camera_order_preserved": "CUMPLIDO (camera_sequence serializado por ranura)",
+    "C4_idempotent_reconciliation": "CUMPLIDO (0 duplicados confirmados por test_09 y test_10)",
+    "C5_dlq_with_sequence_discontinuity": "CUMPLIDO (test_08 y test_14 confirman reprocesamiento)",
+    "C6_zero_orphan_evidences": "CUMPLIDO (Rollback compensatorio validado por test_07)",
+    "C7_speedup_greater_than_threshold": "CUMPLIDO (2.69x vs umbral teórico 1.40x)",
+    "C8_cold_reconciliation_under_3s": "CUMPLIDO (1634.0 ms para 100 spools < 3000 ms)",
+    "C9_memory_stability_ols_newey_west": "CUMPLIDO (ESTABLE, beta=-0.6272 MB/100f)"
+  }
+}

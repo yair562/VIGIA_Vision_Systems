@@ -166,6 +166,9 @@ class TestCameraStreamAndBackend(unittest.TestCase):
             certs_dir=self.certs_dir,
         )
         self.client = self.app.test_client()
+        sess_mgr = self.app.config["SESSION_MANAGER"]
+        self.admin_session = sess_mgr.create_session(self.admin_user)
+        self.client.set_cookie("vigia_session", self.admin_session.token)
         self.synthetic_frame_bytes = _bgr_to_jpeg(_make_synthetic_bgr())
 
     def tearDown(self) -> None:

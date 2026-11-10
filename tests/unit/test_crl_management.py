@@ -119,6 +119,24 @@ def _create_mock_root_ca(target_dir: Path) -> Tuple[x509.Certificate, rsa.RSAPri
 class TestCRLManagement(unittest.TestCase):
     """Pruebas exhaustivas de generación, distribución, rotación y validación de CRL."""
 
+    @classmethod
+    def setUpClass(cls):
+        cls._orig_env = os.environ.get("VIGIA_ENV")
+        cls._orig_dev_sign = os.environ.get("VIGIA_DEV_ALLOW_LOCAL_SIGNING")
+        os.environ["VIGIA_ENV"] = "test"
+        os.environ["VIGIA_DEV_ALLOW_LOCAL_SIGNING"] = "true"
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls._orig_env is not None:
+            os.environ["VIGIA_ENV"] = cls._orig_env
+        else:
+            os.environ.pop("VIGIA_ENV", None)
+        if cls._orig_dev_sign is not None:
+            os.environ["VIGIA_DEV_ALLOW_LOCAL_SIGNING"] = cls._orig_dev_sign
+        else:
+            os.environ.pop("VIGIA_DEV_ALLOW_LOCAL_SIGNING", None)
+
     def setUp(self):
         self.temp_dir = Path(tempfile.mkdtemp(prefix="vigia_crl_test_"))
         self.ca_cert, self.ca_key = _create_mock_root_ca(self.temp_dir)

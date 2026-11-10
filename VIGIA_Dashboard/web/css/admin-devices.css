@@ -897,7 +897,16 @@
   flex-direction: column;
   gap: 0.85rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.camera-card--vehicle-detected {
+  border-color: rgba(16, 185, 129, 0.55);
+}
+
+.camera-card--roi-active {
+  border-color: rgba(99, 102, 241, 0.7);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.28), 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
 .camera-card:hover {
@@ -1049,6 +1058,25 @@
   align-items: center;
   justify-content: center;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: aspect-ratio 0.25s ease, max-height 0.25s ease, max-width 0.25s ease, box-shadow 0.2s ease;
+}
+
+.camera-card-media--landscape {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-width: 100%;
+}
+
+.camera-card-media--portrait {
+  aspect-ratio: 9 / 16;
+  width: 100%;
+  max-width: 270px;
+  max-height: 480px;
+  margin: 0 auto;
+}
+
+.camera-card-media--roi-active {
+  box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.65), 0 0 12px rgba(99, 102, 241, 0.25);
 }
 
 .camera-stream-img {
@@ -1109,6 +1137,51 @@
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.camera-playback-badge--reconnecting {
+  background-color: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #fcd34d;
+}
+
+.camera-playback-badge--persistent {
+  background-color: rgba(239, 68, 68, 0.28);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #f87171;
+}
+
+.camera-playback-retry-btn {
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--border-radius-pill, 9999px);
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  background-color: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  z-index: 3;
+}
+
+.camera-playback-retry-btn:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.45);
+  border-color: rgba(248, 113, 113, 0.85);
+  transform: scale(1.02);
+}
+
+.camera-playback-retry-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.camera-playback-retry-btn:focus-visible {
+  outline: 2px solid #f87171;
+  outline-offset: 2px;
 }
 
 .camera-status-pill {
@@ -1311,5 +1384,11 @@
 @media (max-width: 639px) {
   .admin-nav-username {
     display: none;
+  }
+
+  .camera-card-media.camera-card-media--portrait,
+  .camera-card-media--portrait {
+    max-width: 100%;
+    max-height: 540px;
   }
 }

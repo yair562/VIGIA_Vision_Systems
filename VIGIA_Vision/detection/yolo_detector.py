@@ -21,8 +21,9 @@ automáticamente durante la inferencia o en el filtrado de defensa en profundida
 from __future__ import annotations
 
 import logging
+import os
 import threading
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Union
 
@@ -48,6 +49,111 @@ class ModelLoadError(RuntimeError):
 
 class InferenceError(RuntimeError):
     """Fallo inesperado durante la ejecución de inferencia predictiva."""
+
+
+def resolve_inference_device(device_setting: Optional[str] = None) -> str:
+    """
+    Resuelve y valida el dispositivo de cómputo para inferencia YOLO.
+
+    Soporta:
+    - 'auto': Evalúa disponibilidad funcional de CUDA (PyTorch + hardware). Si
+      está operativa, selecciona 'cuda:0'; ante cualquier fallo o ausencia,
+      realiza un fallback controlado a 'cpu' registrando una advertencia.
+    - 'cuda' o 'cuda:N': Requiere explícitamente GPU CUDA. Valida disponibilidad
+      y funcionalidad. Si no está disponible, lanza RuntimeError (fail-fast).
+    - 'cpu': Selecciona cómputo en procesador central (modo estándar de respaldo).
+
+    Parámetros
+    ----------
+    device_setting : Optional[str]
+        Cadena de configuración ('auto', 'cuda', 'cuda:N', 'cpu') o None para
+        resolver desde la variable de entorno 'VIGIA_INFERENCE_DEVICE'.
+
+    Retorna
+    -------
+    str
+        Cadena normalizada del dispositivo ('cuda:0', 'cuda:N' o 'cpu').
+
+    Lanza
+    -----
+    ValueError
+        Si el valor proporcionado no es reconocido o es inválido.
+    RuntimeError
+        Si se solicitó explícitamente 'cuda' pero la GPU o PyTorch CUDA no están operativos.
+    """
+    raw_setting = device_setting
+    if raw_setting is None or str(raw_setting).strip() == "":
+        try:
+            from VIGIA_Core.config.env_loader import get_setting
+
+            raw_setting = get_setting("VIGIA_INFERENCE_DEVICE", "auto")
+        except Exception:
+            raw_setting = os.environ.get("VIGIA_INFERENCE_DEVICE", "auto")
+
+    dev_str = str(raw_setting).strip().lower()
+
+    if dev_str == "cpu":
+        logger.info("Dispositivo de inferencia seleccionado: 'cpu'.")
+        return "cpu"
+
+    if dev_str == "auto":
+        try:
+            import torch
+
+            if torch.cuda.is_available():
+                test_tensor = torch.zeros((1,), device="cuda:0")
+                del test_tensor
+                gpu_name = torch.cuda.get_device_name(0)
+                props = torch.cuda.get_device_properties(0)
+                vram_mb = props.total_memory / (1024.0 * 1024.0)
+                logger.info(
+                    "Modo 'auto': GPU NVIDIA CUDA detectada y validada: %s (%.0f MB VRAM). Seleccionando 'cuda:0'.",
+                    gpu_name,
+                    vram_mb,
+                )
+                return "cuda:0"
+            else:
+                logger.info("Modo 'auto': CUDA no disponible en este entorno PyTorch. Seleccionando 'cpu'.")
+                return "cpu"
+        except Exception as exc:
+            logger.warning(
+                "Modo 'auto': Error al validar GPU CUDA (%s). Fallback controlado a 'cpu'.",
+                exc,
+            )
+            return "cpu"
+
+    if dev_str == "cuda" or dev_str.startswith("cuda:"):
+        target_dev = "cuda:0" if dev_str == "cuda" else dev_str
+        try:
+            import torch
+
+            if not torch.cuda.is_available():
+                raise RuntimeError(
+                    f"Se solicitó dispositivo explícito '{raw_setting}', pero "
+                    "torch.cuda.is_available() retornó False. Verifique la instalación de PyTorch con soporte CUDA."
+                )
+            test_tensor = torch.zeros((1,), device=target_dev)
+            del test_tensor
+            gpu_name = torch.cuda.get_device_name(target_dev)
+            props = torch.cuda.get_device_properties(target_dev)
+            vram_mb = props.total_memory / (1024.0 * 1024.0)
+            logger.info(
+                "Dispositivo CUDA explícito validado: %s en %s (%.0f MB VRAM).",
+                gpu_name,
+                target_dev,
+                vram_mb,
+            )
+            return target_dev
+        except Exception as exc:
+            if isinstance(exc, RuntimeError) and "Se solicitó dispositivo explícito" in str(exc):
+                raise
+            raise RuntimeError(
+                f"Fallo al validar dispositivo CUDA explícito '{raw_setting}': {exc}"
+            ) from exc
+
+    raise ValueError(
+        f"Dispositivo de inferencia no soportado: '{raw_setting}'. Valores permitidos: 'auto', 'cuda', 'cuda:N', 'cpu'."
+    )
 
 
 @dataclass(frozen=True)
@@ -140,7 +246,16 @@ class YoloVehicleDetector:
         config: Optional[YoloDetectorConfig] = None,
         model_factory: Optional[Callable[[Union[str, Path]], Any]] = None,
     ) -> None:
-        self._config = config or YoloDetectorConfig()
+        raw_config = config or YoloDetectorConfig()
+        dev_normalized = raw_config.device.strip().lower()
+        if dev_normalized in ("auto", "cuda") or dev_normalized.startswith("cuda:"):
+            effective_dev = resolve_inference_device(raw_config.device)
+            if effective_dev != raw_config.device:
+                self._config = replace(raw_config, device=effective_dev)
+            else:
+                self._config = raw_config
+        else:
+            self._config = raw_config
         self._model_factory = model_factory
         self._model: Optional[Any] = None
         self._lock = threading.RLock()
@@ -148,6 +263,11 @@ class YoloVehicleDetector:
     @property
     def config(self) -> YoloDetectorConfig:
         return self._config
+
+    @property
+    def effective_device(self) -> str:
+        """Dispositivo efectivo resuelto para inferencia predictiva."""
+        return self._config.device
 
     @property
     def is_loaded(self) -> bool:
@@ -181,6 +301,8 @@ class YoloVehicleDetector:
                 from ultralytics import YOLO
 
                 self._model = YOLO(str(self._config.model_path))
+                if self._config.device != "cpu":
+                    self._model.to(self._config.device)
                 return self._model
             except Exception as exc:
                 raise ModelLoadError(
@@ -214,19 +336,22 @@ class YoloVehicleDetector:
         model = self.load_model()
 
         try:
-            results = model.predict(
-                source=frame,
-                conf=self._config.confidence_threshold,
-                iou=self._config.iou_threshold,
-                device=self._config.device,
-                imgsz=self._config.imgsz,
-                classes=list(self._config.classes),
-                verbose=False,
-                save=False,
-                show=False,
-            )
+            with self._lock:
+                results = model.predict(
+                    source=frame,
+                    conf=self._config.confidence_threshold,
+                    iou=self._config.iou_threshold,
+                    device=self._config.device,
+                    imgsz=self._config.imgsz,
+                    classes=list(self._config.classes),
+                    verbose=False,
+                    save=False,
+                    show=False,
+                )
         except Exception as exc:
-            raise InferenceError(f"Error durante la inferencia YOLO: {exc}") from exc
+            raise InferenceError(
+                f"Error durante la inferencia YOLO en {self._config.device}: {exc}"
+            ) from exc
 
         if not results or len(results) == 0:
             return ()

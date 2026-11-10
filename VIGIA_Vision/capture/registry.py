@@ -145,6 +145,16 @@ class CameraSourceRegistry:
         """Códigos de cámara registrados en orden determinista (Entrada, Salida)."""
         return tuple(self._slots.keys())
 
+    def register_slot(self, slot: BoundCameraSlot) -> None:
+        """
+        Registra un BoundCameraSlot en el registro de fuentes de manera segura para hilos.
+        Permite soportar puntos de captura adicionales sin alterar la topología base.
+        """
+        if not isinstance(slot, BoundCameraSlot):
+            raise TypeError("slot debe ser una instancia de BoundCameraSlot.")
+        with self._lock:
+            self._slots[slot.camera.codigo] = slot
+
     def get_slot(self, codigo_camara: str) -> BoundCameraSlot:
         """
         Obtiene el ``BoundCameraSlot`` asociado a ``codigo_camara``.

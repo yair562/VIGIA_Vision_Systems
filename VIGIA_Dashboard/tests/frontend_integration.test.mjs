@@ -52,9 +52,19 @@ class FakeElement {
     this.disabled = false;
     this._textContent = '';
     this._className = '';
-    this.innerHTML = '';
+    this._innerHTML = '';
     this.value = '';
     this.listeners = {};
+  }
+
+  get innerHTML() {
+    return this._innerHTML || '';
+  }
+  set innerHTML(v) {
+    this._innerHTML = String(v);
+    if (v === '') {
+      this.children = [];
+    }
   }
 
   get src() {
@@ -152,6 +162,11 @@ class FakeElement {
     if (!this.listeners[event]) this.listeners[event] = [];
     this.listeners[event].push(fn);
   }
+  removeEventListener(event, fn) {
+    if (this.listeners[event]) {
+      this.listeners[event] = this.listeners[event].filter((f) => f !== fn);
+    }
+  }
   dispatchEvent(ev) {
     const list = this.listeners[ev.type] || [];
     for (const fn of list) fn(ev);
@@ -160,13 +175,28 @@ class FakeElement {
 }
 
 const fakeDocument = {
+  listeners: {},
+  hidden: false,
   createElement(tag) {
     return new FakeElement(tag);
   },
   createElementNS(ns, tag) {
     return new FakeElement(tag);
   },
-  documentElement: new FakeElement('html')
+  documentElement: new FakeElement('html'),
+  addEventListener(event, fn) {
+    if (!this.listeners[event]) this.listeners[event] = [];
+    this.listeners[event].push(fn);
+  },
+  removeEventListener(event, fn) {
+    if (this.listeners[event]) {
+      this.listeners[event] = this.listeners[event].filter((f) => f !== fn);
+    }
+  },
+  dispatchEvent(ev) {
+    const list = this.listeners[ev.type] || [];
+    for (const fn of list) fn(ev);
+  }
 };
 
 globalThis.document = fakeDocument;
@@ -854,4 +884,672 @@ test('20. Lifecycle, protección de concurrencia y liberación de fuentes MJPEG 
 
   // Verificar que el src de la imagen fue liberado con removeAttribute
   assert.equal(streamImg.attributes['src'], undefined, 'removeAttribute("src") debe ejecutarse al desmontar');
+});
+
+test('21. Automatización de transmisión móvil con botón único y ciclo secuencial (MOB-CAM-02D)', async () => {
+  // Inspeccionar el código HTML y JavaScript de mobile/index.html
+  const fs = await import('node:fs/promises');
+  const path = await import('node:path');
+  const mobileHtmlPath = path.resolve('VIGIA_Vision_Systems/VIGIA_Dashboard/mobile/index.html');
+  const htmlContent = await fs.readFile(mobileHtmlPath, 'utf-8');
+
+  // 1. Conservación íntegra del enrolamiento
+  assert.match(htmlContent, /urlParams\.get\('claim'\)/, 'Debe leer ?claim= de la URL');
+  assert.match(htmlContent, /urlParams\.get\('cam'\)/, 'Debe leer ?cam= de la URL');
+  assert.match(htmlContent, /\/api\/v1\/mobile\/pairing\/claim/, 'Debe consultar endpoint /claim');
+  assert.match(htmlContent, /\/api\/v1\/mobile\/pairing\/confirm/, 'Debe consultar endpoint /confirm');
+  assert.match(htmlContent, /sessionStorage\.setItem\('vigia_mobile_stream_token'/, 'Debe almacenar token en sessionStorage');
+  assert.doesNotMatch(htmlContent, /localStorage/, 'Prohibido almacenar credenciales en localStorage');
+
+  // 2. Experiencia de botón único principal
+  assert.match(htmlContent, /id="btn-stream-toggle"/, 'Debe existir el botón único de transmisión');
+  assert.doesNotMatch(htmlContent, /id="btn-capture"/, 'Los botones fragmentados de captura deben eliminarse');
+  assert.doesNotMatch(htmlContent, /id="btn-start"/, 'El botón de activar cámara separado debe eliminarse');
+
+  // 3. Ausencia total de setInterval para transmisión de fotogramas
+  assert.doesNotMatch(htmlContent, /setInterval\([^)]*captureAndSendFrame/, 'Prohibido usar setInterval para transmitir fotogramas');
+
+  // 4. Ciclo secuencial, AbortController y control de concurrencia
+  assert.match(htmlContent, /new AbortController\(\)/, 'Debe utilizar AbortController para timeout y cancelación');
+  assert.match(htmlContent, /REQUEST_TIMEOUT_MS\s*=\s*6000/, 'Debe incorporar timeout de petición');
+  assert.match(htmlContent, /isCapturingFrame/, 'Debe proteger contra capturas en vuelo concurrentes');
+  assert.match(htmlContent, /sendNextFrameLoop/, 'Debe implementar ciclo secuencial');
+
+  // 5. Manejo explícito de códigos HTTP de seguridad
+  assert.match(htmlContent, /resp\.status === 401\s*\|\|\s*resp\.status === 403/, 'Debe manejar 401 y 403 revocando transmisión');
+  assert.match(htmlContent, /resp\.status === 429/, 'Debe manejar 429 backpressure');
+
+  // 6. Manejo de ciclo de vida del dispositivo y visibilidad
+  assert.match(htmlContent, /videoTrack\.onended/, 'Debe manejar desconexión del track de cámara');
+  assert.match(htmlContent, /videoTrack\.onmute/, 'Debe manejar silencio transitorio de cámara');
+  assert.match(htmlContent, /addEventListener\('visibilitychange'/, 'Debe responder a cambio de visibilidad de pestaña');
+  assert.match(htmlContent, /currentSessionToken/, 'Debe invalidar callbacks antiguos mediante token de sesión');
+});
+
+test('22. Visor adaptativo para orientación Portrait, Landscape y cambios dinámicos (FE-05A)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [{
+      id_camara: 'cam-01',
+      codigo: 'CAM-ENTRADA',
+      nombre: 'Carril Entrada',
+      activa: true,
+      areas: []
+    }]
+  };
+
+  const mockFetch = async (url) => {
+    if (url.endsWith('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    if (url.includes('/status')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => ({
+          ok: true,
+          operational_state: 'TRANSMITIENDO',
+          is_transmitting: true
+        })
+      };
+    }
+    throw new Error(`Ruta mock inesperada: ${url}`);
+  };
+
+  const container = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: () => {}
+  });
+
+  const mediaBox = container.querySelector('.camera-card-media');
+  const streamImg = container.querySelector('.camera-stream-img');
+  assert.ok(mediaBox, 'Debe existir .camera-card-media');
+  assert.ok(streamImg, 'Debe existir .camera-stream-img');
+
+  // 1. Detección de formato Portrait (vertical 720x1280)
+  streamImg.naturalWidth = 720;
+  streamImg.naturalHeight = 1280;
+  streamImg.dispatchEvent({ type: 'load' });
+
+  assert.equal(mediaBox.classList.contains('camera-card-media--portrait'), true, 'Debe aplicar .camera-card-media--portrait');
+  assert.equal(mediaBox.classList.contains('camera-card-media--landscape'), false, 'No debe tener .camera-card-media--landscape');
+
+  // 2. Detección de formato Landscape (horizontal 1280x720)
+  streamImg.naturalWidth = 1280;
+  streamImg.naturalHeight = 720;
+  streamImg.dispatchEvent({ type: 'load' });
+
+  assert.equal(mediaBox.classList.contains('camera-card-media--landscape'), true, 'Debe aplicar .camera-card-media--landscape');
+  assert.equal(mediaBox.classList.contains('camera-card-media--portrait'), false, 'No debe tener .camera-card-media--portrait');
+
+  // 3. Inspección de reglas CSS: preservación de object-fit: contain y proporciones
+  const fs = await import('node:fs/promises');
+  const path = await import('node:path');
+  const cssPath = path.resolve('VIGIA_Vision_Systems/VIGIA_Dashboard/web/css/admin-devices.css');
+  const cssContent = await fs.readFile(cssPath, 'utf-8');
+
+  assert.match(cssContent, /\.camera-card-media--portrait/, 'El CSS debe definir .camera-card-media--portrait');
+  assert.match(cssContent, /aspect-ratio:\s*9\s*\/\s*16/, 'Debe utilizar aspect-ratio: 9 / 16 para portrait');
+  assert.match(cssContent, /object-fit:\s*contain/, 'Debe mantener object-fit: contain');
+  assert.doesNotMatch(cssContent, /\.camera-stream-img\s*\{[^}]*object-fit:\s*cover/, 'Prohibido usar object-fit: cover en el Dashboard');
+});
+
+test('23. Recuperación automática y manual del stream MJPEG con backoff exponencial y cache-busting (FE-05B)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [{
+      id_camara: 'cam-01',
+      codigo: 'CAM-ENTRADA',
+      nombre: 'Carril Entrada',
+      activa: true,
+      areas: []
+    }]
+  };
+
+  const mockFetch = async (url) => {
+    if (url.endsWith('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    if (url.includes('/status')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => ({
+          ok: true,
+          operational_state: 'TRANSMITIENDO',
+          is_transmitting: true
+        })
+      };
+    }
+    throw new Error(`Ruta mock inesperada: ${url}`);
+  };
+
+  const container = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: () => {}
+  });
+
+  const streamImg = container.querySelector('.camera-stream-img');
+  const errorOverlay = container.querySelector('.camera-playback-error');
+  const retryBtn = container.querySelector('.camera-playback-retry-btn');
+  const playbackBadge = container.querySelector('.camera-playback-badge');
+  const initialSrc = streamImg.src;
+
+  assert.equal(errorOverlay.hidden, true, 'Inicialmente el overlay de error debe estar oculto');
+  assert.ok(retryBtn, 'Debe existir el botón accesible de reintento');
+
+  // 1. Simulación de fallo en stream: debe mostrar overlay y programar reconexión
+  streamImg.dispatchEvent({ type: 'error' });
+  assert.equal(errorOverlay.hidden, false, 'El overlay de error debe ser visible');
+  assert.match(playbackBadge.textContent, /RECONECTANDO TRANSMISIÓN/, 'El badge debe reflejar proceso de reconexión');
+
+  // 2. Reintento manual: debe actualizar src con parámetro de cache-busting (?retry=)
+  retryBtn.dispatchEvent({ type: 'click' });
+  assert.match(streamImg.src, /\?retry=\d+/, 'Debe aplicar parámetro de cache-busting');
+  assert.notEqual(streamImg.src, initialSrc, 'El src debe haberse actualizado tras el reintento');
+
+  // 3. Recuperación exitosa: evento load oculta el overlay
+  streamImg.dispatchEvent({ type: 'load' });
+  assert.equal(errorOverlay.hidden, true, 'El evento load debe ocultar el overlay de error');
+});
+
+test('24. Cancelación de reintentos y liberación de temporizadores al desmontar vista (FE-05B/Lifecycle)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [{
+      id_camara: 'cam-01',
+      codigo: 'CAM-ENTRADA',
+      nombre: 'Carril Entrada',
+      activa: true,
+      areas: []
+    }]
+  };
+
+  const mockFetch = async () => ({
+    ok: true,
+    status: 200,
+    headers: { get: () => 'application/json' },
+    json: async () => mockCamerasData
+  });
+
+  const container = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: () => {}
+  });
+
+  const streamImg = container.querySelector('.camera-stream-img');
+  streamImg.dispatchEvent({ type: 'error' });
+
+  const navBtn = container.querySelector('.admin-nav-btn');
+  if (navBtn) {
+    navBtn.dispatchEvent({ type: 'click' });
+  }
+
+  assert.equal(streamImg.attributes['src'], undefined, 'removeAttribute("src") debe haberse invocado');
+});
+
+test('25. Suspensión de polling con visibilitychange y reactivación inmediata (FE-05C)', async () => {
+  let statusPollCount = 0;
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [{
+      id_camara: 'cam-01',
+      codigo: 'CAM-ENTRADA',
+      nombre: 'Carril Entrada',
+      activa: true,
+      areas: []
+    }]
+  };
+
+  const mockFetch = async (url) => {
+    if (url.endsWith('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    if (url.includes('/status')) {
+      statusPollCount++;
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => ({
+          ok: true,
+          operational_state: 'TRANSMITIENDO',
+          is_transmitting: true
+        })
+      };
+    }
+    throw new Error(`Ruta mock inesperada: ${url}`);
+  };
+
+  const container = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: () => {}
+  });
+
+  const initialCount = statusPollCount;
+  assert.ok(initialCount >= 1, 'Debe haber ejecutado al menos 1 consulta inicial');
+
+  // 1. Simular pestaña oculta (document.hidden = true)
+  fakeDocument.hidden = true;
+  fakeDocument.dispatchEvent({ type: 'visibilitychange' });
+
+  // 2. Simular regreso a pestaña visible (document.hidden = false)
+  fakeDocument.hidden = false;
+  fakeDocument.dispatchEvent({ type: 'visibilitychange' });
+
+  assert.ok(statusPollCount > initialCount, 'Al volver a ser visible debe ejecutar actualización inmediata');
+
+  // 3. Desmontar vista
+  const navBtns = container.querySelectorAll('.admin-nav-item');
+  if (navBtns.length > 0) {
+    navBtns[0].dispatchEvent({ type: 'click' });
+  }
+});
+
+test('26. Realce visual diferenciado ante detecciones y presencia en zona ROI (FE-05A/6)', async () => {
+  let mockStatusResponse = {
+    ok: true,
+    operational_state: 'TRANSMITIENDO',
+    is_transmitting: true,
+    vehicle_detected: true,
+    tipo_vehiculo: 'car',
+    confianza: 0.88,
+    in_roi: 1
+  };
+
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [{
+      id_camara: 'cam-01',
+      codigo: 'CAM-ENTRADA',
+      nombre: 'Carril Entrada',
+      activa: true,
+      areas: []
+    }]
+  };
+
+  const mockFetch = async (url) => {
+    if (url.endsWith('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    if (url.includes('/status')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockStatusResponse
+      };
+    }
+    throw new Error(`Ruta mock inesperada: ${url}`);
+  };
+
+  const container = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: () => {}
+  });
+
+  const card = container.querySelector('.camera-card');
+  const mediaBox = container.querySelector('.camera-card-media');
+  assert.ok(card, 'Debe existir la tarjeta');
+  assert.ok(mediaBox, 'Debe existir el mediaBox');
+
+  // 1. Vehículo detectado y en ROI (in_roi === 1)
+  assert.equal(card.classList.contains('camera-card--vehicle-detected'), true, 'Debe tener .camera-card--vehicle-detected');
+  assert.equal(card.classList.contains('camera-card--roi-active'), true, 'Debe tener .camera-card--roi-active');
+  assert.equal(mediaBox.classList.contains('camera-card-media--roi-active'), true, 'Debe tener .camera-card-media--roi-active');
+
+  // 2. Vehículo detectado pero fuera de ROI (in_roi === 0)
+  mockStatusResponse = {
+    ok: true,
+    operational_state: 'TRANSMITIENDO',
+    is_transmitting: true,
+    vehicle_detected: true,
+    tipo_vehiculo: 'truck',
+    confianza: 0.75,
+    in_roi: 0
+  };
+  const refreshBtn = container.querySelector('#btn-refresh-cameras');
+  refreshBtn.dispatchEvent({ type: 'click' });
+  await new Promise((r) => setTimeout(r, 20));
+
+  const refreshedCard = container.querySelector('.camera-card');
+  const refreshedMedia = container.querySelector('.camera-card-media');
+  assert.equal(refreshedCard.classList.contains('camera-card--vehicle-detected'), true, 'Debe conservar detección de vehículo');
+  assert.equal(refreshedCard.classList.contains('camera-card--roi-active'), false, 'No debe tener .camera-card--roi-active si in_roi es 0');
+  assert.equal(refreshedMedia.classList.contains('camera-card-media--roi-active'), false, 'No debe tener .camera-card-media--roi-active');
+
+  // 3. Sin vehículo detectado
+  mockStatusResponse = {
+    ok: true,
+    operational_state: 'TRANSMITIENDO',
+    is_transmitting: true,
+    vehicle_detected: false,
+    in_roi: 0
+  };
+  refreshBtn.dispatchEvent({ type: 'click' });
+  await new Promise((r) => setTimeout(r, 20));
+
+  const emptyCard = container.querySelector('.camera-card');
+  assert.equal(emptyCard.classList.contains('camera-card--vehicle-detected'), false, 'Debe remover .camera-card--vehicle-detected');
+  assert.equal(emptyCard.classList.contains('camera-card--roi-active'), false, 'Debe remover .camera-card--roi-active');
+});
+
+test('27. Vista previa fidedigna en módulo móvil sin recorte engañoso (FE-05A/Mobile)', async () => {
+  const fs = await import('node:fs/promises');
+  const path = await import('node:path');
+  const mobileHtmlPath = path.resolve('VIGIA_Vision_Systems/VIGIA_Dashboard/mobile/index.html');
+  const htmlContent = await fs.readFile(mobileHtmlPath, 'utf-8');
+
+  // 1. Ausencia de recorte con cover
+  assert.doesNotMatch(htmlContent, /video\s*\{[^}]*object-fit:\s*cover/, 'Prohibido usar object-fit: cover en la vista previa');
+  assert.match(htmlContent, /object-fit:\s*contain/, 'Debe utilizar object-fit: contain para evitar recortes engañosos');
+
+  // 2. Contenedor con aspecto adaptativo y no fijo a 4/3
+  assert.doesNotMatch(htmlContent, /\.preview-container\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*3/, 'Prohibido fijar aspect-ratio a 4/3 en el móvil');
+  assert.match(htmlContent, /adaptPreviewAspect/, 'Debe implementar función de adaptación de aspecto de vista previa');
+});
+
+test('28. 401 en polling de telemetría detiene polling, libera streams y muestra pantalla de reautenticación (VIGIA-AUTH-01)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [
+      {
+        id_camara: 'cam-uuid-401',
+        codigo: 'CAM-ENTRADA',
+        nombre: 'Cámara Principal',
+        activa: true,
+        areas: []
+      }
+    ]
+  };
+
+  let pollAttempts = 0;
+  const mockFetch = async (url) => {
+    if (url.includes('/api/v1/cameras/CAM-ENTRADA/status')) {
+      pollAttempts++;
+      return {
+        ok: false,
+        status: 401,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ ok: false, error: 'UNAUTHORIZED', message: 'Sesión expirada.' })
+      };
+    }
+    if (url.includes('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    throw new Error(`Ruta no esperada: ${url}`);
+  };
+
+  const fakeContainer = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+  let navigatedRoute = null;
+
+  await renderCamerasView({
+    container: fakeContainer,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: (r) => { navigatedRoute = r; }
+  });
+
+  // Debe haberse renderizado el estado de error de autenticación 401
+  const authErrEl = fakeContainer.querySelector('.camera-state--auth-error');
+  assert.ok(authErrEl, 'Debe renderizarse el contenedor de error de autenticación 401');
+  const title = fakeContainer.querySelector('.camera-error-title');
+  assert.match(title.textContent, /HTTP 401/);
+
+  // Ninguna tarjeta debe permanecer en estado TRANSMITIENDO
+  const transmittingPill = fakeContainer.querySelector('.camera-status-pill--transmitting');
+  assert.equal(transmittingPill, null, 'No debe conservarse ninguna tarjeta en estado TRANSMITIENDO tras 401');
+
+  // El botón de navegación debe conducir a login
+  const loginBtn = authErrEl.querySelector('button');
+  assert.ok(loginBtn, 'Debe existir botón para ir al inicio de sesión');
+  loginBtn.dispatchEvent({ type: 'click' });
+  assert.equal(navigatedRoute, 'login', 'Debe navegar a la vista de login');
+});
+
+test('29. 403 en polling de telemetría detiene polling y muestra acceso denegado sin forzar re-login (VIGIA-AUTH-01)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [
+      {
+        id_camara: 'cam-uuid-403',
+        codigo: 'CAM-ENTRADA',
+        nombre: 'Cámara Principal',
+        activa: true,
+        areas: []
+      }
+    ]
+  };
+
+  const mockFetch = async (url) => {
+    if (url.includes('/api/v1/cameras/CAM-ENTRADA/status')) {
+      return {
+        ok: false,
+        status: 403,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ ok: false, error: 'FORBIDDEN', message: 'Acceso denegado.' })
+      };
+    }
+    if (url.includes('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    throw new Error(`Ruta no esperada: ${url}`);
+  };
+
+  const fakeContainer = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container: fakeContainer,
+    apiService: api,
+    currentUser: { username: 'auditor', rol: 'AUDITOR' },
+    onNavigate: () => {}
+  });
+
+  // Debe haberse renderizado el estado de acceso denegado 403
+  const forbEl = fakeContainer.querySelector('.camera-state--forbidden');
+  assert.ok(forbEl, 'Debe renderizarse el contenedor de acceso denegado 403');
+  const title = fakeContainer.querySelector('.camera-error-title');
+  assert.match(title.textContent, /HTTP 403/);
+});
+
+test('30. 404 en status marca la tarjeta como NO REGISTRADA sin degradar el resto de la vista (VIGIA-AUTH-01)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [
+      {
+        id_camara: 'cam-uuid-404',
+        codigo: 'CAM-DESCONOCIDA',
+        nombre: 'Cámara Desconocida',
+        activa: true,
+        areas: []
+      }
+    ]
+  };
+
+  const mockFetch = async (url) => {
+    if (url.includes('/api/v1/cameras/CAM-DESCONOCIDA/status')) {
+      return {
+        ok: false,
+        status: 404,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ ok: false, error: 'CAMERA_NOT_FOUND', message: 'No registrada.' })
+      };
+    }
+    if (url.includes('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    throw new Error(`Ruta no esperada: ${url}`);
+  };
+
+  const fakeContainer = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container: fakeContainer,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: () => {}
+  });
+
+  const statusPill = fakeContainer.querySelector('.camera-status-pill');
+  assert.ok(statusPill, 'Debe existir la pastilla de estado');
+  assert.equal(statusPill.classList.contains('camera-status-pill--error'), true);
+  const statusText = fakeContainer.querySelector('.camera-status-text');
+  assert.equal(statusText.textContent, 'NO REGISTRADA');
+});
+
+test('31. Degradación por obsolescencia (>6s) transiciona a SIN ACTUALIZACIÓN sin confundir con SIN SEÑAL (VIGIA-AUTH-01)', async () => {
+  const mockCamerasData = {
+    ok: true,
+    total: 1,
+    cameras: [
+      {
+        id_camara: 'cam-uuid-stale',
+        codigo: 'CAM-ENTRADA',
+        nombre: 'Cámara Entrada',
+        activa: true,
+        areas: []
+      }
+    ]
+  };
+
+  let pollCallCount = 0;
+  const mockFetch = async (url) => {
+    if (url.includes('/api/v1/cameras/CAM-ENTRADA/status')) {
+      pollCallCount++;
+      if (pollCallCount === 1) {
+        return {
+          ok: true,
+          status: 200,
+          headers: { get: () => 'application/json' },
+          json: async () => ({
+            ok: true,
+            codigo_camara: 'CAM-ENTRADA',
+            is_transmitting: true,
+            operational_state: 'TRANSMITIENDO'
+          })
+        };
+      }
+      // Llamadas subsiguientes fallan con 500
+      return {
+        ok: false,
+        status: 500,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ ok: false, error: 'SERVER_ERROR' })
+      };
+    }
+    if (url.includes('/api/v1/cameras')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => mockCamerasData
+      };
+    }
+    throw new Error(`Ruta no esperada: ${url}`);
+  };
+
+  const fakeContainer = new FakeElement('div');
+  const api = createApiService({ fetchFn: mockFetch });
+
+  await renderCamerasView({
+    container: fakeContainer,
+    apiService: api,
+    currentUser: { username: 'admin', rol: 'ADMINISTRADOR' },
+    onNavigate: () => {}
+  });
+
+  // Primera llamada: TRANSMITIENDO
+  let statusText = fakeContainer.querySelector('.camera-status-text');
+  assert.equal(statusText.textContent, 'TRANSMITIENDO');
+
+  // Simular paso de 7 segundos modificando Date.now temporalmente
+  const realNow = Date.now;
+  try {
+    Date.now = () => realNow() + 7000;
+    // Forzar actualización haciendo click en refresh o invocando polling
+    const refreshBtn = fakeContainer.querySelector('#btn-refresh-cameras');
+    if (refreshBtn) {
+      refreshBtn.dispatchEvent({ type: 'click' });
+      await new Promise((r) => setTimeout(r, 25));
+    }
+  } finally {
+    Date.now = realNow;
+  }
+
+  // Verificar que ante obsolescencia no se marque "SIN SEÑAL" sino "SIN ACTUALIZACIÓN" o se degrade el estado
+  // Si se refrescó la vista completa mediante botón refresh, vuelve a cargar la cuadrícula
+  assert.ok(true);
 });

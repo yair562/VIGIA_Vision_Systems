@@ -70,14 +70,26 @@ class OpenCVCaptureSource:
         source_uri: Union[int, str],
         capture_factory: Optional[Callable[[Union[int, str]], Any]] = None,
         clock: Optional[Callable[[], datetime]] = None,
+        preferred_backend: Optional[int] = None,
     ) -> None:
+        self._preferred_backend: Optional[int] = preferred_backend
         if isinstance(source_uri, str):
-            if not source_uri.strip():
+            clean_uri = source_uri.strip()
+            if not clean_uri:
                 raise ValueError("source_uri no puede ser una cadena vacía.")
-            # Si la cadena representa un índice numérico local (ej. '0'), conservarlo o convertirlo
-            self._source_uri: Union[int, str] = (
-                int(source_uri.strip()) if source_uri.strip().isdigit() else source_uri.strip()
-            )
+            # Soporte explícito para esquema usb:// (ej. 'usb://0' -> entero 0)
+            if clean_uri.lower().startswith("usb://"):
+                idx_part = clean_uri[6:].strip()
+                if not idx_part.isdigit() or int(idx_part) < 0:
+                    raise ValueError(
+                        f"Índice de dispositivo USB inválido en {source_uri!r}. "
+                        "Se requiere un entero >= 0 (ej. 'usb://0')."
+                    )
+                self._source_uri: Union[int, str] = int(idx_part)
+            elif clean_uri.isdigit():
+                self._source_uri = int(clean_uri)
+            else:
+                self._source_uri = clean_uri
         elif isinstance(source_uri, int) and not isinstance(source_uri, bool) and source_uri >= 0:
             self._source_uri = source_uri
         else:
@@ -104,7 +116,37 @@ class OpenCVCaptureSource:
                     cap = self._capture_factory(self._source_uri)
                 else:
                     import cv2  # Importación perezosa
-                    cap = cv2.VideoCapture(self._source_uri)
+                    if isinstance(self._source_uri, int):
+                        # Selección controlada de backend en Windows (MSMF por omisión con fallback a DSHOW/CAP_ANY)
+                        backend = self._preferred_backend
+                        if backend is not None:
+                            cap = cv2.VideoCapture(self._source_uri, backend)
+                        else:
+                            msmf_backend = getattr(cv2, "CAP_MSMF", None)
+                            dshow_backend = getattr(cv2, "CAP_DSHOW", None)
+                            cap = None
+                            if msmf_backend is not None:
+                                cap = cv2.VideoCapture(self._source_uri, msmf_backend)
+                            if cap is None or not bool(cap.isOpened()):
+                                if cap is not None:
+                                    try:
+                                        cap.release()
+                                    except Exception:
+                                        pass
+                                if dshow_backend is not None:
+                                    cap = cv2.VideoCapture(self._source_uri, dshow_backend)
+                                else:
+                                    cap = cv2.VideoCapture(self._source_uri)
+                            if cap is None or not bool(cap.isOpened()):
+                                if cap is not None:
+                                    try:
+                                        cap.release()
+                                    except Exception:
+                                        pass
+                                cap = cv2.VideoCapture(self._source_uri)
+                    else:
+                        cap = cv2.VideoCapture(self._source_uri)
+
                     # Evitar acumulación de fotogramas antiguos en el buffer interno
                     if hasattr(cv2, "CAP_PROP_BUFFERSIZE"):
                         try:

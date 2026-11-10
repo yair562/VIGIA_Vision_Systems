@@ -55,6 +55,7 @@ from VIGIA_Vision.detection.yolo_detector import (
     ModelLoadError,
     YoloDetectorConfig,
     YoloVehicleDetector,
+    resolve_inference_device,
 )
 from VIGIA_Vision.runtime.coordinator import (
     IVehicleDetector,
@@ -504,6 +505,118 @@ class TestYoloRealInference(unittest.TestCase):
 
         # Verificar que las personas presentes en bus.jpg fueron filtradas
         self.assertNotIn("person", labels)
+
+
+    def test_pu_yolo_16_real_inference_on_cuda(self) -> None:
+        """PU-YOLO-16: Inferencia real con pesos YOLO e imagen local en GPU CUDA (si disponible)."""
+        try:
+            import torch
+        except ImportError:
+            self.skipTest("PyTorch no está instalado.")
+
+        if not torch.cuda.is_available():
+            self.skipTest("CUDA no disponible en este entorno PyTorch. Omitiendo prueba de inferencia real en GPU.")
+
+        repo_root = _REPO_ROOT
+        env_weights = os.environ.get("VIGIA_YOLO_WEIGHTS")
+        candidate_weights = [
+            Path(env_weights) if env_weights else None,
+            repo_root / "yolo11n.pt",
+            repo_root / "models" / "yolo11n.pt",
+        ]
+        weights_path = next((p for p in candidate_weights if p is not None and p.exists()), None)
+        if weights_path is None:
+            self.skipTest("Archivo de pesos yolo11n.pt no encontrado para prueba real.")
+
+        try:
+            import ultralytics
+            import cv2
+        except ImportError:
+            self.skipTest("ultralytics o opencv no instalados en el entorno.")
+
+        assets_dir = Path(ultralytics.__file__).parent / "assets"
+        bus_image_path = assets_dir / "bus.jpg"
+        if not bus_image_path.exists():
+            self.skipTest("Imagen de muestra bus.jpg no encontrada en assets de ultralytics.")
+
+        frame = cv2.imread(str(bus_image_path))
+        self.assertIsNotNone(frame, "No se pudo leer bus.jpg con OpenCV.")
+
+        config = YoloDetectorConfig(
+            model_path=str(weights_path),
+            confidence_threshold=0.25,
+            device="cuda:0",
+            imgsz=640,
+        )
+        detector = YoloVehicleDetector(config=config)
+        self.assertEqual(detector.effective_device, "cuda:0")
+        self.assertFalse(detector.is_loaded)
+
+        # Inferencia real consecutiva (estabilidad y retención en GPU)
+        for i in range(3):
+            detections = detector.detect(frame)
+            self.assertTrue(detector.is_loaded)
+            self.assertGreaterEqual(len(detections), 1, f"Iteración {i}: Debe detectar al menos un vehículo.")
+            labels = [d.raw_label for d in detections]
+            self.assertIn("bus", labels)
+            self.assertNotIn("person", labels)
+
+
+class TestYoloDetectorDeviceResolution(unittest.TestCase):
+    """Pruebas unitarias para la resolución y fallback de dispositivos de inferencia."""
+
+    def test_resolve_device_explicit_cpu(self) -> None:
+        """Verifica que solicitar 'cpu' retorne deterministamente 'cpu'."""
+        self.assertEqual(resolve_inference_device("cpu"), "cpu")
+        self.assertEqual(resolve_inference_device("CPU"), "cpu")
+
+    def test_resolve_device_invalid_raises_value_error(self) -> None:
+        """Verifica que un dispositivo desconocido lance ValueError."""
+        with self.assertRaises(ValueError):
+            resolve_inference_device("tpu")
+        with self.assertRaises(ValueError):
+            resolve_inference_device("directml")
+
+    def test_resolve_device_auto_fallback_when_cuda_unavailable(self) -> None:
+        """Verifica que 'auto' realice fallback a 'cpu' si CUDA no está disponible."""
+        from unittest.mock import patch
+        with patch("torch.cuda.is_available", return_value=False):
+            resolved = resolve_inference_device("auto")
+            self.assertEqual(resolved, "cpu")
+
+    def test_resolve_device_cuda_explicit_fails_when_unavailable(self) -> None:
+        """Verifica que solicitar 'cuda' falle con RuntimeError si CUDA no está disponible."""
+        from unittest.mock import patch
+        with patch("torch.cuda.is_available", return_value=False):
+            with self.assertRaises(RuntimeError) as ctx:
+                resolve_inference_device("cuda")
+            self.assertIn("torch.cuda.is_available() retornó False", str(ctx.exception))
+
+    def test_resolve_device_auto_with_cuda_available(self) -> None:
+        """Verifica que 'auto' seleccione 'cuda:0' cuando CUDA está operativo."""
+        try:
+            import torch
+            has_cuda = torch.cuda.is_available()
+        except ImportError:
+            has_cuda = False
+
+        if has_cuda:
+            self.assertEqual(resolve_inference_device("auto"), "cuda:0")
+        else:
+            from unittest.mock import patch, MagicMock
+            mock_props = MagicMock()
+            mock_props.total_memory = 6 * 1024 * 1024 * 1024
+            with patch("torch.cuda.is_available", return_value=True),                  patch("torch.zeros", return_value=MagicMock()),                  patch("torch.cuda.get_device_name", return_value="NVIDIA Mock GPU"),                  patch("torch.cuda.get_device_properties", return_value=mock_props):
+                self.assertEqual(resolve_inference_device("auto"), "cuda:0")
+
+    def test_detector_resolves_effective_device_on_init(self) -> None:
+        """Verifica que YoloVehicleDetector resuelva y exponga effective_device."""
+        detector_cpu = YoloVehicleDetector(config=YoloDetectorConfig(device="cpu"))
+        self.assertEqual(detector_cpu.effective_device, "cpu")
+
+        detector_auto = YoloVehicleDetector(config=YoloDetectorConfig(device="auto"))
+        self.assertIn(detector_auto.effective_device, ("cpu", "cuda:0"))
+        self.assertEqual(detector_auto.config.device, detector_auto.effective_device)
 
 
 if __name__ == "__main__":

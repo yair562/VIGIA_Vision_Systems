@@ -29,8 +29,8 @@
     .config-group { flex: 1; }
     label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
     select, input { width: 100%; background: #090d13; border: 1px solid var(--card-border); color: var(--text-bright); padding: 8px 10px; border-radius: 6px; font-size: 0.9rem; }
-    .preview-container { position: relative; width: 100%; aspect-ratio: 4 / 3; background: #000; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border); margin-bottom: 12px; }
-    video { width: 100%; height: 100%; object-fit: cover; }
+    .preview-container { position: relative; width: 100%; aspect-ratio: auto; min-height: 220px; max-height: 65vh; background: #000; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border); margin-bottom: 12px; transition: aspect-ratio 0.2s ease; }
+    video { width: 100%; height: 100%; max-height: 65vh; object-fit: contain; display: block; }
     .preview-placeholder { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 16px; }
     .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .btn-full { grid-column: span 2; }
@@ -124,17 +124,16 @@
   <div class="card">
     <div class="preview-container">
       <div id="placeholder" class="preview-placeholder">
-        Cámara inactiva.<br>Presiona "Activar Cámara" para iniciar la transmisión visual.
+        Cámara inactiva.<br>Presiona "Iniciar Transmisión" para comenzar la captura continua.
       </div>
       <video id="video-preview" autoplay playsinline muted style="display:none;"></video>
       <canvas id="canvas-snap" style="display:none;"></canvas>
     </div>
 
-    <div class="btn-grid">
-      <button id="btn-start" class="primary">Activar Cámara</button>
-      <button id="btn-stop" disabled class="danger">Detener</button>
-      <button id="btn-capture" class="btn-full action" disabled>📸 Capturar y Procesar en VIGÍA</button>
-      <button id="btn-stream-toggle" class="btn-full" disabled style="background:#30363d;">▶️ Transmisión Continua (1 FPS)</button>
+    <div>
+      <button id="btn-stream-toggle" class="btn-full primary" style="padding:14px; font-size:1.05rem;">
+        ▶️ Iniciar Transmisión
+      </button>
     </div>
   </div>
 
@@ -300,9 +299,72 @@
         }
       });
 
-      // 2. Control de captura WebRTC
-      async function startCamera() {
+      // 2. Control de ciclo de vida, captura y transmisión continua secuencial (MOB-CAM-02D)
+      let streamingTimeoutId = null;
+      let activePushController = null;
+      let currentSessionToken = 0;
+      let isCapturingFrame = false;
+      let consecutiveErrors = 0;
+      const MAX_CONSECUTIVE_ERRORS = 5;
+      const REQUEST_TIMEOUT_MS = 6000;
+
+      function updateStreamBtnUI(transmitting) {
+        if (transmitting) {
+          btnStreamToggle.textContent = '⏸️ Detener Transmisión';
+          btnStreamToggle.className = 'btn-full danger';
+          btnStreamToggle.style.background = 'var(--danger)';
+        } else {
+          btnStreamToggle.textContent = '▶️ Iniciar Transmisión';
+          btnStreamToggle.className = 'btn-full primary';
+          btnStreamToggle.style.background = 'var(--accent)';
+        }
+      }
+
+      async function stopContinuousStreaming(reason) {
+        isStreaming = false;
+        currentSessionToken += 1;
+
+        if (streamingTimeoutId) {
+          clearTimeout(streamingTimeoutId);
+          streamingTimeoutId = null;
+        }
+
+        if (activePushController) {
+          try {
+            activePushController.abort();
+          } catch (_) {}
+          activePushController = null;
+        }
+
+        if (currentStream) {
+          currentStream.getTracks().forEach((track) => {
+            track.onended = null;
+            track.onmute = null;
+            track.onunmute = null;
+            try { track.stop(); } catch (_) {}
+          });
+          currentStream = null;
+        }
+
+        video.srcObject = null;
+        video.style.display = 'none';
+        placeholder.style.display = 'block';
+
+        updateStreamBtnUI(false);
+        consecutiveErrors = 0;
+        isCapturingFrame = false;
+
+        if (reason) {
+          showAlert(reason, 'warn');
+        }
+      }
+
+      async function startContinuousStreaming() {
         clearAlert();
+        consecutiveErrors = 0;
+        const sessionToken = ++currentSessionToken;
+
+        // Invocación DIRECTA de getUserMedia dentro de la interacción del usuario (iOS Safari compatible)
         try {
           const facing = camSourceSelect.value || 'environment';
           const constraints = {
@@ -315,19 +377,52 @@
           };
 
           if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('El navegador bloqueó la cámara porque la conexión no es HTTPS segura. Para activarla, descargue e instale la CA raíz desde /api/v1/tls/ca.crt y acceda mediante la dirección HTTPS.');
+            throw new Error('El navegador bloqueó la cámara porque la conexión no es HTTPS segura. Descargue e instale la CA raíz desde /api/v1/tls/ca.crt y acceda mediante la dirección HTTPS.');
           }
 
-          currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-          video.srcObject = currentStream;
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          if (sessionToken !== currentSessionToken) {
+            stream.getTracks().forEach(t => t.stop());
+            return;
+          }
+
+          currentStream = stream;
+          video.srcObject = stream;
           video.style.display = 'block';
           placeholder.style.display = 'none';
 
-          btnStart.disabled = true;
-          btnStop.disabled = false;
-          btnCapture.disabled = false;
-          btnStreamToggle.disabled = false;
-          showAlert('Cámara física activada correctamente.', 'success');
+          // Manejo robusto del ciclo de vida de los tracks
+          const videoTrack = stream.getVideoTracks()[0];
+          if (videoTrack) {
+            videoTrack.onended = () => {
+              stopContinuousStreaming('La cámara fue desconectada o el sistema operativo retiró el acceso físico.');
+            };
+            videoTrack.onmute = () => {
+              showAlert('Señal de cámara pausada temporalmente por el dispositivo.', 'warn');
+            };
+            videoTrack.onunmute = () => {
+              clearAlert();
+            };
+          }
+
+          isStreaming = true;
+          updateStreamBtnUI(true);
+
+          // Esperar a que el video tenga dimensiones activas antes de iniciar fotogramas
+          const adaptPreviewAspect = () => { if (video.videoWidth > 0 && video.videoHeight > 0) { const cont = document.querySelector('.preview-container'); if (cont) cont.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`; } }; video.onresize = adaptPreviewAspect; await new Promise((resolve) => {
+            if (video.videoWidth > 0 && video.videoHeight > 0) {
+              adaptPreviewAspect(); return resolve();
+            }
+            video.onloadedmetadata = () => { adaptPreviewAspect(); resolve(); };
+            setTimeout(resolve, 500); // fallback
+          });
+
+          if (sessionToken !== currentSessionToken || !isStreaming) {
+            return;
+          }
+
+          showAlert('Transmisión continua activa hacia VIGÍA (1 FPS).', 'success');
+          sendNextFrameLoop(sessionToken);
         } catch (err) {
           console.error(err);
           let detail = err.message || 'Error desconocido al acceder a la cámara.';
@@ -337,150 +432,147 @@
             detail = 'No se encontró ninguna cámara física disponible en este dispositivo.';
           } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
             detail = 'La cámara está siendo utilizada por otra aplicación.';
-          } else if (!isSecure || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            detail = 'El navegador bloqueó la cámara porque la conexión no es HTTPS segura. Descargue e instale la CA raíz en /api/v1/tls/ca.crt y acceda mediante HTTPS.';
           }
-          showAlert('Fallo de acceso a cámara: ' + detail, 'error');
+          stopContinuousStreaming('Fallo de acceso a cámara: ' + detail);
         }
       }
 
-      function stopCamera() {
-        stopContinuousStreaming();
-        if (currentStream) {
-          currentStream.getTracks().forEach(track => track.stop());
-          currentStream = null;
+      async function sendNextFrameLoop(sessionToken) {
+        if (!isStreaming || sessionToken !== currentSessionToken) {
+          return;
         }
-        video.srcObject = null;
-        video.style.display = 'none';
-        placeholder.style.display = 'block';
 
-        btnStart.disabled = false;
-        btnStop.disabled = true;
-        btnCapture.disabled = true;
-        btnStreamToggle.disabled = true;
-        clearAlert();
+        // Si la pestaña está oculta, pausar el ciclo de red sin abortar la sesión
+        if (document.hidden) {
+          streamingTimeoutId = setTimeout(() => sendNextFrameLoop(sessionToken), 1000);
+          return;
+        }
+
+        const tStart = performance.now();
+        const success = await captureAndSendFrame(sessionToken);
+
+        if (!isStreaming || sessionToken !== currentSessionToken) {
+          return;
+        }
+
+        if (!success) {
+          consecutiveErrors++;
+          if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+            stopContinuousStreaming('Transmisión interrumpida por reiteradas fallas de comunicación con el servidor.');
+            return;
+          }
+        } else {
+          consecutiveErrors = 0;
+        }
+
+        const elapsed = performance.now() - tStart;
+        const delay = Math.max(50, 1000 - elapsed);
+        streamingTimeoutId = setTimeout(() => sendNextFrameLoop(sessionToken), delay);
       }
 
-      btnStart.addEventListener('click', startCamera);
-      btnStop.addEventListener('click', stopCamera);
-      camSourceSelect.addEventListener('change', () => {
-        if (currentStream) {
-          stopCamera();
-          startCamera();
+      async function captureAndSendFrame(sessionToken) {
+        if (!isStreaming || sessionToken !== currentSessionToken || !currentStream || isCapturingFrame) {
+          return false;
         }
-      });
+        isCapturingFrame = true;
 
-      // 3. Envío de fotograma a VIGÍA
-      async function captureAndSendFrame() {
-        if (!currentStream) return;
+        try {
+          const track = currentStream.getVideoTracks()[0];
+          const settings = track ? track.getSettings() : {};
+          canvas.width = video.videoWidth || settings.width || 1280;
+          canvas.height = video.videoHeight || settings.height || 720;
 
-        const track = currentStream.getVideoTracks()[0];
-        const settings = track.getSettings();
-        canvas.width = video.videoWidth || settings.width || 1280;
-        canvas.height = video.videoHeight || settings.height || 720;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.90));
+          if (!blob || !isStreaming || sessionToken !== currentSessionToken) {
+            return false;
+          }
 
-        const startTime = performance.now();
+          const camCode = activeCamCode || camCodeSelect.value.trim();
+          const formData = new FormData();
+          formData.append('frame', blob, 'mobile_capture.jpg');
 
-        return new Promise((resolve) => {
-          canvas.toBlob(async (blob) => {
-            if (!blob) {
-              showAlert('Error al generar los bytes del fotograma.', 'error');
-              return resolve(false);
+          const headers = {};
+          if (activeStreamToken) {
+            headers['X-Camera-Key'] = activeStreamToken;
+          }
+
+          // AbortController con timeout de 6 segundos
+          const controller = new AbortController();
+          activePushController = controller;
+          const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+          const tHttp = performance.now();
+          let resp;
+          try {
+            resp = await fetch(`/api/v1/cameras/${encodeURIComponent(camCode)}/push`, {
+              method: 'POST',
+              body: formData,
+              headers: headers,
+              signal: controller.signal
+            });
+          } finally {
+            clearTimeout(timeoutId);
+            if (activePushController === controller) {
+              activePushController = null;
             }
+          }
 
-            const camCode = activeCamCode || camCodeSelect.value.trim();
-            const formData = new FormData();
-            formData.append('frame', blob, 'mobile_capture.jpg');
+          if (sessionToken !== currentSessionToken || !isStreaming) {
+            return false;
+          }
 
-            const headers = {};
-            if (activeStreamToken) {
-              headers['X-Camera-Key'] = activeStreamToken;
+          const latency = Math.round(performance.now() - tHttp);
+          const data = await resp.json();
+
+          if (!resp.ok || !data.ok) {
+            if (resp.status === 401 || resp.status === 403) {
+              authStatusTag.className = 'tag-auth';
+              authStatusTag.textContent = 'Credencial Inválida o Revocada';
+              stopContinuousStreaming('Credencial móvil rechazada por el servidor (HTTP ' + resp.status + '). Transmisión detenida.');
+              return false;
             }
-
-            try {
-              const resp = await fetch(`/api/v1/cameras/${encodeURIComponent(camCode)}/push`, {
-                method: 'POST',
-                body: formData,
-                headers: headers
-              });
-
-              const latency = Math.round(performance.now() - startTime);
-              const data = await resp.json();
-
-              if (!resp.ok || !data.ok) {
-                const errMsg = data.message || data.error || ('HTTP ' + resp.status);
-                showAlert('Rechazo del motor: ' + errMsg, 'error');
-                if (resp.status === 401) {
-                  authStatusTag.className = 'tag-auth';
-                  authStatusTag.textContent = 'Credencial Inválida o Revocada';
-                }
-                return resolve(false);
-              } else {
-                showAlert(`Fotograma procesado por VIGÍA en ${latency} ms.`, 'success');
-                
-                const isVehicle = data.vehicle_detected;
-                const statusEl = document.getElementById('res-status');
-                if (isVehicle) {
-                  statusEl.innerHTML = '<span class="badge detected">' + (data.status || 'DETECTADO') + '</span>';
-                } else {
-                  statusEl.innerHTML = '<span class="badge none">' + (data.status || 'SIN VEHICULO') + '</span>';
-                }
-
-                document.getElementById('res-type').textContent = data.tipo_vehiculo || 'Ninguno';
-                document.getElementById('res-conf').textContent = data.confianza !== null && data.confianza !== undefined
-                  ? (data.confianza * 100).toFixed(1) + '%'
-                  : '—';
-                document.getElementById('res-roi').textContent = data.in_roi_now ?? 0;
-                document.getElementById('res-seq').textContent = '#' + (data.frame_sequence ?? '—');
-                document.getElementById('res-latency').textContent = latency + ' ms';
-                return resolve(true);
-              }
-            } catch (netErr) {
-              console.error(netErr);
-              showAlert('Error de red al conectar con VIGIA_API: ' + netErr.message, 'error');
-              return resolve(false);
+            if (resp.status === 429) {
+              showAlert('Demasiadas solicitudes: el servidor está procesando fotogramas.', 'warn');
+              return false;
             }
-          }, 'image/jpeg', 0.90);
-        });
-      }
+            showAlert('Rechazo del motor: ' + (data.message || data.error || ('HTTP ' + resp.status)), 'warn');
+            return false;
+          }
 
-      btnCapture.addEventListener('click', async () => {
-        btnCapture.disabled = true;
-        btnCapture.textContent = 'Enviando a VIGÍA...';
-        await captureAndSendFrame();
-        btnCapture.disabled = false;
-        btnCapture.textContent = '📸 Capturar y Procesar en VIGÍA';
-      });
+          // Inferencia y actualización de telemetría
+          const isVehicle = data.vehicle_detected;
+          const statusEl = document.getElementById('res-status');
+          if (isVehicle) {
+            statusEl.innerHTML = '<span class="badge detected">' + (data.status || 'DETECTADO') + '</span>';
+          } else {
+            statusEl.innerHTML = '<span class="badge none">' + (data.status || 'SIN VEHICULO') + '</span>';
+          }
 
-      // 4. Modo Transmisión Continua periódica (1 FPS)
-      function startContinuousStreaming() {
-        isStreaming = true;
-        btnStreamToggle.textContent = '⏸️ Detener Transmisión Continua';
-        btnStreamToggle.style.background = 'var(--danger)';
-        btnCapture.disabled = true;
-
-        streamIntervalId = setInterval(async () => {
-          if (!isStreaming) return;
-          await captureAndSendFrame();
-        }, 1000);
-      }
-
-      function stopContinuousStreaming() {
-        isStreaming = false;
-        if (streamIntervalId) {
-          clearInterval(streamIntervalId);
-          streamIntervalId = null;
-        }
-        btnStreamToggle.textContent = '▶️ Transmisión Continua (1 FPS)';
-        btnStreamToggle.style.background = '#30363d';
-        if (currentStream) {
-          btnCapture.disabled = false;
+          document.getElementById('res-type').textContent = data.tipo_vehiculo || 'Ninguno';
+          document.getElementById('res-conf').textContent = data.confianza !== null && data.confianza !== undefined
+            ? (data.confianza * 100).toFixed(1) + '%'
+            : '—';
+          document.getElementById('res-roi').textContent = data.in_roi_now ?? 0;
+          document.getElementById('res-seq').textContent = '#' + (data.frame_sequence ?? '—');
+          document.getElementById('res-latency').textContent = latency + ' ms';
+          return true;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            console.warn('Petición de fotograma descartada por timeout o detención.');
+            return false;
+          }
+          console.error(err);
+          showAlert('Error de conexión: ' + err.message, 'warn');
+          return false;
+        } finally {
+          isCapturingFrame = false;
         }
       }
 
+      // 3. Listener único de control de transmisión
       btnStreamToggle.addEventListener('click', () => {
         if (!isStreaming) {
           startContinuousStreaming();
@@ -489,6 +581,26 @@
         }
       });
 
+      // 4. Gestión del ciclo de vida de visibilidad de pestaña
+      document.addEventListener('visibilitychange', () => {
+        if (!isStreaming) return;
+        if (!document.hidden) {
+          // Al regresar, verificar si el stream continúa activo y tiene tracks operativos
+          const track = currentStream ? currentStream.getVideoTracks()[0] : null;
+          if (!track || track.readyState === 'ended') {
+            stopContinuousStreaming('La cámara se detuvo mientras la pestaña estuvo inactiva. Presione "Iniciar Transmisión" para reanudar.');
+          } else {
+            clearAlert();
+          }
+        }
+      });
+
+      camSourceSelect.addEventListener('change', () => {
+        if (isStreaming) {
+          stopContinuousStreaming();
+          startContinuousStreaming();
+        }
+      });
     })();
   </script>
 </body>

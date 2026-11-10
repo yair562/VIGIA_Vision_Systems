@@ -83,6 +83,78 @@ export async function renderCamerasView({
   if (!container) return;
   container.innerHTML = '';
 
+  // Registro de recursos activos para desmontaje limpio y protección de lifecycle
+  let viewGenerationToken = 0;
+  let isViewDestroyed = false;
+  let activePollInterval = null;
+  let isPollingInProgress = false;
+  let activeVisibilityListener = null;
+  const cameraCardRefs = new Map();
+  const activeStreamImgs = [];
+
+  /**
+   * Actualiza las clases contextuales de orientación según las dimensiones intrínsecas del stream (FE-05A).
+   * @param {HTMLImageElement} img
+   * @param {HTMLElement} mediaBox
+   */
+  function updateStreamOrientation(img, mediaBox) {
+    if (!img || !mediaBox) return;
+    const nw = img.naturalWidth;
+    const nh = img.naturalHeight;
+    if (nw && nh && nw > 0 && nh > 0) {
+      if (nh > nw) {
+        mediaBox.classList.add('camera-card-media--portrait');
+        mediaBox.classList.remove('camera-card-media--landscape');
+      } else {
+        mediaBox.classList.add('camera-card-media--landscape');
+        mediaBox.classList.remove('camera-card-media--portrait');
+      }
+    }
+  }
+
+  function cleanupActiveStreams() {
+    viewGenerationToken += 1;
+    if (activePollInterval) {
+      clearInterval(activePollInterval);
+      activePollInterval = null;
+    }
+    if (activeVisibilityListener && typeof document !== 'undefined' && typeof document.removeEventListener === 'function') {
+      document.removeEventListener('visibilitychange', activeVisibilityListener);
+      activeVisibilityListener = null;
+    }
+    isPollingInProgress = false;
+    for (const refs of cameraCardRefs.values()) {
+      if (refs.reconnectTimeoutId) {
+        clearTimeout(refs.reconnectTimeoutId);
+        refs.reconnectTimeoutId = null;
+      }
+    }
+    cameraCardRefs.clear();
+    while (activeStreamImgs.length > 0) {
+      const img = activeStreamImgs.pop();
+      try {
+        img.onerror = null;
+        img.onload = null;
+        if (typeof img.removeAttribute === 'function') {
+          img.removeAttribute('src');
+        } else {
+          img.src = '';
+        }
+      } catch (_) {}
+    }
+  }
+
+  // Interceptar navegación para desmontaje limpio
+  const originalOnNavigate = onNavigate;
+  const wrappedOnNavigate = (route) => {
+    isViewDestroyed = true;
+    cleanupActiveStreams();
+    if (typeof originalOnNavigate === 'function') {
+      originalOnNavigate(route);
+    }
+  };
+  onNavigate = wrappedOnNavigate;
+
   const shell = document.createElement('div');
   shell.className = 'admin-shell';
 
@@ -90,7 +162,7 @@ export async function renderCamerasView({
   const navbar = renderAdminNavbar({
     activeSectionId: 'cameras',
     currentUser,
-    onNavigate,
+    onNavigate: wrappedOnNavigate,
     onLogout
   });
   shell.appendChild(navbar);
@@ -146,45 +218,6 @@ export async function renderCamerasView({
   contentCard.appendChild(camerasSlot);
   shell.appendChild(contentCard);
 
-  // Registro de recursos activos para desmontaje limpio y protección de lifecycle
-  let viewGenerationToken = 0;
-  let isViewDestroyed = false;
-  let activePollInterval = null;
-  let isPollingInProgress = false;
-  const activeStreamImgs = [];
-
-  function cleanupActiveStreams() {
-    viewGenerationToken += 1;
-    if (activePollInterval) {
-      clearInterval(activePollInterval);
-      activePollInterval = null;
-    }
-    isPollingInProgress = false;
-    while (activeStreamImgs.length > 0) {
-      const img = activeStreamImgs.pop();
-      try {
-        img.onerror = null;
-        img.onload = null;
-        if (typeof img.removeAttribute === 'function') {
-          img.removeAttribute('src');
-        } else {
-          img.src = '';
-        }
-      } catch (_) {}
-    }
-  }
-
-  // Interceptar navegación para desmontaje limpio
-  const originalOnNavigate = onNavigate;
-  const wrappedOnNavigate = (route) => {
-    isViewDestroyed = true;
-    cleanupActiveStreams();
-    if (typeof originalOnNavigate === 'function') {
-      originalOnNavigate(route);
-    }
-  };
-  onNavigate = wrappedOnNavigate;
-
   // Pie de página
   const footer = document.createElement('footer');
   footer.className = 'admin-footer';
@@ -234,8 +267,8 @@ export async function renderCamerasView({
     const grid = document.createElement('div');
     grid.className = 'camera-grid';
 
-    // Mapa de elementos dinámicos por código de cámara para polling
-    const cameraCardRefs = new Map();
+    // Limpiar mapa dinámico por código de cámara para nuevo renderizado
+    cameraCardRefs.clear();
 
     cameras.forEach((cam) => {
       const card = document.createElement('article');
@@ -280,17 +313,27 @@ export async function renderCamerasView({
       statusPill.appendChild(statusText);
       mediaBox.appendChild(statusPill);
 
-      // Indicador independiente de error de reproducción dentro del visor (CAM-01E-01)
+      // Indicador independiente de error de reproducción dentro del visor (CAM-01E-01 / FE-05B)
       const playbackErrorOverlay = document.createElement('div');
       playbackErrorOverlay.className = 'camera-playback-error';
       playbackErrorOverlay.hidden = true;
+
       const playbackBadge = document.createElement('span');
       playbackBadge.className = 'camera-playback-badge';
       playbackBadge.textContent = 'ERROR DE REPRODUCCIÓN';
+
       const playbackMsg = document.createElement('span');
       playbackMsg.textContent = 'No se pudo cargar el flujo de video en este navegador.';
+
+      const retryBtn = document.createElement('button');
+      retryBtn.type = 'button';
+      retryBtn.className = 'camera-playback-retry-btn';
+      retryBtn.textContent = 'Reintentar Conexión';
+      retryBtn.setAttribute('aria-label', `Reintentar conexión de streaming para ${cam.codigo}`);
+
       playbackErrorOverlay.appendChild(playbackBadge);
       playbackErrorOverlay.appendChild(playbackMsg);
+      playbackErrorOverlay.appendChild(retryBtn);
       mediaBox.appendChild(playbackErrorOverlay);
 
       // Imagen para visualización MJPEG (/api/v1/cameras/<codigo>/stream)
@@ -299,15 +342,6 @@ export async function renderCamerasView({
       streamImg.alt = `Transmisión en vivo de ${cam.nombre || cam.codigo}`;
       streamImg.src = apiService.getCameraLiveStreamUrl(cam.codigo);
       activeStreamImgs.push(streamImg);
-
-      // Manejo independiente de errores de reproducción sin alterar la pastilla operativa
-      streamImg.addEventListener('error', () => {
-        playbackErrorOverlay.hidden = false;
-      });
-
-      streamImg.addEventListener('load', () => {
-        playbackErrorOverlay.hidden = true;
-      });
 
       mediaBox.appendChild(streamImg);
 
@@ -323,14 +357,117 @@ export async function renderCamerasView({
       mediaBox.appendChild(detectionsOverlay);
       card.appendChild(mediaBox);
 
-      // Guardar referencias para actualización reactiva vía polling
-      cameraCardRefs.set(cam.codigo, {
+      // Referencias reactivas por tarjeta para reconexión y ciclo de vida (FE-05B)
+      const camRefs = {
+        card,
+        mediaBox,
         statusPill,
         statusText,
         detInfo,
         playbackErrorOverlay,
-        streamImg
+        playbackBadge,
+        playbackMsg,
+        retryBtn,
+        streamImg,
+        reconnectTimeoutId: null,
+        reconnectAttempts: 0,
+        lastSuccessfulUpdate: Date.now()
+      };
+
+      // Función controlada para ejecutar la reconexión con cache-busting
+      function triggerReconnect(isManual = false) {
+        if (isViewDestroyed || currentGeneration !== viewGenerationToken) return;
+        if (camRefs.reconnectTimeoutId) {
+          clearTimeout(camRefs.reconnectTimeoutId);
+          camRefs.reconnectTimeoutId = null;
+        }
+
+        camRefs.reconnectAttempts += 1;
+        playbackBadge.textContent = 'RECONECTANDO TRANSMISIÓN';
+        playbackBadge.className = 'camera-playback-badge camera-playback-badge--reconnecting';
+        playbackMsg.textContent = isManual
+          ? 'Reconectando flujo de video...'
+          : `Reconectando transmisión (intento ${camRefs.reconnectAttempts}/5)...`;
+        retryBtn.disabled = true;
+        retryBtn.textContent = 'Reconectando...';
+
+        try {
+          if (typeof streamImg.removeAttribute === 'function') {
+            streamImg.removeAttribute('src');
+          } else {
+            streamImg.src = '';
+          }
+        } catch (_) {}
+
+        // Asignar URL fresca con parámetro de cache-busting
+        const streamUrl = apiService.getCameraLiveStreamUrl(cam.codigo);
+        streamImg.src = `${streamUrl}?retry=${Date.now()}`;
+      }
+
+      // Programar reconexión automática con backoff exponencial (máximo 10s)
+      function scheduleAutoReconnect() {
+        if (isViewDestroyed || currentGeneration !== viewGenerationToken) return;
+        if (camRefs.reconnectTimeoutId) {
+          clearTimeout(camRefs.reconnectTimeoutId);
+          camRefs.reconnectTimeoutId = null;
+        }
+
+        // Límite máximo de intentos consecutivos automáticos
+        if (camRefs.reconnectAttempts >= 5) {
+          playbackBadge.textContent = 'ERROR PERSISTENTE';
+          playbackBadge.className = 'camera-playback-badge camera-playback-badge--persistent';
+          playbackMsg.textContent = 'No se pudo restablecer la transmisión tras varios intentos. Presione "Reintentar Conexión".';
+          retryBtn.disabled = false;
+          retryBtn.textContent = 'Reintentar Conexión';
+          return;
+        }
+
+        // Backoff exponencial: ~1.5s, 2.7s, 4.8s, 8.7s, máx 10s
+        const delay = Math.min(10000, Math.round(1500 * Math.pow(1.8, camRefs.reconnectAttempts)));
+        playbackBadge.textContent = 'RECONECTANDO TRANSMISIÓN';
+        playbackBadge.className = 'camera-playback-badge camera-playback-badge--reconnecting';
+        playbackMsg.textContent = `Interrupción en la señal de video. Reintentando en ${Math.round(delay / 1000)}s...`;
+        retryBtn.disabled = false;
+        retryBtn.textContent = 'Reintentar Ahora';
+
+        camRefs.reconnectTimeoutId = setTimeout(() => {
+          camRefs.reconnectTimeoutId = null;
+          triggerReconnect(false);
+        }, delay);
+        if (camRefs.reconnectTimeoutId && typeof camRefs.reconnectTimeoutId.unref === 'function') {
+          camRefs.reconnectTimeoutId.unref();
+        }
+      }
+
+      // Reintento manual accesible mediante clic
+      retryBtn.addEventListener('click', (e) => {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        triggerReconnect(true);
       });
+
+      // Manejo de errores de reproducción sin alterar la pastilla operativa
+      streamImg.addEventListener('error', () => {
+        if (isViewDestroyed || currentGeneration !== viewGenerationToken) return;
+        playbackErrorOverlay.hidden = false;
+        scheduleAutoReconnect();
+      });
+
+      // Manejo de carga exitosa: restablecer overlay, resetear reintentos y detectar orientación
+      streamImg.addEventListener('load', () => {
+        if (isViewDestroyed || currentGeneration !== viewGenerationToken) return;
+        playbackErrorOverlay.hidden = true;
+        camRefs.reconnectAttempts = 0;
+        if (camRefs.reconnectTimeoutId) {
+          clearTimeout(camRefs.reconnectTimeoutId);
+          camRefs.reconnectTimeoutId = null;
+        }
+        retryBtn.disabled = false;
+        retryBtn.textContent = 'Reintentar Conexión';
+        updateStreamOrientation(streamImg, mediaBox);
+      });
+
+      // Guardar referencias para actualización reactiva vía polling
+      cameraCardRefs.set(cam.codigo, camRefs);
 
       // Áreas de Visión
       const areasSection = document.createElement('div');
@@ -403,11 +540,50 @@ export async function renderCamerasView({
             break;
           }
 
+          // Verificar si las dimensiones cambiaron durante el stream (rotación móvil FE-05A)
+          if (refs.streamImg && refs.mediaBox) {
+            updateStreamOrientation(refs.streamImg, refs.mediaBox);
+          }
+
           let statusData;
           try {
             statusData = await apiService.getCameraStatus(code);
-          } catch (_) {
-            // Ignorar fallas transitorias de red en polling sin degradar la vista
+            refs.lastSuccessfulUpdate = Date.now();
+          } catch (pollErr) {
+            if (isViewDestroyed || currentGeneration !== viewGenerationToken) {
+              return;
+            }
+            // 401: Sesión expirada o inválida
+            if (pollErr instanceof AuthError || pollErr?.status === 401) {
+              cleanupActiveStreams();
+              renderAuthErrorState(pollErr);
+              return;
+            }
+            // 403: Usuario sin autorización (p. ej. AUDITOR)
+            if (pollErr instanceof ForbiddenError || pollErr?.status === 403) {
+              cleanupActiveStreams();
+              renderForbiddenState(pollErr);
+              return;
+            }
+            // 404: Cámara no registrada en el sistema
+            if (pollErr?.status === 404) {
+              refs.statusPill.className = 'camera-status-pill camera-status-pill--error';
+              refs.statusText.textContent = 'NO REGISTRADA';
+              refs.card.classList.remove('camera-card--vehicle-detected', 'camera-card--roi-active');
+              refs.mediaBox.classList.remove('camera-card-media--roi-active');
+              refs.detInfo.textContent = 'Cámara no encontrada';
+              continue;
+            }
+            // 5xx / Timeout / Falla de red: Evaluar límite de antigüedad de 6 segundos
+            const lastUpdate = refs.lastSuccessfulUpdate || 0;
+            const ageMs = Date.now() - lastUpdate;
+            if (lastUpdate > 0 && ageMs > 6000) {
+              refs.statusPill.className = 'camera-status-pill camera-status-pill--error';
+              refs.statusText.textContent = 'SIN ACTUALIZACIÓN';
+              refs.card.classList.remove('camera-card--vehicle-detected', 'camera-card--roi-active');
+              refs.mediaBox.classList.remove('camera-card-media--roi-active');
+              refs.detInfo.textContent = 'Sin actualización (>6s)';
+            }
             continue;
           }
 
@@ -434,6 +610,22 @@ export async function renderCamerasView({
           } else {
             refs.statusPill.classList.add('camera-status-pill--standby');
             refs.statusText.textContent = 'EN ESPERA';
+          }
+
+          // Realce visual de tarjeta y contenedor ante detecciones y presencia en ROI (FE-05A/6)
+          if (opState === 'TRANSMITIENDO' && statusData.is_transmitting && statusData.vehicle_detected) {
+            refs.card.classList.add('camera-card--vehicle-detected');
+            if (statusData.in_roi) {
+              refs.card.classList.add('camera-card--roi-active');
+              refs.mediaBox.classList.add('camera-card-media--roi-active');
+            } else {
+              refs.card.classList.remove('camera-card--roi-active');
+              refs.mediaBox.classList.remove('camera-card-media--roi-active');
+            }
+          } else {
+            refs.card.classList.remove('camera-card--vehicle-detected');
+            refs.card.classList.remove('camera-card--roi-active');
+            refs.mediaBox.classList.remove('camera-card-media--roi-active');
           }
 
           // Actualizar información de detecciones reales (CAM-01E-02)
@@ -473,6 +665,28 @@ export async function renderCamerasView({
     activePollInterval = setInterval(updateOperationalStatus, 3000);
     if (activePollInterval && typeof activePollInterval.unref === 'function') {
       activePollInterval.unref();
+    }
+
+    // Registrar listener de visibilitychange para suspender polling en segundo plano (FE-05C)
+    if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+      activeVisibilityListener = () => {
+        if (isViewDestroyed || currentGeneration !== viewGenerationToken) return;
+        if (document.hidden) {
+          if (activePollInterval) {
+            clearInterval(activePollInterval);
+            activePollInterval = null;
+          }
+        } else {
+          if (!activePollInterval) {
+            updateOperationalStatus();
+            activePollInterval = setInterval(updateOperationalStatus, 3000);
+            if (activePollInterval && typeof activePollInterval.unref === 'function') {
+              activePollInterval.unref();
+            }
+          }
+        }
+      };
+      document.addEventListener('visibilitychange', activeVisibilityListener);
     }
   }
 

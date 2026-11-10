@@ -41,6 +41,7 @@ from VIGIA_Vision.detection import (
     YoloVehicleDetector,
     filter_detections_by_roi,
     project_normalized_roi,
+    resolve_inference_device,
     validate_bgr_frame,
 )
 from VIGIA_Vision.runtime import (
@@ -100,5 +101,6 @@ __all__ = [
     "map_raw_label_to_domain_vehicle_type",
     "project_normalized_roi",
     "render_annotated_frame",
+    "resolve_inference_device",
     "validate_bgr_frame",
 ]

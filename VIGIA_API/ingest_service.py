@@ -58,15 +58,20 @@ except ModuleNotFoundError:
         raise SystemExit(subprocess.call([str(_venv_python), *sys.argv]))
     raise
 import numpy as np
-from flask import Flask, Response, g, jsonify, request, send_from_directory
+from flask import Flask, Response, g, jsonify, request, send_from_directory, stream_with_context
 from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
 from werkzeug.serving import ThreadedWSGIServer, load_ssl_context, run_simple as _werkzeug_run_simple
 
 from VIGIA_API.security.auth_service import AuthService
 from VIGIA_API.security.session_manager import SessionManager, UserSession
+from VIGIA_Core.config.env_loader import get_setting
 from VIGIA_Core.domain.user import UserDTO
 from VIGIA_Core.domain.pairing import PairingRequestState
-from VIGIA_Core.repository.pairing_repository import PsycopgPairingRepository, hash_token_sha256
+from VIGIA_Core.repository.pairing_repository import (
+    ActiveCredentialConflictError,
+    PsycopgPairingRepository,
+    hash_token_sha256,
+)
 from VIGIA_Core.repository.detection_repository import (
     DatabaseConnectionError,
     DatabasePersistenceError,
@@ -81,11 +86,13 @@ from VIGIA_Core.repository.user_repository import (
     resolve_database_dsn,
 )
 from VIGIA_Core.security.password_hasher import hash_password
-from VIGIA_Vision.capture.registry import UnregisteredCameraError
-from VIGIA_Vision.capture.sources import MobilePushFrameBuffer
+from VIGIA_Vision.capture.registry import BoundCameraSlot, UnregisteredCameraError
+from VIGIA_Vision.capture.sources import MobilePushFrameBuffer, OpenCVCaptureSource
+from VIGIA_API.pull_worker import CameraPullWorker, CameraPullWorkerManager
 from VIGIA_Vision.config.engine_settings import VisionEngineSettings
 from VIGIA_Vision.config.psycopg_topology_repository import PsycopgTopologyConfigRepository
 from VIGIA_Vision.config.topology_validator import (
+    CameraConfigDTO,
     ITopologyConfigRepository,
     TopologyValidationError,
     TopologyValidator,
@@ -99,6 +106,7 @@ from VIGIA_Vision.detection.yolo_detector import (
     ModelLoadError,
     YoloDetectorConfig,
     YoloVehicleDetector,
+    resolve_inference_device,
 )
 from VIGIA_Vision.runtime.coordinator import IVehicleDetector, VisionEngineCoordinator
 from VIGIA_Vision.runtime.evidence_storage import (
@@ -108,6 +116,58 @@ from VIGIA_Vision.runtime.evidence_storage import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Aislamiento Criptográfico de Root CA (VIGIA-NET-04A / VIGIA-NET-04A-R1)
+try:
+    from VIGIA_Security.signer.ipc_client import (
+        SignerAuthenticationError,
+        SignerClient,
+        SignerTimeoutError,
+        SignerUnavailableError,
+    )
+    from VIGIA_Security.signer.policy import PolicyViolationError
+    from VIGIA_Security.signer.constants import AUTHORIZED_ROOT_CA_FINGERPRINT
+except Exception:
+    SignerClient = None
+    SignerUnavailableError = RuntimeError
+    SignerAuthenticationError = RuntimeError
+    SignerTimeoutError = RuntimeError
+    PolicyViolationError = RuntimeError
+    AUTHORIZED_ROOT_CA_FINGERPRINT = ""
+
+
+def is_local_signing_allowed(ca_cert: Optional[Any] = None) -> bool:
+    """
+    Determina si la firma local en el proceso Flask está autorizada exclusivamente
+    para entornos de desarrollo/pruebas automatizadas con material efímero (VIGIA-NET-04A-R1).
+
+    Reglas obligatorias:
+    1. Si VIGIA_ENV == 'production' (o por defecto), la firma local está TERMINANTEMENTE PROHIBIDA (Fail-Closed).
+    2. Requiere que VIGIA_DEV_ALLOW_LOCAL_SIGNING esté explícitamente activado ('true', '1', 'yes').
+    3. Deshabilitado por defecto.
+    4. Prohíbe terminantemente firmar si el certificado es la Root CA de producción oficial.
+    """
+    env_mode = os.environ.get("VIGIA_ENV", "production").strip().lower()
+    if env_mode == "production":
+        return False
+    dev_flag = os.environ.get("VIGIA_DEV_ALLOW_LOCAL_SIGNING", "false").strip().lower()
+    if dev_flag not in ("true", "1", "yes"):
+        return False
+
+    if ca_cert is not None and AUTHORIZED_ROOT_CA_FINGERPRINT:
+        try:
+            from cryptography.hazmat.primitives import hashes
+            fp = ca_cert.fingerprint(hashes.SHA256()).hex().upper()
+            if fp == AUTHORIZED_ROOT_CA_FINGERPRINT:
+                logger.error(
+                    "Intento de firma local sobre la Root CA oficial de producción rechazado. "
+                    "Incluso en modo de desarrollo, la Root CA oficial solo puede ser firmada por IsolatedSigner."
+                )
+                return False
+        except Exception:
+            return False
+
+    return True
 
 # Límites operativos canónicos de seguridad
 DEFAULT_MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MiB
@@ -230,9 +290,17 @@ def build_vision_engine_coordinator(
             raise ModelLoadError(
                 f"No se encontró el archivo de pesos del modelo YOLO en '{weights_file}'."
             )
+        device_setting = get_setting("VIGIA_INFERENCE_DEVICE", "auto")
+        target_device = resolve_inference_device(device_setting)
+        logger.info(
+            "Configurando detector YOLO11n en dispositivo '%s' (VIGIA_INFERENCE_DEVICE='%s').",
+            target_device,
+            device_setting,
+        )
         yolo_cfg = YoloDetectorConfig(
             model_path=str(weights_file),
             confidence_threshold=min(0.25, resolved_settings.vehicle_confidence_threshold),
+            device=target_device,
         )
         resolved_detector = YoloVehicleDetector(config=yolo_cfg)
 
@@ -246,6 +314,31 @@ def build_vision_engine_coordinator(
         new_event_predicate=lambda _cam_code, detections: bool(detections),
     )
     coordinator.initialize(open_sources=open_sources)
+
+    raw_extra_cams = get_setting("VIGIA_EXTRA_CAMERAS", "").strip()
+    if raw_extra_cams and coordinator.registry is not None:
+        extra_codes = [c.strip().upper() for c in raw_extra_cams.split(",") if c.strip()]
+        topo = coordinator.active_topology
+        if topo is not None:
+            for idx, code in enumerate(extra_codes):
+                target_area = topo.area_entrada if (idx % 2 == 0) else topo.area_salida
+                aux_cam = CameraConfigDTO(
+                    id_camara=uuid.uuid4(),
+                    codigo=code,
+                    nombre=f"Cámara Auxiliar {code}",
+                    uri_stream=f"push://{code.lower()}",
+                    activa=True,
+                )
+                aux_slot = BoundCameraSlot(
+                    camera=aux_cam,
+                    area=target_area,
+                    source=MobilePushFrameBuffer(code, ttl_seconds=resolved_settings.mobile_frame_ttl_seconds),
+                )
+                if open_sources:
+                    aux_slot.source.open()
+                coordinator.registry.register_slot(aux_slot)
+                logger.info("Cámara auxiliar multicámara registrada: '%s' -> área '%s'", code, target_area.codigo)
+
     return coordinator
 
 
@@ -472,7 +565,44 @@ def create_ingest_app(
         app.config["CERTS_DIR"] = (repo_root / "certs").resolve()
 
     # Lock para serializar atómicamente push_frame + process_camera_step y caché de deduplicación
-    process_lock = threading.RLock()
+    # Locks granulares por camara para serializar push_frame + process_camera_step
+    # sin bloquear a otras camaras concurrentes (VIGIA-OPT-MULTI-01)
+    camera_process_locks: Dict[str, threading.RLock] = {}
+    camera_locks_guard = threading.Lock()
+    retry_cache_lock = threading.Lock()
+
+    def get_camera_process_lock(code: str) -> threading.RLock:
+        clean_code = (code or "").strip().upper()
+        with camera_locks_guard:
+            if clean_code not in camera_process_locks:
+                camera_process_locks[clean_code] = threading.RLock()
+            return camera_process_locks[clean_code]
+
+    def _update_camera_latest_frame(cam_code: str, payload: Dict[str, Any]) -> None:
+        cam_clean = cam_code.strip().upper()
+        cond = _get_camera_condition(cam_clean)
+        with cond:
+            _latest_camera_frames[cam_clean] = payload
+            cond.notify_all()
+
+    pull_worker_mgr = CameraPullWorkerManager(
+        coordinator=resolved_coordinator,
+        frame_consumer=_update_camera_latest_frame,
+        process_lock_provider=get_camera_process_lock,
+        target_fps=15.0,
+        debounce_seconds=float(os.environ.get("STREAM_PERSIST_DEBOUNCE_SECONDS", "3.0")),
+    )
+    app.config["PULL_WORKER_MANAGER"] = pull_worker_mgr
+
+    # Auto-iniciar workers para fuentes Pull existentes al arranque (persistencia)
+    if resolved_coordinator is not None and getattr(resolved_coordinator, "registry", None) is not None:
+        try:
+            for c_code in resolved_coordinator.registry.registered_camera_codes:
+                c_slot = resolved_coordinator.registry.get_slot(c_code)
+                if isinstance(c_slot.source, OpenCVCaptureSource):
+                    pull_worker_mgr.start_worker(c_code)
+        except Exception as p_err:
+            logger.warning("Fallo al auto-iniciar pull workers al arranque: %s", p_err)
     persisted_retry_cache: Dict[Tuple[str, str], Dict[str, Any]] = {}
     camera_persist_states: Dict[str, Dict[str, Any]] = {}
 
@@ -1494,18 +1624,20 @@ def create_ingest_app(
             getattr(engine_coordinator, "_detection_repository", None) is not None
         )
 
-        with process_lock:
+        cam_lock = get_camera_process_lock(codigo_camara)
+        with cam_lock:
             now_mono = time.monotonic()
-            expired_keys = [
-                k
-                for k, v in persisted_retry_cache.items()
-                if (now_mono - float(v.get("ts_monotonic", 0.0))) > dedup_ttl
-            ]
-            for k in expired_keys:
-                persisted_retry_cache.pop(k, None)
+            with retry_cache_lock:
+                expired_keys = [
+                    k
+                    for k, v in persisted_retry_cache.items()
+                    if (now_mono - float(v.get("ts_monotonic", 0.0))) > dedup_ttl
+                ]
+                for k in expired_keys:
+                    persisted_retry_cache.pop(k, None)
 
-            cached_entry = persisted_retry_cache.get(cache_key)
-            is_duplicate_retry = cached_entry is not None
+                cached_entry = persisted_retry_cache.get(cache_key)
+                is_duplicate_retry = cached_entry is not None
 
             # Si es un reintento de un fotograma ya persistido, no volver a escribir en disco ni en BD.
             # Si no es reintento y el coordinador cuenta con repositorio de detecciones configurado,
@@ -1638,12 +1770,13 @@ def create_ingest_app(
 
                 cam_persist_state["last_persist_ts"] = now_mono
                 _last_persist_timestamps[codigo_camara] = now_mono
-                persisted_retry_cache[cache_key] = {
-                    "ts_monotonic": time.monotonic(),
-                    "id_deteccion": str(envelope.id_deteccion),
-                    "original_evidence_path": envelope.original_evidence_path,
-                    "annotated_evidence_path": envelope.annotated_evidence_path,
-                }
+                with retry_cache_lock:
+                    persisted_retry_cache[cache_key] = {
+                        "ts_monotonic": time.monotonic(),
+                        "id_deteccion": str(envelope.id_deteccion),
+                        "original_evidence_path": envelope.original_evidence_path,
+                        "annotated_evidence_path": envelope.annotated_evidence_path,
+                    }
 
             cam_persist_state["had_vehicle"] = bool(vr.vehicle_detected)
 
@@ -1742,23 +1875,26 @@ def create_ingest_app(
         return True
 
     @app.route("/api/v1/cameras/<codigo_camara>/live", methods=["GET"])
+    @require_rbac("ADMINISTRADOR", "GUARDIA")
     def get_camera_live_frame(codigo_camara: str):
         """
         Retorna el fotograma JPEG anotado más reciente de la cámara con metadatos en encabezados.
         Si la cámara no está transmitiendo, entrega el fotograma de espera correspondiente.
+        Requiere rol ADMINISTRADOR o GUARDIA autenticado.
         """
         codigo_clean = codigo_camara.strip().upper()
         if not _is_camera_registered(codigo_clean):
-            return (
-                jsonify(
-                    {
-                        "ok": False,
-                        "error": "CAMERA_NOT_FOUND",
-                        "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
-                    }
-                ),
-                404,
+            resp = jsonify(
+                {
+                    "ok": False,
+                    "error": "CAMERA_NOT_FOUND",
+                    "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
+                }
             )
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+            resp.headers["Pragma"] = "no-cache"
+            resp.headers["Expires"] = "0"
+            return resp, 404
 
         cond = _get_camera_condition(codigo_clean)
         with cond:
@@ -1769,7 +1905,9 @@ def create_ingest_app(
             if is_fresh and frame_info:
                 headers = {
                     "Content-Type": "image/jpeg",
-                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+                    "Pragma": "no-cache",
+                    "Expires": "0",
                     "X-Vision-Status": str(frame_info.get("status", "SIN_DATOS")),
                     "X-Vehicle-Detected": "true" if frame_info.get("vehicle_detected") else "false",
                     "X-Vehicle-Type": str(frame_info.get("tipo_vehiculo") or "NINGUNO"),
@@ -1784,7 +1922,9 @@ def create_ingest_app(
                 standby = _generate_standby_jpeg(codigo_clean, standby_msg)
                 headers = {
                     "Content-Type": "image/jpeg",
-                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+                    "Pragma": "no-cache",
+                    "Expires": "0",
                     "X-Vision-Status": "SIN_SENAL" if frame_info else "EN_ESPERA",
                     "X-Vehicle-Detected": "false",
                     "X-In-ROI": "0",
@@ -1792,31 +1932,59 @@ def create_ingest_app(
                 return Response(standby, mimetype="image/jpeg", headers=headers)
 
     @app.route("/api/v1/cameras/<codigo_camara>/stream", methods=["GET"])
+    @require_rbac("ADMINISTRADOR", "GUARDIA")
     def stream_camera_mjpeg(codigo_camara: str):
         """
         Emite un flujo continuo MJPEG (multipart/x-mixed-replace) con los fotogramas anotados
         en tiempo real para visualización directa en el Dashboard (VIGIA-CAM-01).
+        Requiere rol ADMINISTRADOR o GUARDIA autenticado y valida periódicamente la vigencia de la sesión.
         """
         codigo_clean = codigo_camara.strip().upper()
         if not _is_camera_registered(codigo_clean):
-            return (
-                jsonify(
-                    {
-                        "ok": False,
-                        "error": "CAMERA_NOT_FOUND",
-                        "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
-                    }
-                ),
-                404,
+            resp = jsonify(
+                {
+                    "ok": False,
+                    "error": "CAMERA_NOT_FOUND",
+                    "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
+                }
             )
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+            resp.headers["Pragma"] = "no-cache"
+            resp.headers["Expires"] = "0"
+            return resp, 404
+
+        session_token = _extract_session_token()
+        sess_mgr = app.config.get("SESSION_MANAGER")
 
         def generate_mjpeg():
             cond = _get_camera_condition(codigo_clean)
             last_seq = -1
             standby_sent_time = 0.0
+            last_session_check = time.time()
 
             try:
                 while True:
+                    # Comprobación periódica de sesión (máximo 15s; ejecutamos cada 10s)
+                    now_ts = time.time()
+                    if now_ts - last_session_check >= 10.0:
+                        last_session_check = now_ts
+                        current_sess = sess_mgr.get_session(session_token) if (sess_mgr and session_token) else None
+                        if not current_sess:
+                            logger.info(
+                                "Sesión finalizada o revocada durante stream MJPEG para '%s' (token: %s...)",
+                                codigo_clean,
+                                session_token[:8] if session_token else "none",
+                            )
+                            break
+                        user_roles = {current_sess.rol.upper(), current_sess.db_rol.upper()}
+                        if "ADMINISTRADOR" not in user_roles and "GUARDIA" not in user_roles and "OPERADOR" not in user_roles:
+                            logger.warning(
+                                "Rol no autorizado detectado durante stream MJPEG para '%s' (rol: %s)",
+                                codigo_clean,
+                                current_sess.rol,
+                            )
+                            break
+
                     jpeg_data = None
                     with cond:
                         frame_info = _latest_camera_frames.get(codigo_clean)
@@ -1850,32 +2018,35 @@ def create_ingest_app(
                 return
 
         return Response(
-            generate_mjpeg(),
+            stream_with_context(generate_mjpeg()),
             mimetype="multipart/x-mixed-replace; boundary=frame",
             headers={
-                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
                 "Pragma": "no-cache",
                 "Expires": "0",
             },
         )
 
     @app.route("/api/v1/cameras/<codigo_camara>/status", methods=["GET"])
+    @require_rbac("ADMINISTRADOR", "GUARDIA")
     def get_camera_operational_status(codigo_camara: str):
         """
         Retorna el estado operativo en tiempo real de la cámara y sus indicadores de visión.
+        Requiere rol ADMINISTRADOR o GUARDIA autenticado.
         """
         codigo_clean = codigo_camara.strip().upper()
         if not _is_camera_registered(codigo_clean):
-            return (
-                jsonify(
-                    {
-                        "ok": False,
-                        "error": "CAMERA_NOT_FOUND",
-                        "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
-                    }
-                ),
-                404,
+            resp = jsonify(
+                {
+                    "ok": False,
+                    "error": "CAMERA_NOT_FOUND",
+                    "message": f"La cámara '{codigo_clean}' no está registrada en el sistema.",
+                }
             )
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+            resp.headers["Pragma"] = "no-cache"
+            resp.headers["Expires"] = "0"
+            return resp, 404
 
         cond = _get_camera_condition(codigo_clean)
         with cond:
@@ -1906,7 +2077,7 @@ def create_ingest_app(
                         pass
                 operational_state = "ENROLADA" if has_enrolled_device else "EN_ESPERA"
 
-            return jsonify(
+            resp = jsonify(
                 {
                     "ok": True,
                     "codigo_camara": codigo_clean,
@@ -1925,7 +2096,10 @@ def create_ingest_app(
                     "sequence": frame_info.get("sequence") if frame_info else None,
                 }
             )
-
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+            resp.headers["Pragma"] = "no-cache"
+            resp.headers["Expires"] = "0"
+            return resp
 
     # =========================================================================
     # ENDPOINTS DE ENROLAMIENTO QR Y GESTIÓN DE DISPOSITIVOS (MOB-QR-01)
@@ -2987,17 +3161,16 @@ def generate_vigia_crl(
 
     base_dir = Path(cert_dir).resolve()
     ca_cert_p = base_dir / "vigia_root_ca.crt"
-    ca_key_p = base_dir / "vigia_root_ca_key.pem"
     crl_file_p = base_dir / CRL_FILENAME
 
-    if not ca_cert_p.is_file() or not ca_key_p.is_file():
-        raise FileNotFoundError(
-            f"No se encontraron los archivos de la Root CA en '{base_dir}'. "
-            "Se requiere vigia_root_ca.crt y vigia_root_ca_key.pem."
-        )
-
-    ca_cert = x509.load_pem_x509_certificate(ca_cert_p.read_bytes())
-    ca_key = serialization.load_pem_private_key(ca_key_p.read_bytes(), password=None)
+    signer_client = None
+    if SignerClient is not None:
+        try:
+            client = SignerClient(certs_dir=base_dir)
+            if client.ping():
+                signer_client = client
+        except Exception:
+            signer_client = None
 
     current_state = load_crl_state(base_dir)
 
@@ -3011,87 +3184,139 @@ def generate_vigia_crl(
     else:
         effective_revoked = list(current_state.get("revoked_serials", []))
 
-    now = datetime.datetime.now(datetime.timezone.utc)
-    this_update = now - datetime.timedelta(minutes=5)
-    next_update = now + datetime.timedelta(days=max(1, valid_days))
-
-    builder = (
-        x509.CertificateRevocationListBuilder()
-        .issuer_name(ca_cert.subject)
-        .last_update(this_update)
-        .next_update(next_update)
-    )
-
-    # AuthorityKeyIdentifier extensión coincidente con el SKI de la Root CA
-    aki = x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key())
-    builder = builder.add_extension(aki, critical=False)
-
-    # CRLNumber extensión monótona
-    builder = builder.add_extension(x509.CRLNumber(effective_num), critical=False)
-
-    reason_mapping = {
-        "unspecified": x509.ReasonFlags.unspecified,
-        "keycompromise": x509.ReasonFlags.key_compromise,
-        "key_compromise": x509.ReasonFlags.key_compromise,
-        "cacompromise": x509.ReasonFlags.ca_compromise,
-        "ca_compromise": x509.ReasonFlags.ca_compromise,
-        "affiliationchanged": x509.ReasonFlags.affiliation_changed,
-        "affiliation_changed": x509.ReasonFlags.affiliation_changed,
-        "superseded": x509.ReasonFlags.superseded,
-        "cessationofoperation": x509.ReasonFlags.cessation_of_operation,
-        "cessation_of_operation": x509.ReasonFlags.cessation_of_operation,
-        "certificatehold": x509.ReasonFlags.certificate_hold,
-        "certificate_hold": x509.ReasonFlags.certificate_hold,
-        "privilegewithdrawn": x509.ReasonFlags.privilege_withdrawn,
-        "privilege_withdrawn": x509.ReasonFlags.privilege_withdrawn,
-        "aacompromise": x509.ReasonFlags.aa_compromise,
-        "aa_compromise": x509.ReasonFlags.aa_compromise,
-        "removefromcrl": x509.ReasonFlags.remove_from_crl,
-        "remove_from_crl": x509.ReasonFlags.remove_from_crl,
-    }
-
-    for item in effective_revoked:
-        s_num = int(item["serial_number"])
-        rev_dt_raw = item.get("revocation_date")
-        if isinstance(rev_dt_raw, str):
-            rev_dt = datetime.datetime.fromisoformat(rev_dt_raw)
-        elif isinstance(rev_dt_raw, datetime.datetime):
-            rev_dt = rev_dt_raw
-        else:
-            rev_dt = now
-        if rev_dt.tzinfo is None:
-            rev_dt = rev_dt.replace(tzinfo=datetime.timezone.utc)
-
-        raw_reason = str(item.get("reason", "key_compromise")).strip().lower()
-        reason_flag = reason_mapping.get(raw_reason, x509.ReasonFlags.key_compromise)
-
-        rev_builder = (
-            x509.RevokedCertificateBuilder()
-            .serial_number(s_num)
-            .revocation_date(rev_dt)
-            .add_extension(x509.CRLReason(reason_flag), critical=False)
+    if signer_client is not None:
+        resp = signer_client.request_crl(
+            crl_number=effective_num,
+            revoked_serials=effective_revoked,
+            valid_days=valid_days,
         )
-        builder = builder.add_revoked_certificate(rev_builder.build())
+        crl_der_bytes = resp["crl_der_bytes"]
+        now = datetime.datetime.now(datetime.timezone.utc)
+        this_update = now - datetime.timedelta(minutes=5)
+        next_update_str = resp.get("next_update") or (now + datetime.timedelta(days=max(1, valid_days))).isoformat()
 
-    crl = builder.sign(ca_key, hashes.SHA256())
-    crl_der = crl.public_bytes(serialization.Encoding.DER)
+        tmp_crl_p = base_dir / f".{CRL_FILENAME}.tmp.{uuid.uuid4().hex[:8]}"
+        try:
+            tmp_crl_p.write_bytes(crl_der_bytes)
+            os.replace(tmp_crl_p, crl_file_p)
+        finally:
+            if tmp_crl_p.exists():
+                tmp_crl_p.unlink(missing_ok=True)
 
-    tmp_crl_p = base_dir / f".{CRL_FILENAME}.tmp.{uuid.uuid4().hex[:8]}"
-    try:
-        tmp_crl_p.write_bytes(crl_der)
-        os.replace(tmp_crl_p, crl_file_p)
-    finally:
-        if tmp_crl_p.exists():
-            tmp_crl_p.unlink(missing_ok=True)
+        new_state = {
+            "crl_number": effective_num,
+            "last_updated": now.isoformat(),
+            "this_update": this_update.isoformat(),
+            "next_update": next_update_str,
+            "revoked_serials": effective_revoked,
+        }
+        state_p = save_crl_state_atomic(base_dir, new_state)
+        return crl_file_p, state_p
 
-    new_state = {
-        "crl_number": effective_num,
-        "last_updated": now.isoformat(),
-        "this_update": this_update.isoformat(),
-        "next_update": next_update.isoformat(),
-        "revoked_serials": effective_revoked,
-    }
-    state_p = save_crl_state_atomic(base_dir, new_state)
+    ca_cert = None
+    if ca_cert_p.is_file():
+        try:
+            ca_cert = x509.load_pem_x509_certificate(ca_cert_p.read_bytes())
+        except Exception:
+            pass
+
+    if is_local_signing_allowed(ca_cert):
+        # Modo explícito de desarrollo / pruebas de laboratorio con mock Root CA
+        ca_key_p = base_dir / "vigia_root_ca_key.pem"
+        if not ca_cert_p.is_file() or not ca_key_p.is_file():
+            raise FileNotFoundError(
+                f"No se encontraron los archivos de la Root CA de prueba en '{base_dir}'."
+            )
+        if ca_cert is None:
+            ca_cert = x509.load_pem_x509_certificate(ca_cert_p.read_bytes())
+        ca_key = serialization.load_pem_private_key(ca_key_p.read_bytes(), password=None)
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        this_update = now - datetime.timedelta(minutes=5)
+        next_update = now + datetime.timedelta(days=max(1, valid_days))
+
+        builder = (
+            x509.CertificateRevocationListBuilder()
+            .issuer_name(ca_cert.subject)
+            .last_update(this_update)
+            .next_update(next_update)
+        )
+
+        aki = x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key())
+        builder = builder.add_extension(aki, critical=False)
+        builder = builder.add_extension(x509.CRLNumber(effective_num), critical=False)
+
+        reason_mapping = {
+            "unspecified": x509.ReasonFlags.unspecified,
+            "keycompromise": x509.ReasonFlags.key_compromise,
+            "key_compromise": x509.ReasonFlags.key_compromise,
+            "cacompromise": x509.ReasonFlags.ca_compromise,
+            "ca_compromise": x509.ReasonFlags.ca_compromise,
+            "affiliationchanged": x509.ReasonFlags.affiliation_changed,
+            "affiliation_changed": x509.ReasonFlags.affiliation_changed,
+            "superseded": x509.ReasonFlags.superseded,
+            "cessationofoperation": x509.ReasonFlags.cessation_of_operation,
+            "cessation_of_operation": x509.ReasonFlags.cessation_of_operation,
+            "certificatehold": x509.ReasonFlags.certificate_hold,
+            "certificate_hold": x509.ReasonFlags.certificate_hold,
+            "privilegewithdrawn": x509.ReasonFlags.privilege_withdrawn,
+            "privilege_withdrawn": x509.ReasonFlags.privilege_withdrawn,
+            "aacompromise": x509.ReasonFlags.aa_compromise,
+            "aa_compromise": x509.ReasonFlags.aa_compromise,
+            "removefromcrl": x509.ReasonFlags.remove_from_crl,
+            "remove_from_crl": x509.ReasonFlags.remove_from_crl,
+        }
+
+        for item in effective_revoked:
+            s_num = int(item["serial_number"])
+            rev_dt_raw = item.get("revocation_date")
+            if isinstance(rev_dt_raw, str):
+                rev_dt = datetime.datetime.fromisoformat(rev_dt_raw)
+            elif isinstance(rev_dt_raw, datetime.datetime):
+                rev_dt = rev_dt_raw
+            else:
+                rev_dt = now
+            if rev_dt.tzinfo is None:
+                rev_dt = rev_dt.replace(tzinfo=datetime.timezone.utc)
+
+            raw_reason = str(item.get("reason", "key_compromise")).strip().lower()
+            reason_flag = reason_mapping.get(raw_reason, x509.ReasonFlags.key_compromise)
+
+            rev_builder = (
+                x509.RevokedCertificateBuilder()
+                .serial_number(s_num)
+                .revocation_date(rev_dt)
+                .add_extension(x509.CRLReason(reason_flag), critical=False)
+            )
+            builder = builder.add_revoked_certificate(rev_builder.build())
+
+        crl = builder.sign(ca_key, hashes.SHA256())
+        crl_der = crl.public_bytes(serialization.Encoding.DER)
+
+        tmp_crl_p = base_dir / f".{CRL_FILENAME}.tmp.{uuid.uuid4().hex[:8]}"
+        try:
+            tmp_crl_p.write_bytes(crl_der)
+            os.replace(tmp_crl_p, crl_file_p)
+        finally:
+            if tmp_crl_p.exists():
+                tmp_crl_p.unlink(missing_ok=True)
+
+        new_state = {
+            "crl_number": effective_num,
+            "last_updated": now.isoformat(),
+            "this_update": this_update.isoformat(),
+            "next_update": next_update.isoformat(),
+            "revoked_serials": effective_revoked,
+        }
+        state_p = save_crl_state_atomic(base_dir, new_state)
+        return crl_file_p, state_p
+
+    # FAIL-CLOSED INNEGOCIABLE EN PRODUCCIÓN (VIGIA-NET-04A-R1)
+    raise SignerUnavailableError(
+        "Política de seguridad FAIL-CLOSED (VIGIA-NET-04A-R1): No es posible emitir la CRL porque "
+        "el servicio IsolatedSigner no se encuentra disponible y la firma directa desde Flask "
+        "está terminantemente prohibida en producción."
+    )
 
     logger.info(
         "CRL X.509 emitida exitosamente: secuencia #%d, %d certificado(s) revocado(s), próxima actualización: %s",
@@ -3332,7 +3557,6 @@ def generate_vigia_local_ca_bundle(
     base_dir.mkdir(parents=True, exist_ok=True)
 
     ca_cert_p = base_dir / "vigia_root_ca.crt"
-    ca_key_p = base_dir / "vigia_root_ca_key.pem"
     cert_p = base_dir / "vigia_cert.pem"
     key_p = base_dir / "vigia_key.pem"
     manifest_p = base_dir / MANIFEST_FILENAME
@@ -3345,18 +3569,19 @@ def generate_vigia_local_ca_bundle(
 
     now = datetime.datetime.now(datetime.timezone.utc)
 
-    # 1. Cargar o generar la Autoridad Certificadora (Root CA) local
-    if ca_cert_p.is_file() and ca_key_p.is_file():
+    # 1. Cargar el certificado público de la Root CA (Flask NO lee vigia_root_ca_key.pem en producción)
+    if ca_cert_p.is_file():
         ca_cert = x509.load_pem_x509_certificate(ca_cert_p.read_bytes())
-        ca_key = serialization.load_pem_private_key(ca_key_p.read_bytes(), password=None)
-    else:
+        ca_key = None
+    elif is_local_signing_allowed() and not ca_cert_p.is_file():
+        # Generación efímera de Root CA de prueba en entorno dev/test
         ca_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
         ca_subject = x509.Name(
             [
                 x509.NameAttribute(NameOID.COUNTRY_NAME, "MX"),
                 x509.NameAttribute(NameOID.ORGANIZATION_NAME, "VIGIA Vision Systems"),
                 x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, "Seguridad e Infraestructura LAN"),
-                x509.NameAttribute(NameOID.COMMON_NAME, "VIGIA Local Root CA"),
+                x509.NameAttribute(NameOID.COMMON_NAME, "VIGIA Test Root CA"),
             ]
         )
         ca_ski = x509.SubjectKeyIdentifier.from_public_key(ca_key.public_key())
@@ -3390,6 +3615,7 @@ def generate_vigia_local_ca_bundle(
             )
             .sign(ca_key, hashes.SHA256())
         )
+        ca_key_p = base_dir / "vigia_root_ca_key.pem"
         ca_key_p.write_bytes(
             ca_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
@@ -3398,6 +3624,11 @@ def generate_vigia_local_ca_bundle(
             )
         )
         ca_cert_p.write_bytes(ca_cert.public_bytes(serialization.Encoding.PEM))
+    else:
+        raise FileNotFoundError(
+            f"No se encontró el certificado de la Root CA en '{ca_cert_p}'. "
+            "Se requiere vigia_root_ca.crt para validar la cadena de confianza."
+        )
 
     # Asegurar existencia y validez de la Lista de Revocación de Certificados (CRL) privada (VIGIA-TLS-02D)
     ensure_crl_is_valid(base_dir)
@@ -3430,64 +3661,114 @@ def generate_vigia_local_ca_bundle(
             if target_ip.strip().lower() != "localhost":
                 san_entries.append(x509.DNSName(target_ip.strip()))
 
-        srv_ski = x509.SubjectKeyIdentifier.from_public_key(srv_key.public_key())
-        ca_aki = x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key())
         effective_crl_port = crl_http_port or int(
             os.environ.get("VIGIA_CRL_HTTP_PORT", str(DEFAULT_CRL_HTTP_PORT))
         )
         cdp_uri = f"http://{target_ip.strip()}:{effective_crl_port}/api/v1/tls/ca.crl"
-        cdp_ext = x509.CRLDistributionPoints([
-            x509.DistributionPoint(
-                full_name=[x509.UniformResourceIdentifier(cdp_uri)],
-                relative_name=None,
-                crl_issuer=None,
-                reasons=None,
-            )
-        ])
-        srv_cert = (
-            x509.CertificateBuilder()
-            .subject_name(srv_subject)
-            .issuer_name(ca_cert.subject)
-            .public_key(srv_key.public_key())
-            .serial_number(x509.random_serial_number())
-            .not_valid_before(now - datetime.timedelta(minutes=5))
-            .not_valid_after(now + datetime.timedelta(days=min(valid_days, 397)))
-            .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
-            .add_extension(
-                x509.KeyUsage(
-                    digital_signature=True,
-                    content_commitment=False,
-                    key_encipherment=True,
-                    data_encipherment=False,
-                    key_agreement=False,
-                    key_cert_sign=False,
-                    crl_sign=False,
-                    encipher_only=False,
-                    decipher_only=False,
-                ),
-                critical=True,
-            )
-            .add_extension(x509.ExtendedKeyUsage([ExtendedKeyUsageOID.SERVER_AUTH]), critical=False)
-            .add_extension(srv_ski, critical=False)
-            .add_extension(ca_aki, critical=False)
-            .add_extension(x509.SubjectAlternativeName(san_entries), critical=False)
-            .add_extension(cdp_ext, critical=False)
-            .sign(ca_key, hashes.SHA256())
-        )
 
-        # Guardar cadena completa (servidor + CA) en vigia_cert.pem y clave en vigia_key.pem
-        staged_key_p.write_bytes(
-            srv_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption(),
+        # Conectar obligatoriamente con IsolatedSigner (delegación obligatoria en producción)
+        signer_client = None
+        if SignerClient is not None:
+            try:
+                client = SignerClient(certs_dir=base_dir)
+                if client.ping():
+                    signer_client = client
+                else:
+                    logger.warning("IsolatedSigner ping falló (no responde PONG).")
+            except Exception as client_err:
+                logger.warning("No fue posible inicializar SignerClient: %s", client_err)
+                signer_client = None
+
+        if signer_client is not None:
+            # Emisión segura desacoplada vía IsolatedSigner (VIGIA-NET-04A / VIGIA-NET-04A-R1)
+            csr = (
+                x509.CertificateSigningRequestBuilder()
+                .subject_name(srv_subject)
+                .sign(srv_key, hashes.SHA256())
             )
-        )
-        chain_pem = (
-            srv_cert.public_bytes(serialization.Encoding.PEM)
-            + ca_cert.public_bytes(serialization.Encoding.PEM)
-        )
-        staged_cert_p.write_bytes(chain_pem)
+            csr_pem = csr.public_bytes(serialization.Encoding.PEM)
+            sign_resp = signer_client.request_certificate(
+                csr_pem=csr_pem,
+                target_ip=target_ip,
+                valid_days=min(valid_days, 90),
+                crl_port=effective_crl_port,
+            )
+            staged_key_p.write_bytes(
+                srv_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    encryption_algorithm=serialization.NoEncryption(),
+                )
+            )
+            staged_cert_p.write_text(sign_resp["fullchain_pem"], encoding="utf-8")
+        elif is_local_signing_allowed(ca_cert):
+            # Modo explícito de desarrollo / pruebas de laboratorio con material mock
+            logger.warning("VIGIA-DEV: Ejecutando firma local de certificado de servidor para pruebas.")
+            ca_key_p = base_dir / "vigia_root_ca_key.pem"
+            if not ca_key_p.is_file():
+                raise FileNotFoundError(f"Falta la clave privada de prueba en '{ca_key_p}'.")
+            ca_key = serialization.load_pem_private_key(ca_key_p.read_bytes(), password=None)
+            srv_ski = x509.SubjectKeyIdentifier.from_public_key(srv_key.public_key())
+            ca_aki = x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key())
+            cdp_ext = x509.CRLDistributionPoints([
+                x509.DistributionPoint(
+                    full_name=[x509.UniformResourceIdentifier(cdp_uri)],
+                    relative_name=None,
+                    crl_issuer=None,
+                    reasons=None,
+                )
+            ])
+            srv_cert = (
+                x509.CertificateBuilder()
+                .subject_name(srv_subject)
+                .issuer_name(ca_cert.subject)
+                .public_key(srv_key.public_key())
+                .serial_number(x509.random_serial_number())
+                .not_valid_before(now - datetime.timedelta(minutes=5))
+                .not_valid_after(now + datetime.timedelta(days=min(valid_days, 397)))
+                .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
+                .add_extension(
+                    x509.KeyUsage(
+                        digital_signature=True,
+                        content_commitment=False,
+                        key_encipherment=True,
+                        data_encipherment=False,
+                        key_agreement=False,
+                        key_cert_sign=False,
+                        crl_sign=False,
+                        encipher_only=False,
+                        decipher_only=False,
+                    ),
+                    critical=True,
+                )
+                .add_extension(x509.ExtendedKeyUsage([ExtendedKeyUsageOID.SERVER_AUTH]), critical=False)
+                .add_extension(srv_ski, critical=False)
+                .add_extension(ca_aki, critical=False)
+                .add_extension(x509.SubjectAlternativeName(san_entries), critical=False)
+                .add_extension(cdp_ext, critical=False)
+                .sign(ca_key, hashes.SHA256())
+            )
+
+            # Guardar cadena completa (servidor + CA) en vigia_cert.pem y clave en vigia_key.pem
+            staged_key_p.write_bytes(
+                srv_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    encryption_algorithm=serialization.NoEncryption(),
+                )
+            )
+            chain_pem = (
+                srv_cert.public_bytes(serialization.Encoding.PEM)
+                + ca_cert.public_bytes(serialization.Encoding.PEM)
+            )
+            staged_cert_p.write_bytes(chain_pem)
+        else:
+            # FAIL-CLOSED INNEGOCIABLE EN PRODUCCIÓN (VIGIA-NET-04A-R1)
+            raise SignerUnavailableError(
+                "Política de seguridad FAIL-CLOSED (VIGIA-NET-04A-R1): El servicio IsolatedSigner "
+                "no está disponible o no responde en el Named Pipe, y la firma directa desde el "
+                "proceso web está terminantemente prohibida en producción."
+            )
 
         validate_tls_certificate_pair(
             cert_path=staged_cert_p,
@@ -3790,11 +4071,24 @@ if __name__ == "__main__":
                     logger.info("Certificado TLS no contiene CDP. Renovando par de servidor preservando Root CA...")
                 else:
                     logger.info("Generando par de certificados TLS inicial para %s...", listen_ip)
-                generate_vigia_local_ca_bundle(
-                    target_ip=listen_ip,
-                    cert_dir=certs_dir,
-                    overwrite=True,
-                )
+                try:
+                    generate_vigia_local_ca_bundle(
+                        target_ip=listen_ip,
+                        cert_dir=certs_dir,
+                        overwrite=True,
+                    )
+                except SignerUnavailableError as signer_err:
+                    if cert_file.exists() and key_file.exists():
+                        logger.warning(
+                            "IsolatedSigner no disponible (%s). Se conserva el par TLS activo existente sin interrupción del servidor.",
+                            signer_err,
+                        )
+                    else:
+                        logger.error(
+                            "IsolatedSigner no disponible y no existe par TLS previo. Operación abortada (FAIL-CLOSED): %s",
+                            signer_err,
+                        )
+                        raise
             else:
                 try:
                     resolve_active_tls_pair(cert_file, key_file, target_ip=listen_ip)
@@ -3805,11 +4099,17 @@ if __name__ == "__main__":
                         listen_ip,
                         tls_err,
                     )
-                    generate_vigia_local_ca_bundle(
-                        target_ip=listen_ip,
-                        cert_dir=certs_dir,
-                        overwrite=True,
-                    )
+                    try:
+                        generate_vigia_local_ca_bundle(
+                            target_ip=listen_ip,
+                            cert_dir=certs_dir,
+                            overwrite=True,
+                        )
+                    except SignerUnavailableError as signer_err:
+                        logger.warning(
+                            "IsolatedSigner no disponible (%s). Se mantiene el par TLS previo sin interrumpir el servidor.",
+                            signer_err,
+                        )
 
             # Iniciar servidor HTTP dedicado para distribución de CRL (RFC 5280)
             crl_port = int(os.environ.get("VIGIA_CRL_HTTP_PORT", str(DEFAULT_CRL_HTTP_PORT)))

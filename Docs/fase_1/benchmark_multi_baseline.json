@@ -1,0 +1,665 @@
+{
+  "timestamp": 1793889205.0497952,
+  "benchmark": "VIGIA-OPT-MULTI-01",
+  "hardware": {
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "vram_total_mb": 6140.5,
+    "cuda_version": "12.4",
+    "cpu_count_logical": 32,
+    "cpu_count_physical": 16
+  },
+  "results": [
+    {
+      "scenario": "E1",
+      "regime": "nominal",
+      "camera_count": 1,
+      "cameras": [
+        "CAM-ENTRADA"
+      ],
+      "num_requests_per_camera": 10,
+      "total_submitted": 10,
+      "total_success": 10,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 10.031,
+      "aggregate_fps": 1.0,
+      "latency_ms": {
+        "mean": 78.4,
+        "std": 17.17,
+        "p50": 86.5,
+        "p90": 94.0,
+        "p95": 94.0,
+        "p99": 94.0,
+        "min": 47.0,
+        "max": 94.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 78.4,
+            "std": 17.17,
+            "p50": 86.5,
+            "p90": 94.0,
+            "p95": 94.0,
+            "p99": 94.0,
+            "min": 47.0,
+            "max": 94.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 5.15,
+        "gpu_util_peak": 19.0,
+        "vram_used_mean_mb": 1346.75,
+        "vram_used_peak_mb": 1358.09,
+        "cpu_util_mean": 10.85,
+        "cpu_util_peak": 27.1,
+        "ram_used_mean_mb": 421.19,
+        "ram_used_peak_mb": 421.27,
+        "gpu_temp_peak_c": 43.0,
+        "sample_count": 99
+      },
+      "data_integrity": {
+        "persisted_in_responses": 6,
+        "db_count_before": 69,
+        "db_count_after": 75,
+        "db_persisted_delta": 6,
+        "db_matches_responses": true
+      }
+    },
+    {
+      "scenario": "E2",
+      "regime": "nominal",
+      "camera_count": 2,
+      "cameras": [
+        "CAM-ENTRADA",
+        "CAM-SALIDA"
+      ],
+      "num_requests_per_camera": 10,
+      "total_submitted": 20,
+      "total_success": 20,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 10.015,
+      "aggregate_fps": 2.0,
+      "latency_ms": {
+        "mean": 104.85,
+        "std": 38.97,
+        "p50": 101.5,
+        "p90": 158.5,
+        "p95": 172.0,
+        "p99": 172.0,
+        "min": 47.0,
+        "max": 172.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 113.0,
+            "std": 34.71,
+            "p50": 102.0,
+            "p90": 158.5,
+            "p95": 165.25,
+            "p99": 170.65,
+            "min": 78.0,
+            "max": 172.0
+          }
+        },
+        "CAM-SALIDA": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 96.7,
+            "std": 41.23,
+            "p50": 101.5,
+            "p90": 157.6,
+            "p95": 164.8,
+            "p99": 170.56,
+            "min": 47.0,
+            "max": 172.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 8.39,
+        "gpu_util_peak": 37.0,
+        "vram_used_mean_mb": 1351.43,
+        "vram_used_peak_mb": 1353.46,
+        "cpu_util_mean": 8.01,
+        "cpu_util_peak": 23.0,
+        "ram_used_mean_mb": 424.16,
+        "ram_used_peak_mb": 424.63,
+        "gpu_temp_peak_c": 43.0,
+        "sample_count": 100
+      },
+      "data_integrity": {
+        "persisted_in_responses": 12,
+        "db_count_before": 75,
+        "db_count_after": 87,
+        "db_persisted_delta": 12,
+        "db_matches_responses": true
+      }
+    },
+    {
+      "scenario": "E3",
+      "regime": "nominal",
+      "camera_count": 3,
+      "cameras": [
+        "CAM-ENTRADA",
+        "CAM-SALIDA",
+        "CAM-03"
+      ],
+      "num_requests_per_camera": 10,
+      "total_submitted": 30,
+      "total_success": 30,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 10.016,
+      "aggregate_fps": 3.0,
+      "latency_ms": {
+        "mean": 138.47,
+        "std": 59.06,
+        "p50": 117.0,
+        "p90": 234.0,
+        "p95": 234.0,
+        "p99": 245.36,
+        "min": 47.0,
+        "max": 250.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 127.8,
+            "std": 55.61,
+            "p50": 109.0,
+            "p90": 219.6,
+            "p95": 226.8,
+            "p99": 232.56,
+            "min": 47.0,
+            "max": 234.0
+          }
+        },
+        "CAM-SALIDA": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 148.5,
+            "std": 58.49,
+            "p50": 140.5,
+            "p90": 235.6,
+            "p95": 242.8,
+            "p99": 248.56,
+            "min": 78.0,
+            "max": 250.0
+          }
+        },
+        "CAM-03": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 139.1,
+            "std": 61.13,
+            "p50": 117.0,
+            "p90": 220.5,
+            "p95": 227.25,
+            "p99": 232.65,
+            "min": 47.0,
+            "max": 234.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 8.47,
+        "gpu_util_peak": 54.0,
+        "vram_used_mean_mb": 1361.18,
+        "vram_used_peak_mb": 1388.28,
+        "cpu_util_mean": 9.36,
+        "cpu_util_peak": 26.8,
+        "ram_used_mean_mb": 427.05,
+        "ram_used_peak_mb": 427.86,
+        "gpu_temp_peak_c": 45.0,
+        "sample_count": 99
+      },
+      "data_integrity": {
+        "persisted_in_responses": 18,
+        "db_count_before": 87,
+        "db_count_after": 105,
+        "db_persisted_delta": 18,
+        "db_matches_responses": true
+      }
+    },
+    {
+      "scenario": "E4",
+      "regime": "nominal",
+      "camera_count": 4,
+      "cameras": [
+        "CAM-ENTRADA",
+        "CAM-SALIDA",
+        "CAM-03",
+        "CAM-04"
+      ],
+      "num_requests_per_camera": 10,
+      "total_submitted": 40,
+      "total_success": 40,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 10.046,
+      "aggregate_fps": 3.98,
+      "latency_ms": {
+        "mean": 162.87,
+        "std": 74.75,
+        "p50": 148.5,
+        "p90": 269.1,
+        "p95": 312.05,
+        "p99": 313.0,
+        "min": 62.0,
+        "max": 313.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 139.0,
+            "std": 72.11,
+            "p50": 117.5,
+            "p90": 200.4,
+            "p95": 256.2,
+            "p99": 300.84,
+            "min": 62.0,
+            "max": 312.0
+          }
+        },
+        "CAM-SALIDA": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 131.1,
+            "std": 71.47,
+            "p50": 109.5,
+            "p90": 199.6,
+            "p95": 256.3,
+            "p99": 301.66,
+            "min": 62.0,
+            "max": 313.0
+          }
+        },
+        "CAM-03": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 173.5,
+            "std": 68.19,
+            "p50": 148.5,
+            "p90": 269.8,
+            "p95": 291.4,
+            "p99": 308.68,
+            "min": 94.0,
+            "max": 313.0
+          }
+        },
+        "CAM-04": {
+          "success_count": 10,
+          "fps": 1.0,
+          "latency": {
+            "mean": 207.9,
+            "std": 60.59,
+            "p50": 219.0,
+            "p90": 269.1,
+            "p95": 283.05,
+            "p99": 294.21,
+            "min": 109.0,
+            "max": 297.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 8.1,
+        "gpu_util_peak": 48.0,
+        "vram_used_mean_mb": 1367.62,
+        "vram_used_peak_mb": 1386.12,
+        "cpu_util_mean": 9.4,
+        "cpu_util_peak": 21.4,
+        "ram_used_mean_mb": 429.11,
+        "ram_used_peak_mb": 429.57,
+        "gpu_temp_peak_c": 46.0,
+        "sample_count": 100
+      },
+      "data_integrity": {
+        "persisted_in_responses": 24,
+        "db_count_before": 105,
+        "db_count_after": 129,
+        "db_persisted_delta": 24,
+        "db_matches_responses": true
+      }
+    },
+    {
+      "scenario": "E1",
+      "regime": "stress",
+      "camera_count": 1,
+      "cameras": [
+        "CAM-ENTRADA"
+      ],
+      "num_requests_per_camera": 20,
+      "total_submitted": 20,
+      "total_success": 20,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 1.719,
+      "aggregate_fps": 11.63,
+      "latency_ms": {
+        "mean": 85.95,
+        "std": 16.08,
+        "p50": 86.5,
+        "p90": 109.0,
+        "p95": 109.05,
+        "p99": 109.81,
+        "min": 62.0,
+        "max": 110.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 20,
+          "fps": 11.63,
+          "latency": {
+            "mean": 85.95,
+            "std": 16.08,
+            "p50": 86.5,
+            "p90": 109.0,
+            "p95": 109.05,
+            "p99": 109.81,
+            "min": 62.0,
+            "max": 110.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 29.88,
+        "gpu_util_peak": 43.0,
+        "vram_used_mean_mb": 1378.44,
+        "vram_used_peak_mb": 1379.21,
+        "cpu_util_mean": 9.81,
+        "cpu_util_peak": 21.1,
+        "ram_used_mean_mb": 429.46,
+        "ram_used_peak_mb": 429.46,
+        "gpu_temp_peak_c": 44.0,
+        "sample_count": 17
+      },
+      "data_integrity": {
+        "persisted_in_responses": 13,
+        "db_count_before": 129,
+        "db_count_after": 142,
+        "db_persisted_delta": 13,
+        "db_matches_responses": true
+      }
+    },
+    {
+      "scenario": "E2",
+      "regime": "stress",
+      "camera_count": 2,
+      "cameras": [
+        "CAM-ENTRADA",
+        "CAM-SALIDA"
+      ],
+      "num_requests_per_camera": 20,
+      "total_submitted": 40,
+      "total_success": 40,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 2.359,
+      "aggregate_fps": 16.96,
+      "latency_ms": {
+        "mean": 116.03,
+        "std": 26.63,
+        "p50": 125.0,
+        "p90": 156.0,
+        "p95": 156.0,
+        "p99": 165.76,
+        "min": 63.0,
+        "max": 172.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 20,
+          "fps": 8.48,
+          "latency": {
+            "mean": 117.2,
+            "std": 30.8,
+            "p50": 125.0,
+            "p90": 156.0,
+            "p95": 156.8,
+            "p99": 168.96,
+            "min": 63.0,
+            "max": 172.0
+          }
+        },
+        "CAM-SALIDA": {
+          "success_count": 20,
+          "fps": 8.48,
+          "latency": {
+            "mean": 114.85,
+            "std": 21.61,
+            "p50": 125.0,
+            "p90": 128.1,
+            "p95": 156.0,
+            "p99": 156.0,
+            "min": 63.0,
+            "max": 156.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 33.96,
+        "gpu_util_peak": 45.0,
+        "vram_used_mean_mb": 1374.08,
+        "vram_used_peak_mb": 1375.7,
+        "cpu_util_mean": 11.33,
+        "cpu_util_peak": 22.5,
+        "ram_used_mean_mb": 429.5,
+        "ram_used_peak_mb": 429.5,
+        "gpu_temp_peak_c": 44.0,
+        "sample_count": 24
+      },
+      "data_integrity": {
+        "persisted_in_responses": 26,
+        "db_count_before": 142,
+        "db_count_after": 168,
+        "db_persisted_delta": 26,
+        "db_matches_responses": true
+      }
+    },
+    {
+      "scenario": "E3",
+      "regime": "stress",
+      "camera_count": 3,
+      "cameras": [
+        "CAM-ENTRADA",
+        "CAM-SALIDA",
+        "CAM-03"
+      ],
+      "num_requests_per_camera": 20,
+      "total_submitted": 60,
+      "total_success": 60,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 3.329,
+      "aggregate_fps": 18.02,
+      "latency_ms": {
+        "mean": 163.05,
+        "std": 31.39,
+        "p50": 171.0,
+        "p90": 203.0,
+        "p95": 204.0,
+        "p99": 210.15,
+        "min": 63.0,
+        "max": 219.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 20,
+          "fps": 6.01,
+          "latency": {
+            "mean": 159.4,
+            "std": 30.48,
+            "p50": 156.0,
+            "p90": 203.0,
+            "p95": 203.0,
+            "p99": 203.0,
+            "min": 63.0,
+            "max": 203.0
+          }
+        },
+        "CAM-SALIDA": {
+          "success_count": 20,
+          "fps": 6.01,
+          "latency": {
+            "mean": 166.45,
+            "std": 37.72,
+            "p50": 179.5,
+            "p90": 204.0,
+            "p95": 204.75,
+            "p99": 216.15,
+            "min": 109.0,
+            "max": 219.0
+          }
+        },
+        "CAM-03": {
+          "success_count": 20,
+          "fps": 6.01,
+          "latency": {
+            "mean": 163.3,
+            "std": 24.07,
+            "p50": 171.0,
+            "p90": 189.6,
+            "p95": 204.0,
+            "p99": 204.0,
+            "min": 110.0,
+            "max": 204.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 25.0,
+        "gpu_util_peak": 55.0,
+        "vram_used_mean_mb": 1369.32,
+        "vram_used_peak_mb": 1374.71,
+        "cpu_util_mean": 13.85,
+        "cpu_util_peak": 26.6,
+        "ram_used_mean_mb": 429.54,
+        "ram_used_peak_mb": 429.54,
+        "gpu_temp_peak_c": 44.0,
+        "sample_count": 33
+      },
+      "data_integrity": {
+        "persisted_in_responses": 39,
+        "db_count_before": 168,
+        "db_count_after": 207,
+        "db_persisted_delta": 39,
+        "db_matches_responses": true
+      }
+    },
+    {
+      "scenario": "E4",
+      "regime": "stress",
+      "camera_count": 4,
+      "cameras": [
+        "CAM-ENTRADA",
+        "CAM-SALIDA",
+        "CAM-03",
+        "CAM-04"
+      ],
+      "num_requests_per_camera": 20,
+      "total_submitted": 80,
+      "total_success": 80,
+      "success_rate_pct": 100.0,
+      "wall_duration_s": 4.391,
+      "aggregate_fps": 18.22,
+      "latency_ms": {
+        "mean": 214.26,
+        "std": 48.42,
+        "p50": 219.0,
+        "p90": 281.0,
+        "p95": 281.0,
+        "p99": 296.21,
+        "min": 63.0,
+        "max": 297.0
+      },
+      "per_camera": {
+        "CAM-ENTRADA": {
+          "success_count": 20,
+          "fps": 4.55,
+          "latency": {
+            "mean": 208.6,
+            "std": 51.72,
+            "p50": 211.5,
+            "p90": 267.5,
+            "p95": 281.75,
+            "p99": 293.15,
+            "min": 63.0,
+            "max": 296.0
+          }
+        },
+        "CAM-SALIDA": {
+          "success_count": 20,
+          "fps": 4.55,
+          "latency": {
+            "mean": 212.5,
+            "std": 41.66,
+            "p50": 203.5,
+            "p90": 267.5,
+            "p95": 281.75,
+            "p99": 293.15,
+            "min": 94.0,
+            "max": 296.0
+          }
+        },
+        "CAM-03": {
+          "success_count": 20,
+          "fps": 4.55,
+          "latency": {
+            "mean": 216.4,
+            "std": 43.17,
+            "p50": 218.5,
+            "p90": 267.5,
+            "p95": 281.8,
+            "p99": 293.96,
+            "min": 141.0,
+            "max": 297.0
+          }
+        },
+        "CAM-04": {
+          "success_count": 20,
+          "fps": 4.55,
+          "latency": {
+            "mean": 219.55,
+            "std": 55.12,
+            "p50": 242.5,
+            "p90": 281.0,
+            "p95": 281.0,
+            "p99": 281.0,
+            "min": 140.0,
+            "max": 281.0
+          }
+        }
+      },
+      "telemetry_hardware": {
+        "gpu_util_mean": 15.91,
+        "gpu_util_peak": 74.0,
+        "vram_used_mean_mb": 1365.36,
+        "vram_used_peak_mb": 1371.02,
+        "cpu_util_mean": 12.39,
+        "cpu_util_peak": 29.7,
+        "ram_used_mean_mb": 430.13,
+        "ram_used_peak_mb": 430.37,
+        "gpu_temp_peak_c": 46.0,
+        "sample_count": 44
+      },
+      "data_integrity": {
+        "persisted_in_responses": 52,
+        "db_count_before": 207,
+        "db_count_after": 259,
+        "db_persisted_delta": 52,
+        "db_matches_responses": true
+      }
+    }
+  ]
+}

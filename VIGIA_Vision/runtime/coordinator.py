@@ -51,6 +51,7 @@ from VIGIA_Vision.config.topology_validator import (
     TopologyValidator,
 )
 from VIGIA_Vision.detection.models import (
+    CaptureReadResult,
     ObservationMetrics,
     RawVehicleDetection,
     VisionObservationEnvelope,
@@ -262,6 +263,7 @@ class VisionEngineCoordinator:
         self,
         codigo_camara: str,
         persist_as_new_event: Optional[bool] = None,
+        read_result: Optional[CaptureReadResult] = None,
     ) -> Optional[VisionObservationEnvelope]:
         """
         Ejecuta un ciclo síncrono de observación para la cámara identificada por
@@ -278,6 +280,10 @@ class VisionEngineCoordinator:
             - Si es ``None``, se consulta ``new_event_predicate`` si fue inyectado;
               de lo contrario, por seguridad en la Etapa 1 (sin tracking) se
               evalúa como ``False`` para impedir persistir una fila por fotograma.
+        read_result : Optional[CaptureReadResult]
+            Resultado de lectura previamente adquirido de la fuente (por ejemplo,
+            por un ``CameraPullWorker``). Si se omite, se invoca directamente
+            ``slot.source.read_frame()``.
 
         Retorna
         -------
@@ -293,7 +299,7 @@ class VisionEngineCoordinator:
             )
 
         slot: BoundCameraSlot = self._registry.get_slot(codigo_camara)
-        read_res = slot.source.read_frame()
+        read_res = read_result if read_result is not None else slot.source.read_frame()
 
         # 1. Si un buffer push móvil indica que la secuencia vigente ya fue procesada,
         # omitir reprocesamiento sin declarar error técnico.

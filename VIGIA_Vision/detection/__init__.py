@@ -25,6 +25,7 @@ from VIGIA_Vision.detection.yolo_detector import (
     ModelLoadError,
     YoloDetectorConfig,
     YoloVehicleDetector,
+    resolve_inference_device,
 )
 
 __all__ = [
@@ -42,5 +43,6 @@ __all__ = [
     "YoloVehicleDetector",
     "filter_detections_by_roi",
     "project_normalized_roi",
+    "resolve_inference_device",
     "validate_bgr_frame",
 ]

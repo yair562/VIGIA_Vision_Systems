@@ -13,6 +13,7 @@ REGLA: Prohibido omitir validación TLS (sin -k, sin insecure, sin ignore_certif
 import argparse
 import hashlib
 import json
+import os
 import socket
 import ssl
 import subprocess
@@ -27,7 +28,7 @@ from cryptography.hazmat.primitives import serialization
 
 def run_strict_check(
     root_ca_path: Path,
-    port: int = 5000,
+    port: int = 5001,
     lan_ip: str = "192.168.1.75",
     crl_port: int = 5080,
 ) -> Dict[str, Any]:
@@ -219,7 +220,7 @@ def run_strict_check(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Verificación Estricta HTTPS VIGIA (TLS-02B / TLS-02D)")
     parser.add_argument("--json", action="store_true", help="Salida en formato JSON")
-    parser.add_argument("--port", type=int, default=5000, help="Puerto del servidor HTTPS VIGIA")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("VIGIA_DEV_PORT", 5001)), help="Puerto del servidor HTTPS VIGIA")
     parser.add_argument("--lan-ip", type=str, default="192.168.1.75", help="IP LAN objetivo")
     parser.add_argument("--crl-port", type=int, default=5080, help="Puerto HTTP de distribución CRL")
     parser.add_argument("--ca-file", type=str, default="", help="Ruta al archivo vigia_root_ca.crt")
