@@ -1,0 +1,10 @@
+# Dependencias exactas congeladas para el entorno experimental aislado YOLO26x
+# No modificar .venv ni .venv_cuda de produccion.
+torch==2.6.0+cu124
+torchvision==0.21.0+cu124
+ultralytics==8.4.171
+opencv-python==4.13.0.92
+numpy==2.4.6
+psutil>=5.9
+pynvml>=11.5
+PyYAML>=6.0,<7.0

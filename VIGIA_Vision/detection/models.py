@@ -107,11 +107,23 @@ class RawVehicleDetection:
     raw_label : str
         Etiqueta de clase emitida por el detector (ej. ``'car'``, ``'motorcycle'``,
         ``'truck'``, ``'bus'`` o el nombre ya normalizado en dominio).
+    detection_id : Optional[str]
+        Identificador unívoco de la observación física en el fotograma.
+    track_id : Optional[str]
+        Identificador temporal de seguimiento dentro de la cámara/área.
+    vehicle_id : Optional[str]
+        Identificador lógico persistente del vehículo cuando exista asociación confirmada.
+    color_result : Optional[Any]
+        Resultado de clasificación cromática independiente para esta detección.
     """
 
     bbox: BoundingBox
     confidence: float
     raw_label: str
+    detection_id: Optional[str] = None
+    track_id: Optional[str] = None
+    vehicle_id: Optional[str] = None
+    color_result: Optional[Any] = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.bbox, BoundingBox):
@@ -219,6 +231,8 @@ class VisionObservationEnvelope:
     frame_sequence: Optional[int] = None
     original_evidence_path: Optional[str] = None
     annotated_evidence_path: Optional[str] = None
+    vehicle_color_result: Optional[Any] = None
+    vehicle_color_results: Tuple[Any, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.vision_result, VisionResult):
@@ -236,3 +250,7 @@ class VisionObservationEnvelope:
                 f"tipo_movimiento={self.tipo_movimiento!r} debe ser 'ENTRADA' o 'SALIDA'."
             )
         object.__setattr__(self, "detections_in_roi", tuple(self.detections_in_roi))
+        if not self.vehicle_color_results and self.vehicle_color_result is not None:
+            object.__setattr__(self, "vehicle_color_results", (self.vehicle_color_result,))
+        else:
+            object.__setattr__(self, "vehicle_color_results", tuple(self.vehicle_color_results))

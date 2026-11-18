@@ -261,6 +261,405 @@ function createQrEnrollmentPanel({ deviceService, onEnrolled, onClose }) {
 }
 
 /**
+ * Construye el panel para Enrolamiento de Cámaras USB Locales (VIGIA-USB-04).
+ * Permite detectar hardware conectado al host, seleccionar carril y manejar
+ * sustituciones con confirmación explícita (confirm_replace).
+ *
+ * @param {Object} options
+ * @param {Object} options.deviceService
+ * @param {() => void} options.onEnrolled
+ * @param {() => void} options.onClose
+ * @returns {HTMLElement}
+ */
+function createUsbEnrollmentPanel({ deviceService, onEnrolled, onClose }) {
+  const panel = document.createElement('section');
+  panel.className = 'admin-provisional-panel';
+  panel.setAttribute('aria-labelledby', 'usb-enrollment-title');
+
+  const header = document.createElement('div');
+  header.className = 'admin-provisional-header';
+
+  const title = document.createElement('h2');
+  title.id = 'usb-enrollment-title';
+  title.className = 'admin-provisional-title';
+  title.textContent = 'Enrolamiento de Cámara USB Local';
+
+  const badge = document.createElement('span');
+  badge.className = 'admin-demo-badge';
+  badge.style.background = '#7c3aed';
+  badge.style.color = '#ffffff';
+  badge.textContent = 'USB-LOCAL-01';
+
+  header.appendChild(title);
+  header.appendChild(badge);
+
+  const description = document.createElement('p');
+  description.style.fontSize = 'var(--font-size-small)';
+  description.style.color = 'var(--admin-text-secondary)';
+  description.textContent =
+    'Detecta y asocia directamente una cámara web o dispositivo USB conectado al servidor a un carril lógico. El backend gestionará la captura en tiempo real mediante un worker dedicado desacoplado.';
+
+  const form = document.createElement('form');
+  form.className = 'admin-provisional-form';
+  form.noValidate = true;
+
+  // Estado y Avisos
+  const errorBox = document.createElement('div');
+  errorBox.className = 'admin-inline-notice admin-inline-notice--warning';
+  errorBox.setAttribute('role', 'alert');
+  errorBox.hidden = true;
+
+  const successBox = document.createElement('div');
+  successBox.className = 'admin-inline-notice';
+  successBox.style.background = '#f0fdf4';
+  successBox.style.borderColor = '#bbf7d0';
+  successBox.style.color = '#166534';
+  successBox.hidden = true;
+
+  // Caja de conflicto de credencial activa (para confirmación explícita de reemplazo)
+  const conflictBox = document.createElement('div');
+  conflictBox.className = 'admin-inline-notice admin-inline-notice--warning';
+  conflictBox.style.background = '#fffbeb';
+  conflictBox.style.borderColor = '#fde68a';
+  conflictBox.style.color = '#92400e';
+  conflictBox.hidden = true;
+
+  // Grupo 1: Detección y Selección de Dispositivo USB
+  const deviceGroup = document.createElement('div');
+  deviceGroup.className = 'admin-form-group';
+
+  const devHeaderRow = document.createElement('div');
+  devHeaderRow.style.display = 'flex';
+  devHeaderRow.style.justifyContent = 'space-between';
+  devHeaderRow.style.alignItems = 'center';
+  devHeaderRow.style.marginBottom = '0.35rem';
+
+  const deviceLabel = document.createElement('label');
+  deviceLabel.className = 'admin-form-label';
+  deviceLabel.htmlFor = 'usb-device-select';
+  deviceLabel.style.margin = '0';
+  deviceLabel.textContent = 'Dispositivo Físico USB *';
+
+  const probeBtn = document.createElement('button');
+  probeBtn.type = 'button';
+  probeBtn.id = 'btn-probe-usb';
+  probeBtn.className = 'device-action-btn';
+  probeBtn.style.padding = '0.2rem 0.65rem';
+  probeBtn.style.fontSize = '0.8rem';
+  probeBtn.textContent = 'Sondear Hardware';
+
+  devHeaderRow.appendChild(deviceLabel);
+  devHeaderRow.appendChild(probeBtn);
+  deviceGroup.appendChild(devHeaderRow);
+
+  const deviceSelect = document.createElement('select');
+  deviceSelect.id = 'usb-device-select';
+  deviceSelect.className = 'admin-form-select';
+  deviceSelect.required = true;
+
+  const defaultOpt = document.createElement('option');
+  defaultOpt.value = '';
+  defaultOpt.textContent = 'Detectando cámaras USB locales...';
+  deviceSelect.appendChild(defaultOpt);
+  deviceGroup.appendChild(deviceSelect);
+
+  // Tarjeta de información del hardware seleccionado
+  const hwInfoCard = document.createElement('div');
+  hwInfoCard.id = 'usb-hw-info-card';
+  hwInfoCard.style.padding = '0.65rem 0.85rem';
+  hwInfoCard.style.background = '#f8fafc';
+  hwInfoCard.style.border = '1px solid var(--admin-border-color, #e2e8f0)';
+  hwInfoCard.style.borderRadius = '8px';
+  hwInfoCard.style.fontSize = '0.85rem';
+  hwInfoCard.style.color = '#475569';
+  hwInfoCard.style.marginTop = '0.5rem';
+  hwInfoCard.hidden = true;
+  deviceGroup.appendChild(hwInfoCard);
+
+  // Grupo 2: Cámara Lógica Destino (Carril)
+  const camGroup = document.createElement('div');
+  camGroup.className = 'admin-form-group';
+  const camLabel = document.createElement('label');
+  camLabel.className = 'admin-form-label';
+  camLabel.htmlFor = 'usb-cam-code';
+  camLabel.textContent = 'Cámara Lógica Destino (Carril) *';
+  const camSelect = document.createElement('select');
+  camSelect.id = 'usb-cam-code';
+  camSelect.className = 'admin-form-select';
+  [
+    { value: 'CAM-ENTRADA', label: 'CAM-ENTRADA — Acceso Principal Norte (Área Entrada)' },
+    { value: 'CAM-SALIDA', label: 'CAM-SALIDA — Control de Salida Sur (Área Salida)' }
+  ].forEach((opt) => {
+    const o = document.createElement('option');
+    o.value = opt.value;
+    o.textContent = opt.label;
+    camSelect.appendChild(o);
+  });
+  camGroup.appendChild(camLabel);
+  camGroup.appendChild(camSelect);
+
+  // Grupo 3: Nombre descriptivo
+  const nameGroup = document.createElement('div');
+  nameGroup.className = 'admin-form-group';
+  const nameLabel = document.createElement('label');
+  nameLabel.className = 'admin-form-label';
+  nameLabel.htmlFor = 'usb-device-name';
+  nameLabel.textContent = 'Nombre Descriptivo del Dispositivo';
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.id = 'usb-device-name';
+  nameInput.className = 'admin-form-input';
+  nameInput.placeholder = 'Ej. Webcam Carril Salida';
+  nameInput.maxLength = 60;
+  nameGroup.appendChild(nameLabel);
+  nameGroup.appendChild(nameInput);
+
+  // Acciones
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'admin-provisional-actions';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button';
+  cancelBtn.className = 'device-action-btn';
+  cancelBtn.textContent = 'Cerrar';
+  cancelBtn.addEventListener('click', () => {
+    if (typeof onClose === 'function') onClose();
+  });
+
+  const submitBtn = document.createElement('button');
+  submitBtn.type = 'submit';
+  submitBtn.id = 'btn-submit-usb-enroll';
+  submitBtn.className = 'device-action-btn';
+  submitBtn.style.fontWeight = 'var(--font-weight-bold)';
+  submitBtn.textContent = 'Conectar y Activar Cámara USB';
+
+  actionsDiv.appendChild(cancelBtn);
+  actionsDiv.appendChild(submitBtn);
+
+  form.appendChild(deviceGroup);
+  form.appendChild(camGroup);
+  form.appendChild(nameGroup);
+  form.appendChild(conflictBox);
+  form.appendChild(actionsDiv);
+
+  panel.appendChild(header);
+  panel.appendChild(description);
+  panel.appendChild(errorBox);
+  panel.appendChild(successBox);
+  panel.appendChild(form);
+
+  let detectedCameras = [];
+
+  function updateHwInfoCard(selectedCamera) {
+    if (!selectedCamera) {
+      hwInfoCard.hidden = true;
+      hwInfoCard.innerHTML = '';
+      return;
+    }
+    const isAvailable = selectedCamera.available && !selectedCamera.in_use_by_camera;
+    hwInfoCard.hidden = false;
+    hwInfoCard.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+        <strong>${selectedCamera.name || `Cámara USB ${selectedCamera.device_index}`}</strong>
+        <span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; background: ${isAvailable ? '#dcfce7' : '#fee2e2'}; color: ${isAvailable ? '#166534' : '#991b1b'};">
+          ${isAvailable ? 'Disponible' : `En uso por ${selectedCamera.in_use_by_camera}`}
+        </span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; color: #64748b;">
+        <div><strong>Índice Físico:</strong> ${selectedCamera.device_index}</div>
+        <div><strong>Resolución:</strong> ${selectedCamera.resolution || 'N/D'}</div>
+        <div><strong>Backend:</strong> ${selectedCamera.backend || 'OpenCV'}</div>
+        <div><strong>URI:</strong> ${selectedCamera.uri || `usb://${selectedCamera.device_index}`}</div>
+      </div>
+    `;
+  }
+
+  async function probeCameras() {
+    errorBox.hidden = true;
+    conflictBox.hidden = true;
+    probeBtn.disabled = true;
+    probeBtn.textContent = 'Sondeando...';
+    deviceSelect.innerHTML = '';
+
+    const loadingOpt = document.createElement('option');
+    loadingOpt.value = '';
+    loadingOpt.textContent = 'Sondeando dispositivos en el servidor...';
+    deviceSelect.appendChild(loadingOpt);
+
+    try {
+      detectedCameras = await deviceService.listUsbCameras(4);
+      deviceSelect.innerHTML = '';
+
+      if (!detectedCameras || detectedCameras.length === 0) {
+        const noneOpt = document.createElement('option');
+        noneOpt.value = '';
+        noneOpt.textContent = 'No se detectaron cámaras USB en el servidor';
+        deviceSelect.appendChild(noneOpt);
+        updateHwInfoCard(null);
+        submitBtn.disabled = true;
+      } else {
+        detectedCameras.forEach((cam) => {
+          const opt = document.createElement('option');
+          opt.value = String(cam.device_index);
+          const inUseText = cam.in_use_by_camera ? ` [En uso por ${cam.in_use_by_camera}]` : ' [Disponible]';
+          opt.textContent = `[Índice ${cam.device_index}] ${cam.name} (${cam.resolution || 'N/D'} · ${cam.backend || 'OpenCV'})${inUseText}`;
+          if (cam.in_use_by_camera) {
+            opt.style.color = '#94a3b8';
+          }
+          deviceSelect.appendChild(opt);
+        });
+
+        const firstAvailable = detectedCameras.find((c) => c.available && !c.in_use_by_camera) || detectedCameras[0];
+        if (firstAvailable) {
+          deviceSelect.value = String(firstAvailable.device_index);
+          updateHwInfoCard(firstAvailable);
+          if (!nameInput.value) {
+            nameInput.value = firstAvailable.name || `Cámara USB ${firstAvailable.device_index}`;
+          }
+        }
+        submitBtn.disabled = false;
+      }
+    } catch (err) {
+      errorBox.textContent = `Error al sondear cámaras USB: ${err.message || err}`;
+      errorBox.hidden = false;
+      deviceSelect.innerHTML = '';
+      const errOpt = document.createElement('option');
+      errOpt.value = '';
+      errOpt.textContent = 'Error al consultar dispositivos USB';
+      deviceSelect.appendChild(errOpt);
+      updateHwInfoCard(null);
+    } finally {
+      probeBtn.disabled = false;
+      probeBtn.textContent = 'Sondear Hardware';
+    }
+  }
+
+  deviceSelect.addEventListener('change', () => {
+    const idx = parseInt(deviceSelect.value, 10);
+    const selected = detectedCameras.find((c) => c.device_index === idx);
+    updateHwInfoCard(selected);
+    if (selected && !nameInput.value) {
+      nameInput.value = selected.name || `Cámara USB ${selected.device_index}`;
+    }
+  });
+
+  probeBtn.addEventListener('click', probeCameras);
+
+  async function performEnrollment(confirmReplace = false) {
+    errorBox.hidden = true;
+    conflictBox.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = confirmReplace ? 'Sustituyendo y Activando...' : 'Conectando y Activando...';
+
+    const selectedIdx = parseInt(deviceSelect.value, 10);
+    if (isNaN(selectedIdx) || selectedIdx < 0) {
+      errorBox.textContent = 'Selecciona una cámara USB válida antes de continuar.';
+      errorBox.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Conectar y Activar Cámara USB';
+      return;
+    }
+
+    const payload = {
+      codigoCamara: camSelect.value,
+      deviceIndex: selectedIdx,
+      deviceName: nameInput.value.trim() || `Cámara USB (${selectedIdx})`,
+      confirmReplace
+    };
+
+    try {
+      const resp = await deviceService.enrollUsbCamera(payload);
+      if (resp && resp.ok) {
+        successBox.textContent = `Cámara USB ${resp.device_index} enrolada y conectada exitosamente a ${resp.codigo_camara}. Transmisión activa en tiempo real.`;
+        successBox.hidden = false;
+        conflictBox.hidden = true;
+        if (typeof onEnrolled === 'function') {
+          await onEnrolled();
+        }
+        submitBtn.textContent = 'Enrolada con Éxito';
+        submitBtn.disabled = false;
+      } else {
+        throw new Error(resp?.message || resp?.error || 'No se pudo enrolar la cámara USB.');
+      }
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Conectar y Activar Cámara USB';
+
+      const errCode = err.code || err.data?.error;
+      const errMsg = err.message || 'Error en la solicitud de enrolamiento.';
+
+      if (
+        errCode === 'ACTIVE_CREDENTIAL_CONFLICT' ||
+        (err.status === 409 && (err.data?.existing_device || errMsg.includes('confirme') || errMsg.includes('activo')))
+      ) {
+        const existingName = err.data?.existing_device?.nombre_dispositivo || 'Dispositivo previamente enrolado';
+        conflictBox.innerHTML = '';
+        conflictBox.hidden = false;
+
+        const conflictTitle = document.createElement('p');
+        conflictTitle.style.fontWeight = 'var(--font-weight-bold)';
+        conflictTitle.style.margin = '0 0 0.25rem 0';
+        conflictTitle.textContent = '⚠️ Conflicto de Credencial Activa en el Carril';
+
+        const conflictMsg = document.createElement('p');
+        conflictMsg.style.margin = '0 0 0.75rem 0';
+        conflictMsg.textContent = `El carril "${camSelect.value}" ya cuenta con un dispositivo activo: "${existingName}". Para conectar esta cámara USB, debes confirmar la sustitución explícita del dispositivo actual (el dispositivo previo será revocado).`;
+
+        const btnRow = document.createElement('div');
+        btnRow.style.display = 'flex';
+        btnRow.style.gap = '0.5rem';
+
+        const cancelReplaceBtn = document.createElement('button');
+        cancelReplaceBtn.type = 'button';
+        cancelReplaceBtn.className = 'device-action-btn';
+        cancelReplaceBtn.textContent = 'Cancelar Sustitución';
+        cancelReplaceBtn.addEventListener('click', () => {
+          conflictBox.hidden = true;
+        });
+
+        const confirmReplaceBtn = document.createElement('button');
+        confirmReplaceBtn.type = 'button';
+        confirmReplaceBtn.id = 'btn-confirm-replace-usb';
+        confirmReplaceBtn.className = 'device-action-btn device-action-btn--danger';
+        confirmReplaceBtn.style.background = '#dc2626';
+        confirmReplaceBtn.style.color = '#ffffff';
+        confirmReplaceBtn.textContent = 'Confirmar y Sustituir';
+        confirmReplaceBtn.addEventListener('click', async () => {
+          await performEnrollment(true);
+        });
+
+        btnRow.appendChild(cancelReplaceBtn);
+        btnRow.appendChild(confirmReplaceBtn);
+        conflictBox.appendChild(conflictTitle);
+        conflictBox.appendChild(conflictMsg);
+        conflictBox.appendChild(btnRow);
+        conflictBox.scrollIntoView?.({ behavior: 'smooth' });
+      } else if (
+        errCode === 'USB_DEVICE_IN_USE' ||
+        (err.status === 409 && (err.data?.in_use_by_camera || errMsg.includes('en uso')))
+      ) {
+        const inUseBy = err.data?.in_use_by_camera || 'otro carril';
+        errorBox.textContent = `Dispositivo no disponible: El índice USB ${selectedIdx} ya se encuentra asignado activamente a "${inUseBy}". Debes revocarlo primero antes de reasignarlo.`;
+        errorBox.hidden = false;
+      } else {
+        errorBox.textContent = errMsg;
+        errorBox.hidden = false;
+      }
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await performEnrollment(false);
+  });
+
+  // Sondeo inicial automático
+  probeCameras();
+
+  return panel;
+}
+
+/**
  * Construye el panel provisional DEMO para "Agregar Dispositivos".
  * @param {Object} options
  * @param {Object} options.deviceService
@@ -563,12 +962,16 @@ export async function renderAdminDevicesView({
           devices,
           onDeviceAction: async (device, actionType) => {
             if (actionType === 'revocar') {
+              const tipoLabel = device.isUsb ? 'la cámara USB local' : 'el dispositivo móvil';
               const confirmed = window.confirm(
-                `¿Confirmas la revocación del dispositivo "${device.nombre}" asociado a "${device.camara_asociada || device.ubicacionDemo}"?\nEsta acción es irreversible y bloqueará la transmisión de fotogramas.`
+                `¿Confirmas la revocación de ${tipoLabel} "${device.nombre}" asociado a "${device.camara_asociada || device.ubicacionDemo}"?\n` +
+                (device.isUsb
+                  ? 'Esta acción detendrá el worker de captura en segundo plano, liberará el hardware y restaurará el carril a modo push.'
+                  : 'Esta acción es irreversible y bloqueará la transmisión de fotogramas.')
               );
               if (!confirmed) return;
               try {
-                const res = await deviceService.revokeDevice(device.id_credencial);
+                const res = await deviceService.revokeDevice(device.id_credencial, `Revocación desde Dashboard (${device.tipo})`);
                 if (res && res.ok) {
                   showInlineNotice(`Dispositivo "${device.nombre}" revocado exitosamente.`, 'info');
                 } else {
@@ -621,10 +1024,11 @@ export async function renderAdminDevicesView({
     addDeviceBtn.className = 'admin-action-pill-btn';
     addDeviceBtn.textContent = isReal ? 'Enrolar Cámara Móvil (QR)' : 'Agregar Dispositivos';
     addDeviceBtn.addEventListener('click', () => {
-      if (provisionalContainer.children.length > 0) {
+      if (provisionalContainer.children.length > 0 && provisionalContainer.querySelector('#qr-enrollment-title')) {
         provisionalContainer.innerHTML = '';
         return;
       }
+      provisionalContainer.innerHTML = '';
       if (isReal) {
         const qrPanel = createQrEnrollmentPanel({
           deviceService,
@@ -657,6 +1061,33 @@ export async function renderAdminDevicesView({
 
     primaryActions.appendChild(cameraViewerBtn);
     primaryActions.appendChild(addDeviceBtn);
+
+    if (isReal) {
+      const enrollUsbBtn = document.createElement('button');
+      enrollUsbBtn.type = 'button';
+      enrollUsbBtn.id = 'btn-enroll-usb';
+      enrollUsbBtn.className = 'admin-action-pill-btn';
+      enrollUsbBtn.textContent = 'Enrolar Cámara USB';
+      enrollUsbBtn.addEventListener('click', () => {
+        if (provisionalContainer.children.length > 0 && provisionalContainer.querySelector('#usb-enrollment-title')) {
+          provisionalContainer.innerHTML = '';
+          return;
+        }
+        provisionalContainer.innerHTML = '';
+        const usbPanel = createUsbEnrollmentPanel({
+          deviceService,
+          onEnrolled: async () => {
+            await refreshTable();
+            showInlineNotice('Cámara USB conectada y activada exitosamente.', 'info');
+          },
+          onClose: () => {
+            provisionalContainer.innerHTML = '';
+          }
+        });
+        provisionalContainer.appendChild(usbPanel);
+      });
+      primaryActions.appendChild(enrollUsbBtn);
+    }
     shell.appendChild(primaryActions);
   } else {
     // Secciones contempladas en la navegación pero pendientes para próximos sprints

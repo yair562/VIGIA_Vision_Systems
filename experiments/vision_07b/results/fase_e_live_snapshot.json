@@ -1,0 +1,400 @@
+{
+  "captured_utc": "2026-11-17T01:56:36.058762+00:00",
+  "gpu_smi": "2026/11/16 19:56:35.372, NVIDIA GeForce RTX 4050 Laptop GPU, 6141, 1907, 4015, 39, 10, 65, 35.93",
+  "python_processes": [
+    {
+      "ProcessId": 20612,
+      "ParentProcessId": 34856,
+      "CommandLine": "\"C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\.venv_cuda\\Scripts\\python.exe\" start_signer.py"
+    },
+    {
+      "ProcessId": 30532,
+      "ParentProcessId": 20612,
+      "CommandLine": "\"C:\\Users\\ROG\\AppData\\Local\\Programs\\Python\\Python311\\python.exe\" start_signer.py"
+    },
+    {
+      "ProcessId": 46712,
+      "ParentProcessId": 36500,
+      "CommandLine": "\"C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\.venv_cuda\\Scripts\\python.exe\" -m VIGIA_API.ingest_service"
+    },
+    {
+      "ProcessId": 19556,
+      "ParentProcessId": 46712,
+      "CommandLine": "\"C:\\Users\\ROG\\AppData\\Local\\Programs\\Python\\Python311\\python.exe\" -m VIGIA_API.ingest_service"
+    },
+    {
+      "ProcessId": 47740,
+      "ParentProcessId": 46176,
+      "CommandLine": "\"C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\.venv_cuda\\Scripts\\python.exe\" C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\vision_07b\\scripts\\capture_fase_e_snapshot.py"
+    },
+    {
+      "ProcessId": 17848,
+      "ParentProcessId": 47740,
+      "CommandLine": "\"C:\\Users\\ROG\\AppData\\Local\\Programs\\Python\\Python311\\python.exe\" C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\vision_07b\\scripts\\capture_fase_e_snapshot.py"
+    }
+  ],
+  "supervision_status": {
+    "engine_initialized": true,
+    "ok": true,
+    "role": "ADMINISTRADOR",
+    "status": "OPERATIONAL",
+    "supervised_positions": [
+      "ENTRADA",
+      "SALIDA"
+    ],
+    "user": "admin_dev",
+    "vision_metrics": {
+      "cameras": {
+        "CAM-03": {
+          "drop_reasons": {},
+          "dropped_frames": 0,
+          "effective_model": "yolo26x.pt",
+          "ingest_count": 1,
+          "ingest_fps": 0.0,
+          "last_drop_policy": null,
+          "last_frame_at": "2026-11-17T00:44:29.226132+00:00",
+          "last_inference_model": "yolo26x.pt",
+          "last_queue_wait_ms": 12.423,
+          "last_status": "PROCESSED",
+          "last_step_ms": 134.957,
+          "processed_count": 1,
+          "processed_fps": 0.0
+        },
+        "CAM-ENTRADA": {
+          "drop_reasons": {},
+          "dropped_frames": 0,
+          "effective_model": "yolo26x.pt",
+          "ingest_count": 62820,
+          "ingest_fps": 14.87,
+          "last_drop_policy": null,
+          "last_frame_at": "2026-11-17T01:56:35.198592+00:00",
+          "last_inference_model": "yolo26x.pt",
+          "last_queue_wait_ms": 0.001,
+          "last_status": "PROCESSED",
+          "last_step_ms": 49.19,
+          "processed_count": 62820,
+          "processed_fps": 14.81
+        },
+        "CAM-SALIDA": {
+          "drop_reasons": {},
+          "dropped_frames": 0,
+          "effective_model": "yolo26x.pt",
+          "ingest_count": 1031,
+          "ingest_fps": 0.0,
+          "last_drop_policy": null,
+          "last_frame_at": "2026-11-17T01:09:05.381779+00:00",
+          "last_inference_model": "yolo26x.pt",
+          "last_queue_wait_ms": 3.703,
+          "last_status": "PROCESSED",
+          "last_step_ms": 123.534,
+          "processed_count": 1031,
+          "processed_fps": 0.0
+        }
+      },
+      "detector": {
+        "augment": false,
+        "consolidate_frontal_confidence": true,
+        "deduplicate_iou_threshold": 0.55,
+        "device": "cuda:0",
+        "effective_fp16": true,
+        "effective_imgsz": 640,
+        "effective_model": "yolo26x.pt",
+        "end2end": true,
+        "end2end_verified": true,
+        "fallback_enabled": true,
+        "fallback_reason": null,
+        "fallback_timestamp": null,
+        "frontal_aux_enabled": true,
+        "frontal_aux_imgsz": 384,
+        "frontal_aux_trigger_confidence": 0.7,
+        "gpu_memory": {
+          "vram_allocated_mb": 402.84,
+          "vram_reserved_mb": 594.0
+        },
+        "imgsz": 640,
+        "inference_metrics": {
+          "cuda_errors": 0,
+          "duplicates_suppressed": 228359,
+          "fallback_count": 0,
+          "frontal_aux_recoveries": 46118,
+          "frontal_aux_triggers": 55309,
+          "inference_errors": 0,
+          "inference_fps": 22.83,
+          "inferences_by_model": {
+            "yolo26x.pt": 63852
+          },
+          "init_errors": 0,
+          "last_camera_code": "CAM-ENTRADA",
+          "last_inference_at": "2026-11-17T01:56:35.198592+00:00",
+          "last_inference_model": "yolo26x.pt",
+          "last_queue_wait_ms": 0.001,
+          "last_recovery_ms": null,
+          "latency_mean_ms": 43.793,
+          "latency_p50_ms": 44.397,
+          "latency_p95_ms": 51.336,
+          "latency_p99_ms": 56.316,
+          "queue_wait_mean_ms": 0.001,
+          "total_inferences": 63852
+        },
+        "is_loaded": true,
+        "last_inference_model": "yolo26x.pt",
+        "nms": false,
+        "quantize": 16,
+        "requested_model": "yolo26x.pt",
+        "ultralytics_version": "8.4.171",
+        "using_fallback": false
+      },
+      "engine_initialized": true,
+      "temporal_fsm_integrated": false
+    }
+  },
+  "cameras": {
+    "cameras": [
+      {
+        "activa": true,
+        "areas": [
+          {
+            "codigo": "ROI-ENT",
+            "id_area_vision": "94bd559c-c467-4b90-b36a-7f21dae2fb12",
+            "nombre": "Zona Lectura Entrada",
+            "tipo_movimiento": "ENTRADA"
+          }
+        ],
+        "codigo": "CAM-ENTRADA",
+        "id_camara": "2296f49a-edac-4b39-87cb-0f9b1499b82b",
+        "is_transmitting": true,
+        "last_frame_seconds_ago": 0.0,
+        "latest_metrics": {
+          "confianza": null,
+          "in_roi": 0,
+          "sequence": 62820,
+          "status": "NO_VEHICLE_DETECTED",
+          "vehicle_detected": false,
+          "vehicle_type": null
+        },
+        "nombre": "Cámara Carril Entrada",
+        "operational_status": "TRANSMITIENDO"
+      },
+      {
+        "activa": true,
+        "areas": [
+          {
+            "codigo": "ROI-SAL",
+            "id_area_vision": "55959afa-4970-4131-9c51-ff75f3b6e0e8",
+            "nombre": "Zona Lectura Salida",
+            "tipo_movimiento": "SALIDA"
+          }
+        ],
+        "codigo": "CAM-SALIDA",
+        "id_camara": "53a9c846-3bac-464c-a1bd-017690c961c0",
+        "is_transmitting": false,
+        "last_frame_seconds_ago": 2849.9,
+        "latest_metrics": {
+          "confianza": 0.9418,
+          "in_roi": 3,
+          "sequence": 1031,
+          "status": "VEHICLE_DETECTED_NO_PLATE",
+          "vehicle_detected": true,
+          "vehicle_type": "AUTOMOVIL"
+        },
+        "nombre": "Cámara Carril Salida",
+        "operational_status": "EN_ESPERA"
+      }
+    ],
+    "ok": true,
+    "total": 2
+  },
+  "cam_entrada_status": {
+    "codigo_camara": "CAM-ENTRADA",
+    "confianza": null,
+    "in_roi": 0,
+    "is_transmitting": true,
+    "last_frame_seconds_ago": 0.08,
+    "ok": true,
+    "operational_state": "TRANSMITIENDO",
+    "sequence": 62820,
+    "status": "NO_VEHICLE_DETECTED",
+    "tipo_vehiculo": null,
+    "vehicle_detected": false
+  },
+  "cam_salida_status": {
+    "codigo_camara": "CAM-SALIDA",
+    "confianza": null,
+    "in_roi": 0,
+    "is_transmitting": false,
+    "last_frame_seconds_ago": 2849.91,
+    "ok": true,
+    "operational_state": "SIN_SEÑAL",
+    "sequence": 1031,
+    "status": "EN_ESPERA",
+    "tipo_vehiculo": null,
+    "vehicle_detected": false
+  },
+  "postgresql_read_only": {
+    "total_rows": 3210,
+    "deteccion_columns": [
+      {
+        "column": "id_deteccion",
+        "type": "uuid",
+        "nullable": "NO",
+        "default": "gen_random_uuid()"
+      },
+      {
+        "column": "id_area_vision",
+        "type": "uuid",
+        "nullable": "NO",
+        "default": null
+      },
+      {
+        "column": "fecha_hora",
+        "type": "timestamp with time zone",
+        "nullable": "NO",
+        "default": "CURRENT_TIMESTAMP"
+      },
+      {
+        "column": "placa_detectada",
+        "type": "character varying",
+        "nullable": "YES",
+        "default": null
+      },
+      {
+        "column": "confianza_placa",
+        "type": "numeric",
+        "nullable": "YES",
+        "default": null
+      },
+      {
+        "column": "confianza_vehiculo",
+        "type": "numeric",
+        "nullable": "YES",
+        "default": null
+      },
+      {
+        "column": "tipo_vehiculo_pred",
+        "type": "character varying",
+        "nullable": "YES",
+        "default": null
+      },
+      {
+        "column": "ruta_evidencia_foto",
+        "type": "text",
+        "nullable": "YES",
+        "default": null
+      }
+    ],
+    "summary_all_dates": [
+      {
+        "camera_code": "CAM-ENTRADA",
+        "vehicle_type": "AUTOMOVIL",
+        "count": 2118,
+        "min_conf": 0.7,
+        "max_conf": 0.99,
+        "avg_conf": 0.8721,
+        "first_ts": "2026-11-04 20:05:30.515339+00",
+        "last_ts": "2026-11-17 01:53:03.309613+00"
+      },
+      {
+        "camera_code": "CAM-ENTRADA",
+        "vehicle_type": "OTRO",
+        "count": 289,
+        "min_conf": 0.778,
+        "max_conf": 0.941,
+        "avg_conf": 0.854,
+        "first_ts": "2026-11-01 19:13:21.27522+00",
+        "last_ts": "2026-11-17 01:31:32.371353+00"
+      },
+      {
+        "camera_code": "CAM-ENTRADA",
+        "vehicle_type": "CAMION",
+        "count": 118,
+        "min_conf": 0.7,
+        "max_conf": 0.945,
+        "avg_conf": 0.8271,
+        "first_ts": "2026-11-04 16:34:35.58561+00",
+        "last_ts": "2026-11-17 01:52:48.295963+00"
+      },
+      {
+        "camera_code": "CAM-ENTRADA",
+        "vehicle_type": "MOTOCICLETA",
+        "count": 8,
+        "min_conf": 0.722,
+        "max_conf": 0.904,
+        "avg_conf": 0.7869,
+        "first_ts": "2026-11-06 16:34:01.494745+00",
+        "last_ts": "2026-11-16 23:38:45.04678+00"
+      },
+      {
+        "camera_code": "CAM-SALIDA",
+        "vehicle_type": "AUTOMOVIL",
+        "count": 465,
+        "min_conf": 0.701,
+        "max_conf": 0.99,
+        "avg_conf": 0.8737,
+        "first_ts": "2026-11-14 00:49:45.898871+00",
+        "last_ts": "2026-11-17 01:09:03.114078+00"
+      },
+      {
+        "camera_code": "CAM-SALIDA",
+        "vehicle_type": "OTRO",
+        "count": 188,
+        "min_conf": 0.701,
+        "max_conf": 0.941,
+        "avg_conf": 0.8257,
+        "first_ts": "2026-11-05 14:25:03.623641+00",
+        "last_ts": "2026-11-16 17:21:34.931174+00"
+      },
+      {
+        "camera_code": "CAM-SALIDA",
+        "vehicle_type": "CAMION",
+        "count": 24,
+        "min_conf": 0.702,
+        "max_conf": 0.82,
+        "avg_conf": 0.7379,
+        "first_ts": "2026-11-14 00:59:50.958916+00",
+        "last_ts": "2026-11-16 17:22:17.74138+00"
+      }
+    ],
+    "summary_20261117": [
+      {
+        "camera_code": "CAM-ENTRADA",
+        "vehicle_type": "AUTOMOVIL",
+        "count": 1976,
+        "min_conf": 0.7,
+        "max_conf": 0.99,
+        "avg_conf": 0.8765,
+        "first_ts": "2026-11-17 00:06:25.139777+00",
+        "last_ts": "2026-11-17 01:53:03.309613+00"
+      },
+      {
+        "camera_code": "CAM-ENTRADA",
+        "vehicle_type": "CAMION",
+        "count": 117,
+        "min_conf": 0.7,
+        "max_conf": 0.945,
+        "avg_conf": 0.8279,
+        "first_ts": "2026-11-17 00:49:16.87433+00",
+        "last_ts": "2026-11-17 01:52:48.295963+00"
+      },
+      {
+        "camera_code": "CAM-ENTRADA",
+        "vehicle_type": "OTRO",
+        "count": 3,
+        "min_conf": 0.778,
+        "max_conf": 0.935,
+        "avg_conf": 0.8413,
+        "first_ts": "2026-11-17 01:31:26.248762+00",
+        "last_ts": "2026-11-17 01:31:32.371353+00"
+      },
+      {
+        "camera_code": "CAM-SALIDA",
+        "vehicle_type": "AUTOMOVIL",
+        "count": 303,
+        "min_conf": 0.705,
+        "max_conf": 0.99,
+        "avg_conf": 0.9244,
+        "first_ts": "2026-11-17 00:08:41.213969+00",
+        "last_ts": "2026-11-17 01:09:03.114078+00"
+      }
+    ]
+  }
+}

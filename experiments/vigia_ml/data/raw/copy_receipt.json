@@ -1,0 +1,16 @@
+{
+  "generated_at_utc": "2026-11-14T17:55:55.578575Z",
+  "include_dates": [
+    "20261111",
+    "20261114"
+  ],
+  "deduplicate_per_cluster": true,
+  "copy_annotated": true,
+  "free_disk_gb_before": 99.376,
+  "total_scanned_in_dates": 156,
+  "selected_pairs": 87,
+  "new_files_written": 174,
+  "new_bytes_written": 11522393,
+  "sha256_verified_orig": 87,
+  "source_untouched": true
+}

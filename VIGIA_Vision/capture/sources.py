@@ -24,11 +24,161 @@ No abre servidores HTTP ni HTTPS en este módulo.
 
 from __future__ import annotations
 
+import os
+import sys
 import threading
 from datetime import datetime, timezone
-from typing import Any, Callable, Optional, Protocol, Union, runtime_checkable
+from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple, Union, runtime_checkable
 
 from VIGIA_Vision.detection.models import CaptureReadResult
+
+
+def parse_usb_source_uri(source_uri: Union[int, str]) -> Tuple[Union[int, str], bool]:
+    """
+    Normaliza una URI o índice de fuente de captura para `OpenCVCaptureSource`.
+
+    Soporta:
+    - Enteros >= 0 (ej. ``0``, ``1``) -> ``(0, True)``
+    - Cadenas numéricas (ej. ``"0"``) -> ``(0, True)``
+    - Esquema explícito USB (ej. ``"usb://0"``) -> ``(0, True)``
+    - Streams RTSP/HTTP o rutas locales -> ``(uri, False)``
+
+    Lanza ``ValueError`` si la URI está vacía o si el esquema ``usb://`` no
+    contiene un índice entero no negativo válido.
+    """
+    if isinstance(source_uri, bool):
+        raise ValueError(f"source_uri={source_uri!r} no puede ser booleano.")
+
+    if isinstance(source_uri, int):
+        if source_uri < 0:
+            raise ValueError(f"source_uri={source_uri!r} debe ser un entero >= 0.")
+        return source_uri, True
+
+    if isinstance(source_uri, str):
+        cleaned = source_uri.strip()
+        if not cleaned:
+            raise ValueError("source_uri no puede ser una cadena vacía.")
+
+        if cleaned.lower().startswith("usb://"):
+            raw_idx = cleaned[6:].strip().rstrip("/")
+            if not raw_idx or not raw_idx.isdigit():
+                raise ValueError(
+                    f"Índice USB inválido en URI {source_uri!r}. "
+                    "Se esperaba formato 'usb://<índice>' con entero >= 0 (ej. 'usb://0')."
+                )
+            return int(raw_idx), True
+
+        if cleaned.isdigit():
+            return int(cleaned), True
+
+        return cleaned, False
+
+    raise ValueError(f"source_uri={source_uri!r} debe ser un entero >= 0 o cadena no vacía.")
+
+
+def probe_local_usb_cameras(
+    max_index: int = 4,
+    active_indices: Optional[Dict[int, Dict[str, Any]]] = None,
+    backend_preference: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """
+    Sondea cámaras USB locales disponibles sin dejar descriptores físicos abiertos.
+
+    Si un índice se encuentra actualmente en uso por un worker gestionado en
+    ``active_indices``, reporta su información sin abrir un segundo descriptor
+    simultáneo sobre el hardware.
+    """
+    import cv2
+
+    results: List[Dict[str, Any]] = []
+    active_map = active_indices or {}
+    pref = (backend_preference or os.environ.get("VIGIA_USB_OPENCV_BACKEND", "dshow")).strip().lower()
+
+    for idx in range(max(1, int(max_index))):
+        if idx in active_map:
+            info = active_map[idx]
+            results.append(
+                {
+                    "device_index": idx,
+                    "uri": f"usb://{idx}",
+                    "name": info.get("name") or f"Cámara USB Local {idx}",
+                    "width": info.get("width"),
+                    "height": info.get("height"),
+                    "resolution": info.get("resolution") or "En uso",
+                    "backend": info.get("backend") or "MSMF/DSHOW",
+                    "available": True,
+                    "in_use_by_camera": info.get("codigo_camara"),
+                }
+            )
+            continue
+
+        cap = None
+        opened = False
+        backend_used = "DEFAULT"
+        try:
+            backends_to_try: List[Tuple[str, Optional[int]]] = []
+            if sys.platform == "win32":
+                if pref == "msmf":
+                    backends_to_try = [
+                        ("MSMF", getattr(cv2, "CAP_MSMF", None)),
+                        ("DSHOW", getattr(cv2, "CAP_DSHOW", None)),
+                    ]
+                elif pref == "auto":
+                    backends_to_try = [
+                        ("ANY", getattr(cv2, "CAP_ANY", None)),
+                        ("DSHOW", getattr(cv2, "CAP_DSHOW", None)),
+                    ]
+                else:
+                    backends_to_try = [
+                        ("DSHOW", getattr(cv2, "CAP_DSHOW", None)),
+                        ("MSMF", getattr(cv2, "CAP_MSMF", None)),
+                    ]
+            else:
+                backends_to_try = [("ANY", None)]
+
+            for b_name, b_flag in backends_to_try:
+                tmp_cap = cv2.VideoCapture(idx, b_flag) if b_flag is not None else cv2.VideoCapture(idx)
+                if tmp_cap is not None and tmp_cap.isOpened():
+                    cap = tmp_cap
+                    opened = True
+                    try:
+                        backend_used = cap.getBackendName()
+                    except Exception:
+                        backend_used = b_name
+                    break
+                if tmp_cap is not None:
+                    try:
+                        tmp_cap.release()
+                    except Exception:
+                        pass
+
+            if opened and cap is not None:
+                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
+                height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
+                res_str = f"{width}x{height}" if (width > 0 and height > 0) else "Desconocida"
+                results.append(
+                    {
+                        "device_index": idx,
+                        "uri": f"usb://{idx}",
+                        "name": f"Cámara USB / Webcam Local ({idx})",
+                        "width": width if width > 0 else None,
+                        "height": height if height > 0 else None,
+                        "resolution": res_str,
+                        "backend": backend_used,
+                        "available": True,
+                        "in_use_by_camera": None,
+                    }
+                )
+        except Exception:
+            pass
+        finally:
+            if cap is not None:
+                try:
+                    cap.release()
+                except Exception:
+                    pass
+
+    return results
 
 
 @runtime_checkable
@@ -70,40 +220,42 @@ class OpenCVCaptureSource:
         source_uri: Union[int, str],
         capture_factory: Optional[Callable[[Union[int, str]], Any]] = None,
         clock: Optional[Callable[[], datetime]] = None,
-        preferred_backend: Optional[int] = None,
+        backend_preference: Optional[str] = None,
     ) -> None:
-        self._preferred_backend: Optional[int] = preferred_backend
-        if isinstance(source_uri, str):
-            clean_uri = source_uri.strip()
-            if not clean_uri:
-                raise ValueError("source_uri no puede ser una cadena vacía.")
-            # Soporte explícito para esquema usb:// (ej. 'usb://0' -> entero 0)
-            if clean_uri.lower().startswith("usb://"):
-                idx_part = clean_uri[6:].strip()
-                if not idx_part.isdigit() or int(idx_part) < 0:
-                    raise ValueError(
-                        f"Índice de dispositivo USB inválido en {source_uri!r}. "
-                        "Se requiere un entero >= 0 (ej. 'usb://0')."
-                    )
-                self._source_uri: Union[int, str] = int(idx_part)
-            elif clean_uri.isdigit():
-                self._source_uri = int(clean_uri)
-            else:
-                self._source_uri = clean_uri
-        elif isinstance(source_uri, int) and not isinstance(source_uri, bool) and source_uri >= 0:
-            self._source_uri = source_uri
-        else:
-            raise ValueError(f"source_uri={source_uri!r} debe ser un entero >= 0 o cadena no vacía.")
+        self._raw_source_uri: Union[int, str] = source_uri
+        resolved_uri, is_usb = parse_usb_source_uri(source_uri)
+        self._source_uri: Union[int, str] = resolved_uri
+        self._is_usb: bool = is_usb
+        self._backend_preference: Optional[str] = backend_preference
 
         self._capture_factory = capture_factory
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._cap: Optional[Any] = None
         self._sequence: int = 0
+        self._last_frame: Optional[Any] = None
+        self._resolved_backend: Optional[str] = None
         self._lock = threading.RLock()
 
     @property
     def source_uri(self) -> Union[int, str]:
         return self._source_uri
+
+    @property
+    def raw_source_uri(self) -> Union[int, str]:
+        return self._raw_source_uri
+
+    @property
+    def is_usb(self) -> bool:
+        return self._is_usb
+
+    @property
+    def resolved_backend(self) -> Optional[str]:
+        return self._resolved_backend
+
+    def get_last_frame(self) -> Tuple[int, Optional[Any]]:
+        """Retorna ``(sequence, frame)`` del último fotograma capturado bajo lock."""
+        with self._lock:
+            return self._sequence, self._last_frame
 
     def open(self) -> bool:
         """Abre explícitamente el descriptor de video."""
@@ -114,51 +266,68 @@ class OpenCVCaptureSource:
             try:
                 if self._capture_factory is not None:
                     cap = self._capture_factory(self._source_uri)
+                    self._resolved_backend = "CUSTOM_FACTORY"
                 else:
                     import cv2  # Importación perezosa
-                    if isinstance(self._source_uri, int):
-                        # Selección controlada de backend en Windows (MSMF por omisión con fallback a DSHOW/CAP_ANY)
-                        backend = self._preferred_backend
-                        if backend is not None:
-                            cap = cv2.VideoCapture(self._source_uri, backend)
+
+                    cap = None
+                    if self._is_usb and sys.platform == "win32":
+                        pref = (
+                            self._backend_preference
+                            or os.environ.get("VIGIA_USB_OPENCV_BACKEND", "dshow")
+                        ).strip().lower()
+
+                        if pref == "msmf":
+                            candidates = [
+                                ("MSMF", getattr(cv2, "CAP_MSMF", None)),
+                                ("DSHOW", getattr(cv2, "CAP_DSHOW", None)),
+                            ]
+                        elif pref == "auto":
+                            candidates = [
+                                ("ANY", getattr(cv2, "CAP_ANY", None)),
+                                ("DSHOW", getattr(cv2, "CAP_DSHOW", None)),
+                            ]
                         else:
-                            msmf_backend = getattr(cv2, "CAP_MSMF", None)
-                            dshow_backend = getattr(cv2, "CAP_DSHOW", None)
-                            cap = None
-                            if msmf_backend is not None:
-                                cap = cv2.VideoCapture(self._source_uri, msmf_backend)
-                            if cap is None or not bool(cap.isOpened()):
-                                if cap is not None:
-                                    try:
-                                        cap.release()
-                                    except Exception:
-                                        pass
-                                if dshow_backend is not None:
-                                    cap = cv2.VideoCapture(self._source_uri, dshow_backend)
-                                else:
-                                    cap = cv2.VideoCapture(self._source_uri)
-                            if cap is None or not bool(cap.isOpened()):
-                                if cap is not None:
-                                    try:
-                                        cap.release()
-                                    except Exception:
-                                        pass
-                                cap = cv2.VideoCapture(self._source_uri)
+                            candidates = [
+                                ("DSHOW", getattr(cv2, "CAP_DSHOW", None)),
+                                ("MSMF", getattr(cv2, "CAP_MSMF", None)),
+                            ]
+
+                        for b_name, b_flag in candidates:
+                            tmp = cv2.VideoCapture(self._source_uri, b_flag) if b_flag is not None else cv2.VideoCapture(self._source_uri)
+                            if tmp is not None and tmp.isOpened():
+                                cap = tmp
+                                try:
+                                    self._resolved_backend = cap.getBackendName()
+                                except Exception:
+                                    self._resolved_backend = b_name
+                                break
+                            if tmp is not None:
+                                try:
+                                    tmp.release()
+                                except Exception:
+                                    pass
                     else:
                         cap = cv2.VideoCapture(self._source_uri)
+                        try:
+                            self._resolved_backend = cap.getBackendName() if cap is not None else None
+                        except Exception:
+                            self._resolved_backend = "DEFAULT"
 
                     # Evitar acumulación de fotogramas antiguos en el buffer interno
-                    if hasattr(cv2, "CAP_PROP_BUFFERSIZE"):
+                    if cap is not None and hasattr(cv2, "CAP_PROP_BUFFERSIZE"):
                         try:
                             cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
                         except Exception:
                             pass
             except Exception:
                 self._cap = None
+                self._resolved_backend = None
                 return False
 
             if cap is None:
                 self._cap = None
+                self._resolved_backend = None
                 return False
 
             try:
@@ -172,6 +341,7 @@ class OpenCVCaptureSource:
                 except Exception:
                     pass
                 self._cap = None
+                self._resolved_backend = None
                 return False
 
             self._cap = cap
@@ -227,6 +397,7 @@ class OpenCVCaptureSource:
                 )
 
             self._sequence += 1
+            self._last_frame = frame
             return CaptureReadResult(
                 ok=True,
                 frame=frame,
@@ -240,6 +411,8 @@ class OpenCVCaptureSource:
         with self._lock:
             cap = self._cap
             self._cap = None
+            self._last_frame = None
+            self._resolved_backend = None
             if cap is not None:
                 try:
                     cap.release()

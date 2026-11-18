@@ -96,15 +96,25 @@ export function renderDevicesTable({ devices = [], onDeviceAction } = {}) {
     nameStrong.textContent = device.nombre;
     const codeSub = document.createElement('span');
     codeSub.className = 'device-code-sub';
-    codeSub.textContent = `${device.id} · ${device.ubicacionDemo || 'Ubicación DEMO'}`;
+    const loc = device.camara_asociada || device.ubicacionDemo || 'Ubicación DEMO';
+    codeSub.textContent = `${device.id} · ${loc}`;
     nameContainer.appendChild(nameStrong);
     nameContainer.appendChild(codeSub);
     tr.appendChild(createDataCell(COLUMNS[0].label, nameContainer));
 
     // 2. Tipo
+    const typeContainer = document.createElement('div');
     const typeSpan = document.createElement('span');
+    typeSpan.className = `device-type-label ${device.isUsb ? 'device-type-label--usb' : 'device-type-label--mobile'}`;
     typeSpan.textContent = device.tipo;
-    tr.appendChild(createDataCell(COLUMNS[1].label, typeSpan));
+    typeContainer.appendChild(typeSpan);
+    if (device.isUsb && device.backend) {
+      const typeSub = document.createElement('span');
+      typeSub.className = 'device-code-sub';
+      typeSub.textContent = `${device.backend} · idx ${device.deviceIndex ?? 0}`;
+      typeContainer.appendChild(typeSub);
+    }
+    tr.appendChild(createDataCell(COLUMNS[1].label, typeContainer));
 
     // 3. Estado
     const statusPill = document.createElement('span');

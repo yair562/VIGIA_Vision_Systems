@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vigia.local/schemas/vigia_ml_annotation_v1.json",
+  "title": "VIGIA-ML Manual Annotation Schema v1",
+  "type": "object",
+  "required": ["schema_version", "created_at_utc", "records"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "created_at_utc": { "type": "string", "format": "date-time" },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sample_id",
+          "image_path",
+          "sha256",
+          "source_domain",
+          "session_id",
+          "duplicate_group",
+          "objects",
+          "ground_truth_status"
+        ],
+        "properties": {
+          "sample_id": { "type": "string" },
+          "image_path": { "type": "string" },
+          "sha256": { "type": "string", "minLength": 64, "maxLength": 64 },
+          "source_domain": {
+            "enum": ["SCALE_MODEL_LAB", "SCREEN_RECAPTURE", "REAL_FULL_SCALE", "NEGATIVE_CONTROL", "UNKNOWN"]
+          },
+          "session_id": { "type": "string" },
+          "duplicate_group": { "type": "string" },
+          "ground_truth_status": {
+            "enum": ["NONE", "PENDING_HUMAN_REVIEW", "HUMAN_VERIFIED", "DISPUTED", "REJECTED"]
+          },
+          "objects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "annotation_id",
+                "bbox_xyxy",
+                "vehicle_class",
+                "observed_color",
+                "visibility",
+                "occlusion",
+                "lighting_condition",
+                "blur_level",
+                "annotator_id",
+                "review_status"
+              ],
+              "properties": {
+                "annotation_id": { "type": "string" },
+                "bbox_xyxy": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "vehicle_class": {
+                  "enum": ["CAR", "MOTORCYCLE", "BUS", "TRUCK", "OTHER", "IGNORE"]
+                },
+                "observed_color": {
+                  "enum": [
+                    "WHITE", "BLACK", "GRAY", "SILVER", "RED", "BLUE",
+                    "GREEN", "YELLOW", "BROWN", "ORANGE", "OTHER", "INDETERMINATE"
+                  ]
+                },
+                "visibility": { "enum": ["FULL", "PARTIAL", "EDGE_TRUNCATED", "LOW"] },
+                "occlusion": { "enum": ["NONE", "PARTIAL", "HEAVY"] },
+                "lighting_condition": {
+                  "enum": ["NORMAL", "LOW_LIGHT", "GLARE", "COLOR_CAST", "BACKLIT"]
+                },
+                "blur_level": { "enum": ["SHARP", "MODERATE", "SEVERE"] },
+                "annotator_notes": { "type": "string" },
+                "annotator_id": { "type": "string" },
+                "reviewer_id": { "type": ["string", "null"] },
+                "review_status": {
+                  "enum": ["DRAFT", "PENDING_REVIEW", "APPROVED", "DISPUTED", "REJECTED"]
+                },
+                "yolo_aux_reference": {
+                  "type": ["object", "null"],
+                  "description": "Referencia auxiliar no autoritativa; nunca equivale a GT.",
+                  "properties": {
+                    "model_name": { "type": "string" },
+                    "bbox_xyxy": {
+                      "type": "array",
+                      "items": { "type": "integer", "minimum": 0 },
+                      "minItems": 4,
+                      "maxItems": 4
+                    },
+                    "raw_class": { "type": "string" },
+                    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+                    "is_ground_truth": { "const": false }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2902 @@
+{
+  "experiments": [
+    {
+      "exp_id": "BASELINE",
+      "hypothesis": "Configuración base VISION-04A (YOLO26x, imgsz=640, FP16, nms=False, umbral ROI=0.70).",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 21.07,
+        "p50_ms": 20.62,
+        "p95_ms": 23.45,
+        "fps": 47.46
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 194,
+          "rate_at_thresh_pct": 69.53,
+          "hits_at_025": 255,
+          "rate_at_025_pct": 91.4
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 53,
+          "rate_at_thresh_pct": 69.74,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 3,
+          "rate_at_thresh_pct": 16.67,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 15,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 55,
+          "rate_at_thresh_pct": 68.75,
+          "hits_at_025": 76,
+          "rate_at_025_pct": 95.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 103,
+          "rate_at_thresh_pct": 69.13,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 94.74,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 87.88,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 47.37,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 92,
+          "rate_at_thresh_pct": 70.77,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 31,
+          "rate_at_thresh_pct": 43.66,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 590,
+          "rate_at_thresh_pct": 87.41,
+          "hits_at_025": 651,
+          "rate_at_025_pct": 96.44
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 53,
+          "rate_at_thresh_pct": 69.74,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 3,
+          "rate_at_thresh_pct": 16.67,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 15,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 451,
+          "rate_at_thresh_pct": 94.75,
+          "hits_at_025": 472,
+          "rate_at_025_pct": 99.16
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 103,
+          "rate_at_thresh_pct": 69.13,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 94.74,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 87.88,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 47.37,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 92,
+          "rate_at_thresh_pct": 70.77,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 31,
+          "rate_at_thresh_pct": 43.66,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      }
+    },
+    {
+      "exp_id": "EXP-01A",
+      "hypothesis": "Reducir únicamente el umbral operativo de validación ROI a 0.60 (manteniendo imgsz=640, nms=False).",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.6,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.6,
+      "latency": {
+        "mean_ms": 20.39,
+        "p50_ms": 20.28,
+        "p95_ms": 23.09,
+        "fps": 49.04
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 212,
+          "rate_at_thresh_pct": 75.99,
+          "hits_at_025": 255,
+          "rate_at_025_pct": 91.4
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 60,
+          "rate_at_thresh_pct": 78.95,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 20,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 72.5,
+          "hits_at_025": 76,
+          "rate_at_025_pct": 95.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 111,
+          "rate_at_thresh_pct": 74.5,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 21,
+          "rate_at_thresh_pct": 55.26,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 104,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 36,
+          "rate_at_thresh_pct": 50.7,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 608,
+          "rate_at_thresh_pct": 90.07,
+          "hits_at_025": 651,
+          "rate_at_025_pct": 96.44
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 60,
+          "rate_at_thresh_pct": 78.95,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 20,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 454,
+          "rate_at_thresh_pct": 95.38,
+          "hits_at_025": 472,
+          "rate_at_025_pct": 99.16
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 111,
+          "rate_at_thresh_pct": 74.5,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 21,
+          "rate_at_thresh_pct": 55.26,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 104,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 36,
+          "rate_at_thresh_pct": 50.7,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      }
+    },
+    {
+      "exp_id": "EXP-01B",
+      "hypothesis": "Reducir únicamente el umbral operativo de validación ROI a 0.55 (manteniendo imgsz=640, nms=False).",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.55,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.55,
+      "latency": {
+        "mean_ms": 20.44,
+        "p50_ms": 20.34,
+        "p95_ms": 23.6,
+        "fps": 48.92
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 221,
+          "rate_at_thresh_pct": 79.21,
+          "hits_at_025": 255,
+          "rate_at_025_pct": 91.4
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 61,
+          "rate_at_thresh_pct": 80.26,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 10,
+          "rate_at_thresh_pct": 55.56,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 22,
+          "rate_at_thresh_pct": 73.33,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 78.75,
+          "hits_at_025": 76,
+          "rate_at_025_pct": 95.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 117,
+          "rate_at_thresh_pct": 78.52,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 64,
+          "rate_at_thresh_pct": 96.97,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 60.53,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 108,
+          "rate_at_thresh_pct": 83.08,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 41,
+          "rate_at_thresh_pct": 57.75,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 617,
+          "rate_at_thresh_pct": 91.41,
+          "hits_at_025": 651,
+          "rate_at_025_pct": 96.44
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 61,
+          "rate_at_thresh_pct": 80.26,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 10,
+          "rate_at_thresh_pct": 55.56,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 22,
+          "rate_at_thresh_pct": 73.33,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 459,
+          "rate_at_thresh_pct": 96.43,
+          "hits_at_025": 472,
+          "rate_at_025_pct": 99.16
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 117,
+          "rate_at_thresh_pct": 78.52,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 64,
+          "rate_at_thresh_pct": 96.97,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 60.53,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 108,
+          "rate_at_thresh_pct": 83.08,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 41,
+          "rate_at_thresh_pct": 57.75,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      }
+    },
+    {
+      "exp_id": "EXP-01C",
+      "hypothesis": "Reducir únicamente el umbral operativo de validación ROI a 0.50 (manteniendo imgsz=640, nms=False).",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.5,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.5,
+      "latency": {
+        "mean_ms": 20.26,
+        "p50_ms": 20.15,
+        "p95_ms": 22.81,
+        "fps": 49.36
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 230,
+          "rate_at_thresh_pct": 82.44,
+          "hits_at_025": 255,
+          "rate_at_025_pct": 91.4
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 82.89,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 10,
+          "rate_at_thresh_pct": 55.56,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 76.67,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 69,
+          "rate_at_thresh_pct": 86.25,
+          "hits_at_025": 76,
+          "rate_at_025_pct": 95.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 122,
+          "rate_at_thresh_pct": 81.88,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 63.16,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 112,
+          "rate_at_thresh_pct": 86.15,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 45,
+          "rate_at_thresh_pct": 63.38,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 626,
+          "rate_at_thresh_pct": 92.74,
+          "hits_at_025": 651,
+          "rate_at_025_pct": 96.44
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 82.89,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 86.84
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 10,
+          "rate_at_thresh_pct": 55.56,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 76.67,
+          "hits_at_025": 27,
+          "rate_at_025_pct": 90.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 465,
+          "rate_at_thresh_pct": 97.69,
+          "hits_at_025": 472,
+          "rate_at_025_pct": 99.16
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 122,
+          "rate_at_thresh_pct": 81.88,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 63.16,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 112,
+          "rate_at_thresh_pct": 86.15,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 45,
+          "rate_at_thresh_pct": 63.38,
+          "hits_at_025": 56,
+          "rate_at_025_pct": 78.87
+        },
+        "dup_frames_025": 45,
+        "total_dup_pairs_025": 50
+      }
+    },
+    {
+      "exp_id": "EXP-02A",
+      "hypothesis": "Modificar únicamente la resolución de inferencia a imgsz=384 (manteniendo nms=False, umbral=0.70).",
+      "parameters": {
+        "imgsz": 384,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 19.49,
+        "p50_ms": 18.61,
+        "p95_ms": 24.13,
+        "fps": 51.31
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 189,
+          "rate_at_thresh_pct": 67.74,
+          "hits_at_025": 253,
+          "rate_at_025_pct": 90.68
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 76.32,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 5,
+          "rate_at_thresh_pct": 27.78,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 13,
+          "rate_at_thresh_pct": 43.33,
+          "hits_at_025": 20,
+          "rate_at_025_pct": 66.67
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 57,
+          "rate_at_thresh_pct": 71.25,
+          "hits_at_025": 73,
+          "rate_at_025_pct": 91.25
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 94,
+          "rate_at_thresh_pct": 63.09,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 16,
+          "rate_at_thresh_pct": 84.21,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 57,
+          "rate_at_thresh_pct": 86.36,
+          "hits_at_025": 62,
+          "rate_at_025_pct": 93.94
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 28,
+          "rate_at_thresh_pct": 73.68,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 84,
+          "rate_at_thresh_pct": 64.62,
+          "hits_at_025": 118,
+          "rate_at_025_pct": 90.77
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 32,
+          "rate_at_thresh_pct": 45.07,
+          "hits_at_025": 57,
+          "rate_at_025_pct": 80.28
+        },
+        "dup_frames_025": 31,
+        "total_dup_pairs_025": 33
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 585,
+          "rate_at_thresh_pct": 86.67,
+          "hits_at_025": 649,
+          "rate_at_025_pct": 96.15
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 76.32,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 5,
+          "rate_at_thresh_pct": 27.78,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 13,
+          "rate_at_thresh_pct": 43.33,
+          "hits_at_025": 20,
+          "rate_at_025_pct": 66.67
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 453,
+          "rate_at_thresh_pct": 95.17,
+          "hits_at_025": 469,
+          "rate_at_025_pct": 98.53
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 94,
+          "rate_at_thresh_pct": 63.09,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 16,
+          "rate_at_thresh_pct": 84.21,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 57,
+          "rate_at_thresh_pct": 86.36,
+          "hits_at_025": 62,
+          "rate_at_025_pct": 93.94
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 28,
+          "rate_at_thresh_pct": 73.68,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 84,
+          "rate_at_thresh_pct": 64.62,
+          "hits_at_025": 118,
+          "rate_at_025_pct": 90.77
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 32,
+          "rate_at_thresh_pct": 45.07,
+          "hits_at_025": 57,
+          "rate_at_025_pct": 80.28
+        },
+        "dup_frames_025": 422,
+        "total_dup_pairs_025": 424
+      }
+    },
+    {
+      "exp_id": "EXP-02B",
+      "hypothesis": "Modificar únicamente la resolución de inferencia a imgsz=480 (manteniendo nms=False, umbral=0.70).",
+      "parameters": {
+        "imgsz": 480,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 20.19,
+        "p50_ms": 19.53,
+        "p95_ms": 22.97,
+        "fps": 49.53
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 205,
+          "rate_at_thresh_pct": 73.48,
+          "hits_at_025": 259,
+          "rate_at_025_pct": 92.83
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 76.32,
+          "hits_at_025": 69,
+          "rate_at_025_pct": 90.79
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 8,
+          "rate_at_thresh_pct": 44.44,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 17,
+          "rate_at_thresh_pct": 56.67,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 57,
+          "rate_at_thresh_pct": 71.25,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 109,
+          "rate_at_thresh_pct": 73.15,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 94.74,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 60,
+          "rate_at_thresh_pct": 90.91,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 60.53,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 103,
+          "rate_at_thresh_pct": 79.23,
+          "hits_at_025": 120,
+          "rate_at_025_pct": 92.31
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 31,
+          "rate_at_thresh_pct": 43.66,
+          "hits_at_025": 62,
+          "rate_at_025_pct": 87.32
+        },
+        "dup_frames_025": 34,
+        "total_dup_pairs_025": 37
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 601,
+          "rate_at_thresh_pct": 89.04,
+          "hits_at_025": 655,
+          "rate_at_025_pct": 97.04
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 76.32,
+          "hits_at_025": 69,
+          "rate_at_025_pct": 90.79
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 8,
+          "rate_at_thresh_pct": 44.44,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 17,
+          "rate_at_thresh_pct": 56.67,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 453,
+          "rate_at_thresh_pct": 95.17,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 109,
+          "rate_at_thresh_pct": 73.15,
+          "hits_at_025": 137,
+          "rate_at_025_pct": 91.95
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 94.74,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 60,
+          "rate_at_thresh_pct": 90.91,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 60.53,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 103,
+          "rate_at_thresh_pct": 79.23,
+          "hits_at_025": 120,
+          "rate_at_025_pct": 92.31
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 31,
+          "rate_at_thresh_pct": 43.66,
+          "hits_at_025": 62,
+          "rate_at_025_pct": 87.32
+        },
+        "dup_frames_025": 34,
+        "total_dup_pairs_025": 37
+      }
+    },
+    {
+      "exp_id": "EXP-02C",
+      "hypothesis": "Modificar únicamente la resolución de inferencia a imgsz=960 (manteniendo nms=False, umbral=0.70).",
+      "parameters": {
+        "imgsz": 960,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 36.39,
+        "p50_ms": 37.93,
+        "p95_ms": 39.81,
+        "fps": 27.48
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 139,
+          "rate_at_thresh_pct": 49.82,
+          "hits_at_025": 224,
+          "rate_at_025_pct": 80.29
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 33,
+          "rate_at_thresh_pct": 43.42,
+          "hits_at_025": 52,
+          "rate_at_025_pct": 68.42
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 3,
+          "rate_at_thresh_pct": 16.67,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 12,
+          "rate_at_thresh_pct": 40.0,
+          "hits_at_025": 26,
+          "rate_at_025_pct": 86.67
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 40,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 70,
+          "rate_at_025_pct": 87.5
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 76,
+          "rate_at_thresh_pct": 51.01,
+          "hits_at_025": 121,
+          "rate_at_025_pct": 81.21
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 16,
+          "rate_at_thresh_pct": 84.21,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 49,
+          "rate_at_thresh_pct": 74.24,
+          "hits_at_025": 63,
+          "rate_at_025_pct": 95.45
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 23.68,
+          "hits_at_025": 20,
+          "rate_at_025_pct": 52.63
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 68,
+          "rate_at_thresh_pct": 52.31,
+          "hits_at_025": 107,
+          "rate_at_025_pct": 82.31
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 12,
+          "rate_at_thresh_pct": 16.9,
+          "hits_at_025": 41,
+          "rate_at_025_pct": 57.75
+        },
+        "dup_frames_025": 50,
+        "total_dup_pairs_025": 53
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 535,
+          "rate_at_thresh_pct": 79.26,
+          "hits_at_025": 620,
+          "rate_at_025_pct": 91.85
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 33,
+          "rate_at_thresh_pct": 43.42,
+          "hits_at_025": 52,
+          "rate_at_025_pct": 68.42
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 3,
+          "rate_at_thresh_pct": 16.67,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 12,
+          "rate_at_thresh_pct": 40.0,
+          "hits_at_025": 26,
+          "rate_at_025_pct": 86.67
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 436,
+          "rate_at_thresh_pct": 91.6,
+          "hits_at_025": 466,
+          "rate_at_025_pct": 97.9
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 76,
+          "rate_at_thresh_pct": 51.01,
+          "hits_at_025": 121,
+          "rate_at_025_pct": 81.21
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 16,
+          "rate_at_thresh_pct": 84.21,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 49,
+          "rate_at_thresh_pct": 74.24,
+          "hits_at_025": 63,
+          "rate_at_025_pct": 95.45
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 23.68,
+          "hits_at_025": 20,
+          "rate_at_025_pct": 52.63
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 68,
+          "rate_at_thresh_pct": 52.31,
+          "hits_at_025": 107,
+          "rate_at_025_pct": 82.31
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 12,
+          "rate_at_thresh_pct": 16.9,
+          "hits_at_025": 41,
+          "rate_at_025_pct": 57.75
+        },
+        "dup_frames_025": 50,
+        "total_dup_pairs_025": 53
+      }
+    },
+    {
+      "exp_id": "EXP-03",
+      "hypothesis": "Activar la rama one2many nativa de YOLO26x mediante nms=True (manteniendo imgsz=640, umbral=0.70).",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": true,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": false
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 21.5,
+        "p50_ms": 21.1,
+        "p95_ms": 25.45,
+        "fps": 46.51
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 218,
+          "rate_at_thresh_pct": 78.14,
+          "hits_at_025": 269,
+          "rate_at_025_pct": 96.42
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 61,
+          "rate_at_thresh_pct": 80.26,
+          "hits_at_025": 73,
+          "rate_at_025_pct": 96.05
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 11,
+          "rate_at_thresh_pct": 61.11,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 20,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 61,
+          "rate_at_thresh_pct": 76.25,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 114,
+          "rate_at_thresh_pct": 76.51,
+          "hits_at_025": 143,
+          "rate_at_025_pct": 95.97
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 94.74,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 59,
+          "rate_at_thresh_pct": 89.39,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 63.16,
+          "hits_at_025": 33,
+          "rate_at_025_pct": 86.84
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 104,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 123,
+          "rate_at_025_pct": 94.62
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 40,
+          "rate_at_thresh_pct": 56.34,
+          "hits_at_025": 68,
+          "rate_at_025_pct": 95.77
+        },
+        "dup_frames_025": 18,
+        "total_dup_pairs_025": 19
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 614,
+          "rate_at_thresh_pct": 90.96,
+          "hits_at_025": 665,
+          "rate_at_025_pct": 98.52
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 61,
+          "rate_at_thresh_pct": 80.26,
+          "hits_at_025": 73,
+          "rate_at_025_pct": 96.05
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 11,
+          "rate_at_thresh_pct": 61.11,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 20,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 457,
+          "rate_at_thresh_pct": 96.01,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 114,
+          "rate_at_thresh_pct": 76.51,
+          "hits_at_025": 143,
+          "rate_at_025_pct": 95.97
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 18,
+          "rate_at_thresh_pct": 94.74,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 59,
+          "rate_at_thresh_pct": 89.39,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 63.16,
+          "hits_at_025": 33,
+          "rate_at_025_pct": 86.84
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 104,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 123,
+          "rate_at_025_pct": 94.62
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 40,
+          "rate_at_thresh_pct": 56.34,
+          "hits_at_025": 68,
+          "rate_at_025_pct": 95.77
+        },
+        "dup_frames_025": 18,
+        "total_dup_pairs_025": 19
+      }
+    },
+    {
+      "exp_id": "EXP-04A",
+      "hypothesis": "Aplicar ecualización adaptativa de contraste CLAHE en canal L* (CIELAB) antes de inferir (imgsz=640, nms=False).",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "CLAHE_LAB_2.0",
+        "dedup": false
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 26.94,
+        "p50_ms": 24.63,
+        "p95_ms": 34.42,
+        "fps": 37.12
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 197,
+          "rate_at_thresh_pct": 70.61,
+          "hits_at_025": 256,
+          "rate_at_025_pct": 91.76
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 76.32,
+          "hits_at_025": 67,
+          "rate_at_025_pct": 88.16
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 16,
+          "rate_at_025_pct": 88.89
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 63.33,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 56,
+          "rate_at_thresh_pct": 70.0,
+          "hits_at_025": 79,
+          "rate_at_025_pct": 98.75
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 99,
+          "rate_at_thresh_pct": 66.44,
+          "hits_at_025": 133,
+          "rate_at_025_pct": 89.26
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 60,
+          "rate_at_thresh_pct": 90.91,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 13,
+          "rate_at_thresh_pct": 34.21,
+          "hits_at_025": 24,
+          "rate_at_025_pct": 63.16
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 92,
+          "rate_at_thresh_pct": 70.77,
+          "hits_at_025": 116,
+          "rate_at_025_pct": 89.23
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 35,
+          "rate_at_thresh_pct": 49.3,
+          "hits_at_025": 63,
+          "rate_at_025_pct": 88.73
+        },
+        "dup_frames_025": 47,
+        "total_dup_pairs_025": 55
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 593,
+          "rate_at_thresh_pct": 87.85,
+          "hits_at_025": 652,
+          "rate_at_025_pct": 96.59
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 58,
+          "rate_at_thresh_pct": 76.32,
+          "hits_at_025": 67,
+          "rate_at_025_pct": 88.16
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 16,
+          "rate_at_025_pct": 88.89
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 63.33,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 452,
+          "rate_at_thresh_pct": 94.96,
+          "hits_at_025": 475,
+          "rate_at_025_pct": 99.79
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 99,
+          "rate_at_thresh_pct": 66.44,
+          "hits_at_025": 133,
+          "rate_at_025_pct": 89.26
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 60,
+          "rate_at_thresh_pct": 90.91,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 13,
+          "rate_at_thresh_pct": 34.21,
+          "hits_at_025": 24,
+          "rate_at_025_pct": 63.16
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 92,
+          "rate_at_thresh_pct": 70.77,
+          "hits_at_025": 116,
+          "rate_at_025_pct": 89.23
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 35,
+          "rate_at_thresh_pct": 49.3,
+          "hits_at_025": 63,
+          "rate_at_025_pct": 88.73
+        },
+        "dup_frames_025": 47,
+        "total_dup_pairs_025": 55
+      }
+    },
+    {
+      "exp_id": "EXP-04B",
+      "hypothesis": "Aplicar realce de bordes Unsharp Masking (sigma=1.2, amount=1.0) antes de inferir (imgsz=640, nms=False).",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "UNSHARP_1.2_1.0",
+        "dedup": false
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 21.73,
+        "p50_ms": 21.26,
+        "p95_ms": 25.85,
+        "fps": 46.02
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 193,
+          "rate_at_thresh_pct": 69.18,
+          "hits_at_025": 261,
+          "rate_at_025_pct": 93.55
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 53,
+          "rate_at_thresh_pct": 69.74,
+          "hits_at_025": 68,
+          "rate_at_025_pct": 89.47
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 6,
+          "rate_at_thresh_pct": 33.33,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 14,
+          "rate_at_thresh_pct": 46.67,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 55,
+          "rate_at_thresh_pct": 68.75,
+          "hits_at_025": 79,
+          "rate_at_025_pct": 98.75
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 101,
+          "rate_at_thresh_pct": 67.79,
+          "hits_at_025": 140,
+          "rate_at_025_pct": 93.96
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 57,
+          "rate_at_thresh_pct": 86.36,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 16,
+          "rate_at_thresh_pct": 42.11,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 76.32
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 89,
+          "rate_at_thresh_pct": 68.46,
+          "hits_at_025": 121,
+          "rate_at_025_pct": 93.08
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 34,
+          "rate_at_thresh_pct": 47.89,
+          "hits_at_025": 63,
+          "rate_at_025_pct": 88.73
+        },
+        "dup_frames_025": 55,
+        "total_dup_pairs_025": 58
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 589,
+          "rate_at_thresh_pct": 87.26,
+          "hits_at_025": 657,
+          "rate_at_025_pct": 97.33
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 53,
+          "rate_at_thresh_pct": 69.74,
+          "hits_at_025": 68,
+          "rate_at_025_pct": 89.47
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 6,
+          "rate_at_thresh_pct": 33.33,
+          "hits_at_025": 13,
+          "rate_at_025_pct": 72.22
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 14,
+          "rate_at_thresh_pct": 46.67,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 451,
+          "rate_at_thresh_pct": 94.75,
+          "hits_at_025": 475,
+          "rate_at_025_pct": 99.79
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 101,
+          "rate_at_thresh_pct": 67.79,
+          "hits_at_025": 140,
+          "rate_at_025_pct": 93.96
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 57,
+          "rate_at_thresh_pct": 86.36,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 16,
+          "rate_at_thresh_pct": 42.11,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 76.32
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 89,
+          "rate_at_thresh_pct": 68.46,
+          "hits_at_025": 121,
+          "rate_at_025_pct": 93.08
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 34,
+          "rate_at_thresh_pct": 47.89,
+          "hits_at_025": 63,
+          "rate_at_025_pct": 88.73
+        },
+        "dup_frames_025": 55,
+        "total_dup_pairs_025": 58
+      }
+    },
+    {
+      "exp_id": "EXP-05",
+      "hypothesis": "Aplicar deduplicación espacial agnóstica de clase (IoU>=0.55) con consolidación de probabilidad inter-clase sobre nms=False.",
+      "parameters": {
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": true,
+        "fuse_class_prob": true
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 20.27,
+        "p50_ms": 20.2,
+        "p95_ms": 22.51,
+        "fps": 49.33
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 205,
+          "rate_at_thresh_pct": 73.48,
+          "hits_at_025": 259,
+          "rate_at_025_pct": 92.83
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 55,
+          "rate_at_thresh_pct": 72.37,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 85.53
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 20,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 59,
+          "rate_at_thresh_pct": 73.75,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 107,
+          "rate_at_thresh_pct": 71.81,
+          "hits_at_025": 138,
+          "rate_at_025_pct": 92.62
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 99,
+          "rate_at_thresh_pct": 76.15,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 34,
+          "rate_at_thresh_pct": 47.89,
+          "hits_at_025": 60,
+          "rate_at_025_pct": 84.51
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 601,
+          "rate_at_thresh_pct": 89.04,
+          "hits_at_025": 655,
+          "rate_at_025_pct": 97.04
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 55,
+          "rate_at_thresh_pct": 72.37,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 85.53
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 9,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 20,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 455,
+          "rate_at_thresh_pct": 95.59,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 107,
+          "rate_at_thresh_pct": 71.81,
+          "hits_at_025": 138,
+          "rate_at_025_pct": 92.62
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 50.0,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 78.95
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 99,
+          "rate_at_thresh_pct": 76.15,
+          "hits_at_025": 122,
+          "rate_at_025_pct": 93.85
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 34,
+          "rate_at_thresh_pct": 47.89,
+          "hits_at_025": 60,
+          "rate_at_025_pct": 84.51
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      }
+    },
+    {
+      "exp_id": "EXP-06",
+      "hypothesis": "Estrategia multiescala condicional NMS-Free (imgsz=640 + sonda auxiliar imgsz=384 ante candidatos débiles/ausentes + deduplicación inter-clase).",
+      "parameters": {
+        "imgsz": "640+384_cond",
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": true
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 30.69,
+        "p50_ms": 23.91,
+        "p95_ms": 44.85,
+        "fps": 32.58
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 232,
+          "rate_at_thresh_pct": 83.15,
+          "hits_at_025": 270,
+          "rate_at_025_pct": 96.77
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 64,
+          "rate_at_thresh_pct": 84.21,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 10,
+          "rate_at_thresh_pct": 55.56,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 22,
+          "rate_at_thresh_pct": 73.33,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 66,
+          "rate_at_thresh_pct": 82.5,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 120,
+          "rate_at_thresh_pct": 80.54,
+          "hits_at_025": 143,
+          "rate_at_025_pct": 95.97
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 28,
+          "rate_at_thresh_pct": 73.68,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 115,
+          "rate_at_thresh_pct": 88.46,
+          "hits_at_025": 126,
+          "rate_at_025_pct": 96.92
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 41,
+          "rate_at_thresh_pct": 57.75,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 92.96
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 628,
+          "rate_at_thresh_pct": 93.04,
+          "hits_at_025": 666,
+          "rate_at_025_pct": 98.67
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 64,
+          "rate_at_thresh_pct": 84.21,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 10,
+          "rate_at_thresh_pct": 55.56,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 22,
+          "rate_at_thresh_pct": 73.33,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 462,
+          "rate_at_thresh_pct": 97.06,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 120,
+          "rate_at_thresh_pct": 80.54,
+          "hits_at_025": 143,
+          "rate_at_025_pct": 95.97
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 28,
+          "rate_at_thresh_pct": 73.68,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 115,
+          "rate_at_thresh_pct": 88.46,
+          "hits_at_025": 126,
+          "rate_at_025_pct": 96.92
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 41,
+          "rate_at_thresh_pct": 57.75,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 92.96
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      }
+    },
+    {
+      "exp_id": "EXP-07",
+      "hypothesis": "Rama one2many (nms=True) con inferencia multiescala condicional (640 + 384) y deduplicación inter-clase a umbral 0.70.",
+      "parameters": {
+        "imgsz": "640+384_cond",
+        "quantize": 16,
+        "nms": true,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": true
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 30.64,
+        "p50_ms": 22.93,
+        "p95_ms": 48.63,
+        "fps": 32.64
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 244,
+          "rate_at_thresh_pct": 87.46,
+          "hits_at_025": 272,
+          "rate_at_025_pct": 97.49
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 68,
+          "rate_at_thresh_pct": 89.47,
+          "hits_at_025": 73,
+          "rate_at_025_pct": 96.05
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 14,
+          "rate_at_thresh_pct": 77.78,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 76.67,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 70,
+          "rate_at_thresh_pct": 87.5,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 128,
+          "rate_at_thresh_pct": 85.91,
+          "hits_at_025": 145,
+          "rate_at_025_pct": 97.32
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 30,
+          "rate_at_thresh_pct": 78.95,
+          "hits_at_025": 35,
+          "rate_at_025_pct": 92.11
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 116,
+          "rate_at_thresh_pct": 89.23,
+          "hits_at_025": 125,
+          "rate_at_025_pct": 96.15
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 52,
+          "rate_at_thresh_pct": 73.24,
+          "hits_at_025": 69,
+          "rate_at_025_pct": 97.18
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 640,
+          "rate_at_thresh_pct": 94.81,
+          "hits_at_025": 668,
+          "rate_at_025_pct": 98.96
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 68,
+          "rate_at_thresh_pct": 89.47,
+          "hits_at_025": 73,
+          "rate_at_025_pct": 96.05
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 14,
+          "rate_at_thresh_pct": 77.78,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 23,
+          "rate_at_thresh_pct": 76.67,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 466,
+          "rate_at_thresh_pct": 97.9,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 128,
+          "rate_at_thresh_pct": 85.91,
+          "hits_at_025": 145,
+          "rate_at_025_pct": 97.32
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 30,
+          "rate_at_thresh_pct": 78.95,
+          "hits_at_025": 35,
+          "rate_at_025_pct": 92.11
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 116,
+          "rate_at_thresh_pct": 89.23,
+          "hits_at_025": 125,
+          "rate_at_025_pct": 96.15
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 52,
+          "rate_at_thresh_pct": 73.24,
+          "hits_at_025": 69,
+          "rate_at_025_pct": 97.18
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      }
+    },
+    {
+      "exp_id": "EXP-08",
+      "hypothesis": "Estrategia multiescala condicional NMS-Free (640+384 + deduplicación inter-clase) con umbral operativo calibrado a 0.55.",
+      "parameters": {
+        "imgsz": "640+384_cond",
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.55,
+        "preprocess": "none",
+        "dedup": true
+      },
+      "eval_threshold": 0.55,
+      "latency": {
+        "mean_ms": 30.67,
+        "p50_ms": 27.2,
+        "p95_ms": 46.02,
+        "fps": 32.61
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 248,
+          "rate_at_thresh_pct": 88.89,
+          "hits_at_025": 270,
+          "rate_at_025_pct": 96.77
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 67,
+          "rate_at_thresh_pct": 88.16,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 13,
+          "rate_at_thresh_pct": 72.22,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 72,
+          "rate_at_thresh_pct": 90.0,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 132,
+          "rate_at_thresh_pct": 88.59,
+          "hits_at_025": 143,
+          "rate_at_025_pct": 95.97
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 31,
+          "rate_at_thresh_pct": 81.58,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 121,
+          "rate_at_thresh_pct": 93.08,
+          "hits_at_025": 126,
+          "rate_at_025_pct": 96.92
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 50,
+          "rate_at_thresh_pct": 70.42,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 92.96
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 644,
+          "rate_at_thresh_pct": 95.41,
+          "hits_at_025": 666,
+          "rate_at_025_pct": 98.67
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 67,
+          "rate_at_thresh_pct": 88.16,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 13,
+          "rate_at_thresh_pct": 72.22,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 468,
+          "rate_at_thresh_pct": 98.32,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 132,
+          "rate_at_thresh_pct": 88.59,
+          "hits_at_025": 143,
+          "rate_at_025_pct": 95.97
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 31,
+          "rate_at_thresh_pct": 81.58,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 121,
+          "rate_at_thresh_pct": 93.08,
+          "hits_at_025": 126,
+          "rate_at_025_pct": 96.92
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 50,
+          "rate_at_thresh_pct": 70.42,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 92.96
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      }
+    },
+    {
+      "exp_id": "EXP-09",
+      "hypothesis": "Rama one2many (nms=True) multiescala condicional (640+384 + deduplicación inter-clase) con umbral operativo calibrado a 0.55.",
+      "parameters": {
+        "imgsz": "640+384_cond",
+        "quantize": 16,
+        "nms": true,
+        "threshold": 0.55,
+        "preprocess": "none",
+        "dedup": true
+      },
+      "eval_threshold": 0.55,
+      "latency": {
+        "mean_ms": 29.86,
+        "p50_ms": 22.41,
+        "p95_ms": 44.78,
+        "fps": 33.49
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 261,
+          "rate_at_thresh_pct": 93.55,
+          "hits_at_025": 272,
+          "rate_at_025_pct": 97.49
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 71,
+          "rate_at_thresh_pct": 93.42,
+          "hits_at_025": 73,
+          "rate_at_025_pct": 96.05
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 14,
+          "rate_at_thresh_pct": 77.78,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 27,
+          "rate_at_thresh_pct": 90.0,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 77,
+          "rate_at_thresh_pct": 96.25,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 138,
+          "rate_at_thresh_pct": 92.62,
+          "hits_at_025": 145,
+          "rate_at_025_pct": 97.32
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 33,
+          "rate_at_thresh_pct": 86.84,
+          "hits_at_025": 35,
+          "rate_at_025_pct": 92.11
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 119,
+          "rate_at_thresh_pct": 91.54,
+          "hits_at_025": 125,
+          "rate_at_025_pct": 96.15
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 91.55,
+          "hits_at_025": 69,
+          "rate_at_025_pct": 97.18
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 657,
+          "rate_at_thresh_pct": 97.33,
+          "hits_at_025": 668,
+          "rate_at_025_pct": 98.96
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 71,
+          "rate_at_thresh_pct": 93.42,
+          "hits_at_025": 73,
+          "rate_at_025_pct": 96.05
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 14,
+          "rate_at_thresh_pct": 77.78,
+          "hits_at_025": 14,
+          "rate_at_025_pct": 77.78
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 27,
+          "rate_at_thresh_pct": 90.0,
+          "hits_at_025": 29,
+          "rate_at_025_pct": 96.67
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 473,
+          "rate_at_thresh_pct": 99.37,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 138,
+          "rate_at_thresh_pct": 92.62,
+          "hits_at_025": 145,
+          "rate_at_025_pct": 97.32
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 63,
+          "rate_at_thresh_pct": 95.45,
+          "hits_at_025": 65,
+          "rate_at_025_pct": 98.48
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 33,
+          "rate_at_thresh_pct": 86.84,
+          "hits_at_025": 35,
+          "rate_at_025_pct": 92.11
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 119,
+          "rate_at_thresh_pct": 91.54,
+          "hits_at_025": 125,
+          "rate_at_025_pct": 96.15
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 91.55,
+          "hits_at_025": 69,
+          "rate_at_025_pct": 97.18
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      }
+    },
+    {
+      "exp_id": "EXP-10",
+      "hypothesis": "NMS-Free (nms=False) + sonda condicional imgsz=384 + deduplicación espacial y consolidación de confianza intra/inter-escala a umbral 0.70.",
+      "parameters": {
+        "imgsz": "640+384_cond",
+        "quantize": 16,
+        "nms": false,
+        "threshold": 0.7,
+        "preprocess": "none",
+        "dedup": true,
+        "consensus": true
+      },
+      "eval_threshold": 0.7,
+      "latency": {
+        "mean_ms": 31.12,
+        "p50_ms": 23.39,
+        "p95_ms": 47.24,
+        "fps": 32.13
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_at_thresh": 241,
+          "rate_at_thresh_pct": 86.38,
+          "hits_at_025": 271,
+          "rate_at_025_pct": 97.13
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 85.53,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 12,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_at_thresh": 71,
+          "rate_at_thresh_pct": 88.75,
+          "hits_at_025": 80,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 127,
+          "rate_at_thresh_pct": 85.23,
+          "hits_at_025": 144,
+          "rate_at_025_pct": 96.64
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 28,
+          "rate_at_thresh_pct": 73.68,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 117,
+          "rate_at_thresh_pct": 90.0,
+          "hits_at_025": 126,
+          "rate_at_025_pct": 96.92
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 47,
+          "rate_at_thresh_pct": 66.2,
+          "hits_at_025": 67,
+          "rate_at_025_pct": 94.37
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_at_thresh": 637,
+          "rate_at_thresh_pct": 94.37,
+          "hits_at_025": 667,
+          "rate_at_025_pct": 98.81
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 85.53,
+          "hits_at_025": 72,
+          "rate_at_025_pct": 94.74
+        },
+        "frontal_buses": {
+          "total": 18,
+          "hits_at_thresh": 12,
+          "rate_at_thresh_pct": 66.67,
+          "hits_at_025": 15,
+          "rate_at_025_pct": 83.33
+        },
+        "frontal_and_oblique_school_bus": {
+          "total": 30,
+          "hits_at_thresh": 24,
+          "rate_at_thresh_pct": 80.0,
+          "hits_at_025": 30,
+          "rate_at_025_pct": 100.0
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_at_thresh": 467,
+          "rate_at_thresh_pct": 98.11,
+          "hits_at_025": 476,
+          "rate_at_025_pct": 100.0
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_at_thresh": 127,
+          "rate_at_thresh_pct": 85.23,
+          "hits_at_025": 144,
+          "rate_at_025_pct": 96.64
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_at_thresh": 19,
+          "rate_at_thresh_pct": 100.0,
+          "hits_at_025": 19,
+          "rate_at_025_pct": 100.0
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_at_thresh": 65,
+          "rate_at_thresh_pct": 98.48,
+          "hits_at_025": 66,
+          "rate_at_025_pct": 100.0
+        },
+        "low_light": {
+          "total": 38,
+          "hits_at_thresh": 28,
+          "rate_at_thresh_pct": 73.68,
+          "hits_at_025": 34,
+          "rate_at_025_pct": 89.47
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_at_thresh": 117,
+          "rate_at_thresh_pct": 90.0,
+          "hits_at_025": 126,
+          "rate_at_025_pct": 96.92
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_at_thresh": 47,
+          "rate_at_thresh_pct": 66.2,
+          "hits_at_025": 67,
+          "rate_at_025_pct": 94.37
+        },
+        "dup_frames_025": 0,
+        "total_dup_pairs_025": 0
+      }
+    }
+  ]
+}

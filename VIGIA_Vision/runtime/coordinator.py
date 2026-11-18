@@ -31,8 +31,13 @@ Política de persistencia en la Etapa 1 (Sección 5.8):
 
 from __future__ import annotations
 
+import inspect
 import logging
-from typing import Any, Callable, Dict, List, Mapping, Optional, Protocol, Sequence, runtime_checkable
+import threading
+import time
+from collections import deque
+from datetime import datetime, timezone
+from typing import Any, Callable, Deque, Dict, List, Mapping, Optional, Protocol, Sequence, runtime_checkable
 from uuid import UUID
 
 from VIGIA_Core.domain.vision_result import VisionResult, VisionStatus
@@ -50,8 +55,16 @@ from VIGIA_Vision.config.topology_validator import (
     TopologyValidationError,
     TopologyValidator,
 )
+from VIGIA_Vision.detection.color_classifier import (
+    ColorClassificationStatus,
+    ColorRegionQuality,
+    IVehicleColorClassifier,
+    VehicleColor,
+    VehicleColorClassifier,
+    VehicleColorResult,
+    load_color_config_from_env,
+)
 from VIGIA_Vision.detection.models import (
-    CaptureReadResult,
     ObservationMetrics,
     RawVehicleDetection,
     VisionObservationEnvelope,
@@ -166,6 +179,8 @@ class VisionEngineCoordinator:
         source_factory: Optional[Callable[[Any], IFrameCaptureSource]] = None,
         consumers: Optional[Sequence[IObservationConsumer]] = None,
         new_event_predicate: Optional[Callable[[str, Sequence[RawVehicleDetection]], bool]] = None,
+        max_inference_wait_ms: Optional[float] = None,
+        color_classifier: Optional[IVehicleColorClassifier] = None,
     ) -> None:
         if not isinstance(topology_validator, TopologyValidator):
             raise TypeError("topology_validator debe ser una instancia de TopologyValidator.")
@@ -173,6 +188,11 @@ class VisionEngineCoordinator:
         self._validator = topology_validator
         self._settings = settings or VisionEngineSettings()
         self._detector: IVehicleDetector = detector or NullVehicleDetector()
+        self._color_classifier: IVehicleColorClassifier = (
+            color_classifier
+            if color_classifier is not None
+            else VehicleColorClassifier(load_color_config_from_env())
+        )
         self._detection_repository = detection_repository
         self._evidence_storage: IEvidenceStorageService = evidence_storage or LocalDiskEvidenceStorage(
             base_directory=self._settings.evidence_directory,
@@ -186,6 +206,23 @@ class VisionEngineCoordinator:
         self._topology: Optional[OperationalTopologyDTO] = None
         self._registry: Optional[CameraSourceRegistry] = None
         self._initialized: bool = False
+        self._max_inference_wait_ms: Optional[float] = max_inference_wait_ms
+        self._detector_supports_context: bool = self._check_detector_context_support(self._detector)
+        self._cam_metrics_lock = threading.Lock()
+        self._camera_metrics: Dict[str, Dict[str, Any]] = {}
+        self._color_metrics_lock = threading.Lock()
+        self._color_classified_total: int = 0
+        self._color_unknown_total: int = 0
+        self._color_error_total: int = 0
+        self._color_latency_ms_window: Deque[float] = deque(maxlen=120)
+
+    @staticmethod
+    def _check_detector_context_support(detector: IVehicleDetector) -> bool:
+        try:
+            sig = inspect.signature(detector.detect)
+            return "camera_code" in sig.parameters and "max_wait_ms" in sig.parameters
+        except (TypeError, ValueError):
+            return False
 
     @property
     def settings(self) -> VisionEngineSettings:
@@ -246,10 +283,155 @@ class VisionEngineCoordinator:
         return self._topology
 
     def shutdown(self) -> None:
-        """Cierra de manera idempotente todas las fuentes registradas."""
-        if self._registry is not None:
-            self._registry.release_all()
+        """Cierra de manera idempotente todas las fuentes registradas y libera el detector."""
         self._initialized = False
+        try:
+            if self._registry is not None:
+                self._registry.release_all()
+        except Exception as exc:
+            logger.warning("Error al liberar fuentes durante shutdown: %s", exc)
+        finally:
+            unload_fn = getattr(self._detector, "unload", None)
+            if callable(unload_fn):
+                try:
+                    unload_fn()
+                except Exception as exc:
+                    logger.warning("Error al liberar detector durante shutdown: %s", exc)
+
+    def _get_cam_metric_bucket(self, codigo_camara: str) -> Dict[str, Any]:
+        bucket = self._camera_metrics.get(codigo_camara)
+        if bucket is None:
+            bucket = {
+                "ingest_timestamps": deque(maxlen=60),
+                "processed_timestamps": deque(maxlen=60),
+                "ingest_count": 0,
+                "processed_count": 0,
+                "dropped_frames": 0,
+                "drop_reasons": {},
+                "last_drop_policy": None,
+                "last_queue_wait_ms": None,
+                "last_step_ms": None,
+                "last_frame_at": None,
+                "last_status": None,
+                "last_inference_model": None,
+            }
+            self._camera_metrics[codigo_camara] = bucket
+        return bucket
+
+    @staticmethod
+    def _compute_fps(timestamps: Deque[float], window_s: float = 10.0) -> float:
+        if len(timestamps) < 2:
+            return 0.0
+        now = time.monotonic()
+        recent = [t for t in timestamps if (now - t) <= window_s]
+        if len(recent) < 2:
+            return 0.0
+        span = recent[-1] - recent[0]
+        if span <= 0.0:
+            return 0.0
+        return round((len(recent) - 1) / span, 2)
+
+    def _record_camera_ingest(self, codigo_camara: str) -> None:
+        now = time.monotonic()
+        with self._cam_metrics_lock:
+            b = self._get_cam_metric_bucket(codigo_camara)
+            b["ingest_count"] += 1
+            b["ingest_timestamps"].append(now)
+
+    def _record_camera_drop(
+        self,
+        codigo_camara: str,
+        *,
+        reason: str,
+        policy: str,
+        wait_ms: Optional[float] = None,
+        status: Optional[str] = None,
+    ) -> None:
+        with self._cam_metrics_lock:
+            b = self._get_cam_metric_bucket(codigo_camara)
+            b["dropped_frames"] += 1
+            reasons = b["drop_reasons"]
+            reasons[reason] = int(reasons.get(reason, 0)) + 1
+            b["last_drop_policy"] = policy
+            if wait_ms is not None:
+                b["last_queue_wait_ms"] = round(wait_ms, 3)
+            if status is not None:
+                b["last_status"] = status
+
+    def _record_camera_processed(
+        self,
+        codigo_camara: str,
+        *,
+        step_ms: float,
+        queue_wait_ms: Optional[float],
+        status: str,
+        inference_model: Optional[str] = None,
+    ) -> None:
+        now = time.monotonic()
+        with self._cam_metrics_lock:
+            b = self._get_cam_metric_bucket(codigo_camara)
+            b["processed_count"] += 1
+            b["processed_timestamps"].append(now)
+            b["last_step_ms"] = round(step_ms, 3)
+            if queue_wait_ms is not None:
+                b["last_queue_wait_ms"] = round(queue_wait_ms, 3)
+            b["last_frame_at"] = datetime.now(timezone.utc).isoformat()
+            b["last_status"] = status
+            if inference_model is not None:
+                b["last_inference_model"] = inference_model
+
+    def get_operational_metrics(self) -> Dict[str, Any]:
+        """Retorna métricas operativas del motor de inferencia, cámaras, GPU y resiliencia."""
+        detector_fn = getattr(self._detector, "get_runtime_status", None)
+        detector_status = detector_fn() if callable(detector_fn) else {
+            "effective_model": type(self._detector).__name__,
+            "is_loaded": True,
+        }
+        effective_model = detector_status.get("effective_model")
+
+        cameras_snapshot: Dict[str, Dict[str, Any]] = {}
+        with self._cam_metrics_lock:
+            for code, b in self._camera_metrics.items():
+                cameras_snapshot[code] = {
+                    "ingest_count": b["ingest_count"],
+                    "processed_count": b["processed_count"],
+                    "ingest_fps": self._compute_fps(b["ingest_timestamps"]),
+                    "processed_fps": self._compute_fps(b["processed_timestamps"]),
+                    "dropped_frames": b["dropped_frames"],
+                    "drop_reasons": dict(b["drop_reasons"]),
+                    "last_drop_policy": b["last_drop_policy"],
+                    "last_queue_wait_ms": b["last_queue_wait_ms"],
+                    "last_step_ms": b["last_step_ms"],
+                    "last_frame_at": b["last_frame_at"],
+                    "last_status": b["last_status"],
+                    "effective_model": effective_model,
+                    "last_inference_model": b.get("last_inference_model") or effective_model,
+                }
+
+        with self._color_metrics_lock:
+            c_total = self._color_classified_total
+            c_unk = self._color_unknown_total
+            c_err = self._color_error_total
+            c_lat = list(self._color_latency_ms_window)
+
+        cfg_obj = getattr(self._color_classifier, "config", None)
+        color_enabled = bool(getattr(cfg_obj, "enabled", True))
+        mean_lat_ms = round(sum(c_lat) / len(c_lat), 3) if c_lat else 0.0
+
+        return {
+            "engine_initialized": self._initialized,
+            "temporal_fsm_integrated": False,
+            "detector": detector_status,
+            "color_classifier": {
+                "enabled": color_enabled,
+                "class_name": type(self._color_classifier).__name__,
+                "classified_total": c_total,
+                "unknown_total": c_unk,
+                "error_total": c_err,
+                "mean_latency_ms": mean_lat_ms,
+            },
+            "cameras": cameras_snapshot,
+        }
 
     def __enter__(self) -> "VisionEngineCoordinator":
         if not self._initialized:
@@ -263,7 +445,6 @@ class VisionEngineCoordinator:
         self,
         codigo_camara: str,
         persist_as_new_event: Optional[bool] = None,
-        read_result: Optional[CaptureReadResult] = None,
     ) -> Optional[VisionObservationEnvelope]:
         """
         Ejecuta un ciclo síncrono de observación para la cámara identificada por
@@ -280,10 +461,6 @@ class VisionEngineCoordinator:
             - Si es ``None``, se consulta ``new_event_predicate`` si fue inyectado;
               de lo contrario, por seguridad en la Etapa 1 (sin tracking) se
               evalúa como ``False`` para impedir persistir una fila por fotograma.
-        read_result : Optional[CaptureReadResult]
-            Resultado de lectura previamente adquirido de la fuente (por ejemplo,
-            por un ``CameraPullWorker``). Si se omite, se invoca directamente
-            ``slot.source.read_frame()``.
 
         Retorna
         -------
@@ -298,16 +475,32 @@ class VisionEngineCoordinator:
                 "El coordinador de visión no ha sido inicializado con una topología válida.",
             )
 
+        t_step0 = time.perf_counter()
         slot: BoundCameraSlot = self._registry.get_slot(codigo_camara)
-        read_res = read_result if read_result is not None else slot.source.read_frame()
+        read_res = slot.source.read_frame()
 
         # 1. Si un buffer push móvil indica que la secuencia vigente ya fue procesada,
         # omitir reprocesamiento sin declarar error técnico.
         if not read_res.ok and read_res.is_already_processed:
             return None
 
+        self._record_camera_ingest(slot.camera.codigo)
+
         # 2. Fallo de captura o fotograma vencido (TTL) -> CAMERA_ERROR
         if not read_res.ok or read_res.frame is None:
+            err_lower = (read_res.error_reason or "").lower()
+            is_stale = bool(
+                getattr(read_res, "is_expired", False)
+                or "expir" in err_lower
+                or "ttl" in err_lower
+            )
+            drop_reason = "STALE_FRAME_TTL" if is_stale else "CAPTURE_ERROR"
+            self._record_camera_drop(
+                slot.camera.codigo,
+                reason=drop_reason,
+                policy="DROP_ON_READ_ERROR",
+                status=VisionStatus.CAMERA_ERROR.value,
+            )
             vision_res = VisionResult(
                 status=VisionStatus.CAMERA_ERROR,
                 timestamp=read_res.captured_at,
@@ -336,6 +529,12 @@ class VisionEngineCoordinator:
             frame_w, frame_h = validate_bgr_frame(frame)
             pixel_roi = project_normalized_roi(slot.area, frame_w, frame_h)
         except (FrameValidationError, ValueError) as exc:
+            self._record_camera_drop(
+                slot.camera.codigo,
+                reason="INVALID_FRAME_OR_ROI",
+                policy="DROP_INVALID_FRAME",
+                status=VisionStatus.CAMERA_ERROR.value,
+            )
             vision_res = VisionResult(
                 status=VisionStatus.CAMERA_ERROR,
                 timestamp=read_res.captured_at,
@@ -354,13 +553,45 @@ class VisionEngineCoordinator:
 
         # 4. Ejecución aislada del detector de vehículos
         try:
-            raw_candidates = tuple(self._detector.detect(frame) or ())
+            if self._detector_supports_context:
+                raw_candidates = tuple(
+                    self._detector.detect(
+                        frame,
+                        camera_code=slot.camera.codigo,
+                        max_wait_ms=self._max_inference_wait_ms,
+                    )
+                    or ()
+                )
+            else:
+                raw_candidates = tuple(self._detector.detect(frame) or ())
         except Exception as exc:
-            logger.error(
-                "Error técnico de inferencia en cámara '%s': %s",
-                slot.camera.codigo,
-                exc,
-            )
+            is_bp = exc.__class__.__name__ == "InferenceBackpressureError"
+            if is_bp:
+                self._record_camera_drop(
+                    slot.camera.codigo,
+                    reason="GPU_BACKPRESSURE_TIMEOUT",
+                    policy="DROP_ON_GPU_BACKPRESSURE",
+                    wait_ms=self._max_inference_wait_ms,
+                    status=VisionStatus.VISION_ERROR.value,
+                )
+                logger.warning(
+                    "Frame descartado por saturación GPU en cámara '%s' (policy=DROP_ON_GPU_BACKPRESSURE, wait_ms=%s): %s",
+                    slot.camera.codigo,
+                    self._max_inference_wait_ms,
+                    exc,
+                )
+            else:
+                self._record_camera_drop(
+                    slot.camera.codigo,
+                    reason="INFERENCE_ERROR",
+                    policy="FAIL_SAFE_VISION_ERROR",
+                    status=VisionStatus.VISION_ERROR.value,
+                )
+                logger.error(
+                    "Error técnico de inferencia en cámara '%s': %s",
+                    slot.camera.codigo,
+                    exc,
+                )
             vision_res = VisionResult(
                 status=VisionStatus.VISION_ERROR,
                 timestamp=read_res.captured_at,
@@ -376,6 +607,19 @@ class VisionEngineCoordinator:
             )
             self._notify_consumers(envelope)
             return envelope
+
+        det_qwait = getattr(self._detector, "_last_queue_wait_ms", None)
+        det_inf_model = getattr(self._detector, "last_inference_model", None)
+        if not det_inf_model:
+            eff_path = getattr(self._detector, "effective_model_path", None)
+            det_inf_model = str(eff_path).split("\\")[-1].split("/")[-1] if eff_path else type(self._detector).__name__
+        self._record_camera_processed(
+            slot.camera.codigo,
+            step_ms=(time.perf_counter() - t_step0) * 1000.0,
+            queue_wait_ms=det_qwait if isinstance(det_qwait, (int, float)) else None,
+            status="PROCESSED",
+            inference_model=det_inf_model,
+        )
 
         # 5. Filtrado por umbral de confianza y pertenencia del centroide al ROI (RF-03)
         detections_in_roi, excluded_outside_roi = filter_detections_by_roi(
@@ -415,9 +659,35 @@ class VisionEngineCoordinator:
             self._notify_consumers(envelope)
             return envelope
 
-        # 7. Selección determinista del vehículo primario dentro del ROI
+        # 7. Clasificación modular de color para TODOS los vehículos en ROI (VISION-07B.1).
+        # Cada detección recibe su propio resultado cromático independiente sin contaminación cruzada.
+        enriched_detections = []
+        all_color_results = []
+        for det in detections_in_roi:
+            det_vehicle_type = map_raw_label_to_domain_vehicle_type(det.raw_label)
+            det_color_res = self._classify_vehicle_color(
+                frame=frame,
+                detection=det,
+                domain_vehicle_type=det_vehicle_type,
+                codigo_camara=slot.camera.codigo,
+            )
+            all_color_results.append(det_color_res)
+            enriched_detections.append(
+                RawVehicleDetection(
+                    bbox=det.bbox,
+                    confidence=det.confidence,
+                    raw_label=det.raw_label,
+                    detection_id=det.detection_id,
+                    track_id=det.track_id,
+                    vehicle_id=det.vehicle_id,
+                    color_result=det_color_res,
+                )
+            )
+
+        detections_in_roi = tuple(enriched_detections)
         primary = detections_in_roi[0]
         domain_vehicle_type = map_raw_label_to_domain_vehicle_type(primary.raw_label)
+        color_res = all_color_results[0]
 
         should_persist = (
             persist_as_new_event
@@ -462,6 +732,8 @@ class VisionEngineCoordinator:
             plate_confidence=None,
             evidence_path=orig_rel_path,
             error_message=None,
+            vehicle_color_pred=color_res.predominant_color.value,
+            vehicle_color_confidence=color_res.confidence,
         )
 
         # 8. Persistencia relacional con limpieza compensatoria ante fallo SQL
@@ -498,6 +770,8 @@ class VisionEngineCoordinator:
             frame_sequence=read_res.frame_sequence,
             original_evidence_path=orig_rel_path,
             annotated_evidence_path=annot_rel_path,
+            vehicle_color_result=color_res,
+            vehicle_color_results=tuple(all_color_results),
         )
         self._notify_consumers(envelope)
         return envelope
@@ -547,6 +821,86 @@ class VisionEngineCoordinator:
 
         return results
 
+    def _classify_vehicle_color(
+        self,
+        *,
+        frame: Any,
+        detection: RawVehicleDetection,
+        domain_vehicle_type: Optional[str],
+        codigo_camara: str,
+    ) -> VehicleColorResult:
+        """
+        Invoca el clasificador modular de color de forma aislada y fail-safe.
+        Cualquier excepción inesperada se registra y cae en ``UNKNOWN`` sin
+        interrumpir el ciclo de detección vehicular.
+        """
+        t0 = time.perf_counter()
+        try:
+            res = self._color_classifier.classify(
+                frame,
+                detection.bbox,
+                vehicle_class=domain_vehicle_type or detection.raw_label,
+                detection_confidence=detection.confidence,
+            )
+            elapsed_ms = (time.perf_counter() - t0) * 1000.0
+            with self._color_metrics_lock:
+                self._color_classified_total += 1
+                if res.predominant_color == VehicleColor.UNKNOWN:
+                    self._color_unknown_total += 1
+                self._color_latency_ms_window.append(elapsed_ms)
+            return res
+        except Exception as exc:
+            elapsed_ms = (time.perf_counter() - t0) * 1000.0
+            logger.warning(
+                "Fallo no bloqueante en clasificación de color vehicular para cámara '%s': %s",
+                codigo_camara,
+                exc,
+            )
+            with self._color_metrics_lock:
+                self._color_error_total += 1
+                self._color_unknown_total += 1
+                self._color_latency_ms_window.append(elapsed_ms)
+            return VehicleColorResult(
+                predominant_color=VehicleColor.UNKNOWN,
+                confidence=0.0,
+                status=ColorClassificationStatus.CLASSIFIER_ERROR,
+                quality=ColorRegionQuality(
+                    bbox_area_px=detection.bbox.area,
+                    usable_body_pixels=0,
+                    usable_pixel_ratio=0.0,
+                    mean_luminance_l=0.0,
+                    std_luminance_l=0.0,
+                    mean_saturation_s=0.0,
+                    mean_chroma_ab=0.0,
+                    shadow_ratio=0.0,
+                    glare_ratio=0.0,
+                    background_excluded_ratio=0.0,
+                    sharpness_laplacian=0.0,
+                    is_sufficient=False,
+                    limitations=("CLASSIFIER_EXCEPTION_FALLBACK",),
+                ),
+                category_scores={VehicleColor.UNKNOWN.value: 1.0},
+                vehicle_class=domain_vehicle_type or detection.raw_label,
+                detection_confidence=detection.confidence,
+                processing_time_ms=elapsed_ms,
+            )
+
+    def _classify_primary_vehicle_color(
+        self,
+        *,
+        frame: Any,
+        primary: RawVehicleDetection,
+        domain_vehicle_type: Optional[str],
+        codigo_camara: str,
+    ) -> VehicleColorResult:
+        """Alias retrocompatible para clasificación del vehículo primario."""
+        return self._classify_vehicle_color(
+            frame=frame,
+            detection=primary,
+            domain_vehicle_type=domain_vehicle_type,
+            codigo_camara=codigo_camara,
+        )
+
     @staticmethod
     def _build_envelope(
         slot: BoundCameraSlot,
@@ -557,6 +911,8 @@ class VisionEngineCoordinator:
         frame_sequence: Optional[int] = None,
         original_evidence_path: Optional[str] = None,
         annotated_evidence_path: Optional[str] = None,
+        vehicle_color_result: Optional[Any] = None,
+        vehicle_color_results: Optional[Sequence[Any]] = None,
     ) -> VisionObservationEnvelope:
         return VisionObservationEnvelope(
             vision_result=vision_result,
@@ -571,6 +927,8 @@ class VisionEngineCoordinator:
             frame_sequence=frame_sequence,
             original_evidence_path=original_evidence_path,
             annotated_evidence_path=annotated_evidence_path,
+            vehicle_color_result=vehicle_color_result,
+            vehicle_color_results=tuple(vehicle_color_results or ()),
         )
 
     def _notify_consumers(self, envelope: VisionObservationEnvelope) -> None:

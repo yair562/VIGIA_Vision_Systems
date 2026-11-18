@@ -1,0 +1,14 @@
+# Dependencias aisladas para el sandbox experimental VIGIA-ML
+# Compatible con Python 3.11+ y el entorno científico ya validado.
+numpy>=1.26,<3.0
+opencv-python>=4.9,<5.0
+pandas>=2.1,<3.0
+scikit-learn>=1.5,<2.0
+PyYAML>=6.0,<7.0
+matplotlib>=3.8,<4.0
+Pillow>=10.0,<13.0
+
+# Opcionales recomendadas para notebooks academicos y ejecucion de pruebas via pytest
+jupyterlab>=4.0
+nbformat>=5.9
+pytest>=8.0

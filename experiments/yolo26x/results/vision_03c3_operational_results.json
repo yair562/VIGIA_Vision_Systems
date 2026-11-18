@@ -1,0 +1,506 @@
+{
+  "generated_at_utc": "2026-11-15T04:09:48.341248+00:00",
+  "hardware": {
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "total_vram_mb": 6140.5,
+    "torch_version": "2.6.0+cu124",
+    "ultralytics_version": "8.4.171"
+  },
+  "phase_b_inventory": {
+    "evidencias_vigia_corpus": {
+      "total_orig_images": 604,
+      "total_annot_images": 604,
+      "corrupt_or_unreadable": 0,
+      "unique_sha256": 208,
+      "duplicate_groups": 3,
+      "duplicate_extra_files": 396,
+      "by_date": {
+        "20261101": 1,
+        "20261102": 1,
+        "20261104": 10,
+        "20261105": 412,
+        "20261106": 14,
+        "20261110": 10,
+        "20261111": 11,
+        "20261114": 145
+      },
+      "by_camera": {
+        "CAM-03": 77,
+        "CAM-04": 38,
+        "CAM-ENTRADA": 238,
+        "CAM-SALIDA": 251
+      },
+      "resolutions": {
+        "810x1080": 7,
+        "720x1280": 74,
+        "640x480": 523
+      }
+    },
+    "vigia_bench_v1": {
+      "total_selected": 150,
+      "readable_files": 150,
+      "human_annotated_rows": 0,
+      "pending_human_review_rows": 150,
+      "source_domains": {
+        "SCALE_MODEL_LAB": 128,
+        "SCREEN_RECAPTURE": 20,
+        "SYNTHETIC_STOCK": 2
+      },
+      "real_1to1_vehicles_count": 0,
+      "lighting_conditions": {
+        "WELL_LIT": 116,
+        "HARSH_GLARE": 20,
+        "UNDEREXPOSED": 14
+      },
+      "sharpness_tiers": {
+        "MODERATE_BLUR": 42,
+        "SHARP": 27,
+        "SEVERE_BLUR": 81
+      },
+      "resolutions": {
+        "720x1280": 72,
+        "640x480": 77,
+        "810x1080": 1
+      }
+    }
+  },
+  "phase_bc_comparative": {
+    "ground_truth_available": false,
+    "ground_truth_note": "Los 150 registros de annotation_sheet_v1.csv están en PENDING_HUMAN_REVIEW; análisis estrictamente diagnóstico sin métricas certificadas de precisión.",
+    "groups": {
+      "SCALE_MODEL_LAB": {
+        "images": 128,
+        "y11_frames_with_det_025": 128,
+        "y26_frames_with_det_025": 125,
+        "y11_frames_with_det_070": 119,
+        "y26_frames_with_det_070": 101,
+        "y11_total_boxes_025": 161,
+        "y26_total_boxes_025": 177,
+        "y11_total_boxes_070": 125,
+        "y26_total_boxes_070": 103,
+        "y26_additional_boxes_025": 27,
+        "y11_only_boxes_025": 11,
+        "matched_iou_050": 150,
+        "y11_classes_025": {
+          "truck": 28,
+          "car": 123,
+          "motorcycle": 2,
+          "bus": 8
+        },
+        "y26_classes_025": {
+          "car": 131,
+          "truck": 35,
+          "bus": 11
+        },
+        "y11_classes_070": {
+          "truck": 11,
+          "car": 105,
+          "motorcycle": 2,
+          "bus": 7
+        },
+        "y26_classes_070": {
+          "car": 93,
+          "truck": 3,
+          "bus": 7
+        },
+        "y11_mean_conf_025": 0.7471,
+        "y26_mean_conf_025": 0.707
+      },
+      "SCREEN_RECAPTURE": {
+        "images": 20,
+        "y11_frames_with_det_025": 20,
+        "y26_frames_with_det_025": 20,
+        "y11_frames_with_det_070": 20,
+        "y26_frames_with_det_070": 20,
+        "y11_total_boxes_025": 188,
+        "y26_total_boxes_025": 287,
+        "y11_total_boxes_070": 90,
+        "y26_total_boxes_070": 89,
+        "y26_additional_boxes_025": 123,
+        "y11_only_boxes_025": 24,
+        "matched_iou_050": 164,
+        "y11_classes_025": {
+          "car": 184,
+          "motorcycle": 4
+        },
+        "y26_classes_025": {
+          "car": 280,
+          "motorcycle": 4,
+          "truck": 3
+        },
+        "y11_classes_070": {
+          "car": 90
+        },
+        "y26_classes_070": {
+          "car": 89
+        },
+        "y11_mean_conf_025": 0.6439,
+        "y26_mean_conf_025": 0.5745
+      },
+      "SYNTHETIC_STOCK": {
+        "images": 2,
+        "y11_frames_with_det_025": 2,
+        "y26_frames_with_det_025": 2,
+        "y11_frames_with_det_070": 2,
+        "y26_frames_with_det_070": 2,
+        "y11_total_boxes_025": 2,
+        "y26_total_boxes_025": 2,
+        "y11_total_boxes_070": 2,
+        "y26_total_boxes_070": 2,
+        "y26_additional_boxes_025": 0,
+        "y11_only_boxes_025": 0,
+        "matched_iou_050": 2,
+        "y11_classes_025": {
+          "bus": 2
+        },
+        "y26_classes_025": {
+          "bus": 2
+        },
+        "y11_classes_070": {
+          "bus": 2
+        },
+        "y26_classes_070": {
+          "bus": 2
+        },
+        "y11_mean_conf_025": 0.8817,
+        "y26_mean_conf_025": 0.9451
+      }
+    },
+    "stock_reference_bus_jpg": {
+      "yolo11n": [
+        {
+          "label": "bus",
+          "conf": 0.9404
+        }
+      ],
+      "yolo26x": [
+        {
+          "label": "bus",
+          "conf": 0.9448
+        }
+      ]
+    },
+    "classification_analysis": {
+      "yolo11_to_yolo26_label_diffs_on_matched_iou050": {
+        "car->truck": 10,
+        "motorcycle->car": 2,
+        "bus->truck": 1,
+        "truck->bus": 1,
+        "truck->car": 6
+      },
+      "coco_to_vigia_mapping_yolo11": {
+        "truck->CAMION": 28,
+        "car->AUTOMOVIL": 307,
+        "motorcycle->MOTOCICLETA": 6,
+        "bus->AUTOBUS": 10
+      },
+      "coco_to_vigia_mapping_yolo26": {
+        "car->AUTOMOVIL": 411,
+        "truck->CAMION": 38,
+        "bus->AUTOBUS": 13,
+        "motorcycle->MOTOCICLETA": 4
+      },
+      "intra_frame_duplicate_boxes_iou050": {
+        "y11": 8,
+        "y26": 30
+      },
+      "small_vehicles_lt_5pct_area": {
+        "y11": 214,
+        "y26": 307
+      },
+      "box_size_anomalies": {
+        "y11_tiny": 1,
+        "y26_tiny": 10,
+        "y11_huge": 2,
+        "y26_huge": 2
+      },
+      "lighting_breakdown": {
+        "WELL_LIT": {
+          "images": 116,
+          "y11_070": 112,
+          "y26_070": 101,
+          "y11_025": 116,
+          "y26_025": 115
+        },
+        "HARSH_GLARE": {
+          "images": 20,
+          "y11_070": 17,
+          "y26_070": 15,
+          "y11_025": 20,
+          "y26_025": 20
+        },
+        "UNDEREXPOSED": {
+          "images": 14,
+          "y11_070": 12,
+          "y26_070": 7,
+          "y11_025": 14,
+          "y26_025": 12
+        }
+      }
+    },
+    "latency_comparison_150_frames": {
+      "yolo11n_fp32_cuda": {
+        "count": 150,
+        "mean_ms": 21.828,
+        "p50_ms": 11.98,
+        "p95_ms": 32.024,
+        "p99_ms": 508.023,
+        "min_ms": 8.664,
+        "max_ms": 612.882,
+        "fps": 45.81
+      },
+      "yolo26x_fp16_e2e_cuda": {
+        "count": 150,
+        "mean_ms": 44.165,
+        "p50_ms": 21.688,
+        "p95_ms": 142.587,
+        "p99_ms": 929.797,
+        "min_ms": 16.987,
+        "max_ms": 1158.04,
+        "fps": 22.64
+      }
+    }
+  },
+  "phase_d_pipeline": {
+    "stage_1_yolo26x_init": {
+      "passed": true,
+      "runtime_status": {
+        "requested_model": "yolo26x.pt",
+        "requested_weights_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+        "effective_model": "yolo26x.pt",
+        "weights_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+        "device": "cuda:0",
+        "imgsz": 640,
+        "quantize": 16,
+        "nms": false,
+        "augment": false,
+        "end2end": true,
+        "end2end_verified": true,
+        "fallback_enabled": true,
+        "using_fallback": false,
+        "fallback_reason": null,
+        "fallback_timestamp": null,
+        "is_loaded": true,
+        "ultralytics_version": "8.4.171"
+      }
+    },
+    "stage_2_nms_free_verified": {
+      "passed": true
+    },
+    "stage_3_http_push_and_coordinator": {
+      "passed": true,
+      "http_status": 200,
+      "response": {
+        "annotated_evidence_path": "20261115/CAM-ENTRADA/20261115T040751_951961Z_3299c33559a3_annot.jpg",
+        "codigo_area": "ROI-ENT",
+        "codigo_camara": "CAM-ENTRADA",
+        "confianza": 0.9462890625,
+        "detection_persisted": true,
+        "detections_count": 1,
+        "duplicate_retry": false,
+        "evidence_saved": true,
+        "excluded_outside_roi": 0,
+        "frame_sequence": 1,
+        "id_area_vision": "e4da8952-482e-454c-b9c6-672bd531a890",
+        "id_camara": "4f97477a-2f8d-4d08-8f8a-861c44047528",
+        "id_deteccion": "01bc0555-c097-43b5-981a-e24d389eb27e",
+        "in_roi_now": 1,
+        "ok": true,
+        "original_evidence_path": "20261115/CAM-ENTRADA/20261115T040751_951961Z_3299c33559a3_orig.jpg",
+        "status": "VEHICLE_DETECTED_NO_PLATE",
+        "timestamp": "2026-11-15T04:07:51.951961+00:00",
+        "tipo_movimiento": "ENTRADA",
+        "tipo_vehiculo": "AUTOBUS",
+        "total_detected_in_frame": 1,
+        "vehicle_detected": true
+      }
+    },
+    "stage_4_temporal_fsm": {
+      "integrated_in_coordinator": false,
+      "note": "CameraTemporalStateTracker permanece aislado por diseño de VISION-02A.1 hasta VISION-02B; contrato verificado manualmente.",
+      "contract_probe_statuses": [
+        "VEHICLE_CANDIDATE",
+        "VEHICLE_PRESENT"
+      ]
+    },
+    "stage_5_persistence_in_memory_vs_postgres": {
+      "in_memory_records_saved": 1,
+      "postgres_live_status": "BLOCKED (Docker/PostgreSQL offline en 127.0.0.1:5434)"
+    },
+    "stage_6_evidence_files_on_disk": {
+      "orig_count": 1,
+      "annot_count": 1
+    },
+    "stage_7_dashboard_and_streaming_endpoints": {
+      "login_status": 200,
+      "get_app_html_status": 200,
+      "get_cameras_status": 200,
+      "get_camera_status_code": 200,
+      "get_camera_status_payload": {
+        "codigo_camara": "CAM-ENTRADA",
+        "confianza": 0.9462890625,
+        "in_roi": 1,
+        "is_transmitting": true,
+        "last_frame_seconds_ago": 0.0,
+        "ok": true,
+        "operational_state": "TRANSMITIENDO",
+        "sequence": 1,
+        "status": "VEHICLE_DETECTED_NO_PLATE",
+        "tipo_vehiculo": "AUTOBUS",
+        "vehicle_detected": true
+      },
+      "get_camera_live_status": 200,
+      "get_camera_live_content_type": "image/jpeg",
+      "get_supervision_status": 200
+    }
+  },
+  "phase_e_stability": {
+    "isolated_inference_200_frames": {
+      "count": 200,
+      "mean_ms": 56.585,
+      "p50_ms": 38.63,
+      "p95_ms": 245.621,
+      "p99_ms": 299.398,
+      "min_ms": 21.604,
+      "max_ms": 366.885,
+      "fps": 17.67
+    },
+    "multi_worker_200_frames_concurrent": {
+      "cam_entrada_100": {
+        "count": 100,
+        "mean_ms": 85.598,
+        "p50_ms": 83.878,
+        "p95_ms": 103.218,
+        "p99_ms": 136.852,
+        "min_ms": 52.215,
+        "max_ms": 259.704,
+        "fps": 11.68
+      },
+      "cam_salida_100": {
+        "count": 100,
+        "mean_ms": 86.04,
+        "p50_ms": 84.05,
+        "p95_ms": 105.595,
+        "p99_ms": 171.7,
+        "min_ms": 42.348,
+        "max_ms": 267.717,
+        "fps": 11.62
+      },
+      "combined_wall_ms": 8607.91,
+      "combined_aggregate_fps": 23.23,
+      "errors": []
+    },
+    "end_to_end_http_push_100_frames": {
+      "latency": {
+        "count": 100,
+        "mean_ms": 53.162,
+        "p50_ms": 52.536,
+        "p95_ms": 68.438,
+        "p99_ms": 80.256,
+        "min_ms": 36.76,
+        "max_ms": 81.655,
+        "fps": 18.81
+      },
+      "http_errors": 0,
+      "persisted_in_memory": 2
+    },
+    "sustained_gpu_soak": {
+      "duration_s": 90.01,
+      "total_frames": 2374,
+      "errors": 0,
+      "using_fallback_after_soak": false,
+      "effective_model_after_soak": "yolo26x.pt",
+      "latency": {
+        "count": 2374,
+        "mean_ms": 37.664,
+        "p50_ms": 36.975,
+        "p95_ms": 50.364,
+        "p99_ms": 60.757,
+        "min_ms": 24.822,
+        "max_ms": 83.797,
+        "fps": 26.55
+      },
+      "vram_start_mb": 434.86,
+      "vram_end_mb": 434.86,
+      "vram_delta_mb": 0.0,
+      "vram_peak_allocated_mb": 487.07,
+      "vram_peak_reserved_mb": 732.0,
+      "cpu_process_pct_single_core": 93.65,
+      "final_gpu_smi": {
+        "temp_c": 64.0,
+        "gpu_util_pct": 49.0,
+        "mem_util_pct": 12.0,
+        "vram_used_mb": 1600.0,
+        "vram_total_mb": 6141.0
+      },
+      "telemetry_samples": [
+        {
+          "elapsed_s": 5.0,
+          "frames": 117,
+          "vram_allocated_mb": 434.86,
+          "vram_reserved_mb": 732.0,
+          "temp_c": 60.0,
+          "gpu_util_pct": 43.0,
+          "mem_util_pct": 11.0,
+          "vram_used_mb": 2568.0,
+          "vram_total_mb": 6141.0
+        },
+        {
+          "elapsed_s": 20.0,
+          "frames": 490,
+          "vram_allocated_mb": 434.86,
+          "vram_reserved_mb": 732.0,
+          "temp_c": 60.0,
+          "gpu_util_pct": 43.0,
+          "mem_util_pct": 10.0,
+          "vram_used_mb": 1606.0,
+          "vram_total_mb": 6141.0
+        },
+        {
+          "elapsed_s": 35.1,
+          "frames": 889,
+          "vram_allocated_mb": 434.86,
+          "vram_reserved_mb": 732.0,
+          "temp_c": 65.0,
+          "gpu_util_pct": 31.0,
+          "mem_util_pct": 8.0,
+          "vram_used_mb": 1603.0,
+          "vram_total_mb": 6141.0
+        },
+        {
+          "elapsed_s": 50.1,
+          "frames": 1262,
+          "vram_allocated_mb": 434.86,
+          "vram_reserved_mb": 732.0,
+          "temp_c": 62.0,
+          "gpu_util_pct": 47.0,
+          "mem_util_pct": 12.0,
+          "vram_used_mb": 1614.0,
+          "vram_total_mb": 6141.0
+        },
+        {
+          "elapsed_s": 65.1,
+          "frames": 1673,
+          "vram_allocated_mb": 434.86,
+          "vram_reserved_mb": 732.0,
+          "temp_c": 63.0,
+          "gpu_util_pct": 48.0,
+          "mem_util_pct": 12.0,
+          "vram_used_mb": 1607.0,
+          "vram_total_mb": 6141.0
+        },
+        {
+          "elapsed_s": 80.1,
+          "frames": 2092,
+          "vram_allocated_mb": 434.86,
+          "vram_reserved_mb": 732.0,
+          "temp_c": 63.0,
+          "gpu_util_pct": 53.0,
+          "mem_util_pct": 13.0,
+          "vram_used_mb": 1600.0,
+          "vram_total_mb": 6141.0
+        }
+      ]
+    }
+  }
+}

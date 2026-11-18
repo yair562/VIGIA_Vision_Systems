@@ -1,0 +1,546 @@
+{
+  "timestamp_utc": "2026-11-17T00:21:30.283287+00:00",
+  "phase_1_audit": {
+    "python_version": "3.11.1",
+    "pytorch_version": "2.6.0+cu124",
+    "cuda_version": "12.4",
+    "cuda_available": true,
+    "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "vram_free_mb": 5075.0,
+    "vram_total_mb": 6140.5,
+    "ultralytics_version": "8.4.171",
+    "checkpoint_yolo26x": {
+      "path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+      "size_bytes": 118667365,
+      "sha256": "9fdd44a31c504547ffb81d2c6d9e6dac3493c8eaa8b0398d3f43bae6c7003e92",
+      "verified": true
+    },
+    "checkpoint_yolo11n": {
+      "path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\yolo11n.pt",
+      "size_bytes": 5613764,
+      "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+      "verified": true
+    },
+    "configuration_matrix": [
+      {
+        "configuracion": "VIGIA_YOLO_MODEL",
+        "valor_solicitado": "experiments/yolo26x/weights/yolo26x.pt",
+        "valor_efectivo": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+        "evidencia": "Archivo existe (118667365 bytes, SHA256=9fdd44a31c50...)"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_DEVICE",
+        "valor_solicitado": "cuda:0",
+        "valor_efectivo": "cuda:0",
+        "evidencia": "torch.cuda.is_available()=True, NVIDIA GeForce RTX 4050 Laptop GPU"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_IMGSZ",
+        "valor_solicitado": "640",
+        "valor_efectivo": 640,
+        "evidencia": "YoloDetectorConfig.imgsz=640"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_QUANTIZE",
+        "valor_solicitado": "16 (FP16)",
+        "valor_efectivo": 16,
+        "evidencia": "YoloDetectorConfig.quantize=16, AutoBackend.fp16=True"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_NMS",
+        "valor_solicitado": "false (NMS-Free)",
+        "valor_efectivo": false,
+        "evidencia": "YoloDetectorConfig.nms=False, AutoBackend.end2end=True"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_AUGMENT",
+        "valor_solicitado": "false",
+        "valor_efectivo": false,
+        "evidencia": "YoloDetectorConfig.augment=False"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_FALLBACK_ENABLED",
+        "valor_solicitado": "true",
+        "valor_efectivo": true,
+        "evidencia": "YoloDetectorConfig.fallback_enabled=True"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_FALLBACK_MODEL",
+        "valor_solicitado": "yolo11n.pt",
+        "valor_efectivo": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\yolo11n.pt",
+        "evidencia": "Archivo existe (5613764 bytes, SHA256=0ebbc80d4a76...)"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_DEDUP_IOU (EXP-10)",
+        "valor_solicitado": "0.55",
+        "valor_efectivo": 0.55,
+        "evidencia": "YoloDetectorConfig.deduplicate_iou_threshold=0.55"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_CONSOLIDATE_CONFIDENCE (EXP-10)",
+        "valor_solicitado": "true",
+        "valor_efectivo": true,
+        "evidencia": "YoloDetectorConfig.consolidate_frontal_confidence=True"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_FRONTAL_AUX_ENABLED (EXP-10)",
+        "valor_solicitado": "true",
+        "valor_efectivo": true,
+        "evidencia": "YoloDetectorConfig.frontal_aux_enabled=True"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_FRONTAL_AUX_IMGSZ (EXP-10)",
+        "valor_solicitado": "384",
+        "valor_efectivo": 384,
+        "evidencia": "YoloDetectorConfig.frontal_aux_imgsz=384"
+      },
+      {
+        "configuracion": "VIGIA_YOLO_FRONTAL_AUX_TRIGGER_CONF (EXP-10)",
+        "valor_solicitado": "0.70",
+        "valor_efectivo": 0.7,
+        "evidencia": "YoloDetectorConfig.frontal_aux_trigger_confidence=0.70"
+      }
+    ]
+  },
+  "phase_2_compatibility": {
+    "load_time_ms": 418.42,
+    "probe_latency_ms": 1105.17,
+    "is_loaded": true,
+    "effective_model": "yolo26x.pt",
+    "device": "cuda:0",
+    "effective_fp16": true,
+    "end2end": true,
+    "end2end_verified": true,
+    "exp10_configured": {
+      "deduplicate_iou_threshold": 0.55,
+      "consolidate_frontal_confidence": true,
+      "frontal_aux_enabled": true,
+      "frontal_aux_imgsz": 384,
+      "frontal_aux_trigger_confidence": 0.7
+    },
+    "gpu_memory": {
+      "vram_allocated_mb": 370.84,
+      "vram_reserved_mb": 562.0
+    }
+  },
+  "phase_3_and_4_runtime_verification": {
+    "push_status_code": 200,
+    "push_latency_ms": 881.53,
+    "push_payload": {
+      "annotated_evidence_path": "20261117/CAM-ENTRADA/20261117T002123_973208Z_cc4d19790443_annot.jpg",
+      "codigo_area": "ROI-ENT",
+      "codigo_camara": "CAM-ENTRADA",
+      "confianza": 0.9744,
+      "detection_persisted": true,
+      "detections_count": 1,
+      "duplicate_retry": false,
+      "evidence_saved": true,
+      "excluded_outside_roi": 0,
+      "frame_sequence": 1,
+      "id_area_vision": "395c9d0f-f8af-4bc7-af6a-39aa139d2f9a",
+      "id_camara": "5722fa34-a6ca-4bde-bdce-08f06944f2d0",
+      "id_deteccion": "51ad8768-e6af-4c5c-8c24-a12da6587acc",
+      "in_roi_now": 1,
+      "ok": true,
+      "original_evidence_path": "20261117/CAM-ENTRADA/20261117T002123_973208Z_cc4d19790443_orig.jpg",
+      "status": "VEHICLE_DETECTED_NO_PLATE",
+      "timestamp": "2026-11-17T00:21:23.973208+00:00",
+      "tipo_movimiento": "ENTRADA",
+      "tipo_vehiculo": "AUTOMOVIL",
+      "total_detected_in_frame": 1,
+      "vehicle_detected": true
+    },
+    "supervision_status_payload": {
+      "engine_initialized": true,
+      "ok": true,
+      "role": "ADMINISTRADOR",
+      "status": "OPERATIONAL",
+      "supervised_positions": [
+        "ENTRADA",
+        "SALIDA"
+      ],
+      "user": "admin_05c",
+      "vision_metrics": {
+        "cameras": {
+          "CAM-ENTRADA": {
+            "drop_reasons": {},
+            "dropped_frames": 0,
+            "effective_model": "yolo26x.pt",
+            "ingest_count": 1,
+            "ingest_fps": 0.0,
+            "last_drop_policy": null,
+            "last_frame_at": "2026-11-17T00:21:24.618903+00:00",
+            "last_queue_wait_ms": 0.002,
+            "last_status": "PROCESSED",
+            "last_step_ms": 645.0,
+            "processed_count": 1,
+            "processed_fps": 0.0
+          }
+        },
+        "detector": {
+          "augment": false,
+          "consolidate_frontal_confidence": true,
+          "deduplicate_iou_threshold": 0.55,
+          "device": "cuda:0",
+          "effective_fp16": true,
+          "effective_imgsz": 640,
+          "effective_model": "yolo26x.pt",
+          "end2end": true,
+          "end2end_verified": true,
+          "fallback_enabled": true,
+          "fallback_reason": null,
+          "fallback_timestamp": null,
+          "frontal_aux_enabled": true,
+          "frontal_aux_imgsz": 384,
+          "frontal_aux_trigger_confidence": 0.7,
+          "gpu_memory": {
+            "vram_allocated_mb": 371.78,
+            "vram_reserved_mb": 566.0
+          },
+          "imgsz": 640,
+          "inference_metrics": {
+            "cuda_errors": 0,
+            "duplicates_suppressed": 2,
+            "fallback_count": 0,
+            "frontal_aux_recoveries": 1,
+            "frontal_aux_triggers": 1,
+            "inference_errors": 0,
+            "inference_fps": 2.56,
+            "init_errors": 0,
+            "last_camera_code": "CAM-ENTRADA",
+            "last_inference_at": "2026-11-17T00:21:24.618903+00:00",
+            "last_queue_wait_ms": 0.002,
+            "last_recovery_ms": null,
+            "latency_mean_ms": 390.037,
+            "latency_p50_ms": 390.037,
+            "latency_p95_ms": 390.037,
+            "latency_p99_ms": 390.037,
+            "queue_wait_mean_ms": 0.002,
+            "total_inferences": 1
+          },
+          "is_loaded": true,
+          "nms": false,
+          "quantize": 16,
+          "requested_model": "yolo26x.pt",
+          "ultralytics_version": "8.4.171",
+          "using_fallback": false
+        },
+        "engine_initialized": true,
+        "temporal_fsm_integrated": false
+      }
+    },
+    "runtime_verification": {
+      "exact_checkpoint_path": "experiments/yolo26x/weights/yolo26x.pt",
+      "model_identity": "yolo26x.pt",
+      "inference_device": "cuda:0",
+      "effective_precision": "FP16",
+      "effective_fp16": true,
+      "effective_imgsz": 640,
+      "nms_free_status": false,
+      "end2end_active": true,
+      "exp10_dedup_threshold": 0.55,
+      "exp10_consolidate_conf": true,
+      "exp10_frontal_aux_enabled": true,
+      "exp10_frontal_aux_imgsz": 384,
+      "using_fallback": false,
+      "fallback_reason": null,
+      "inference_metrics": {
+        "total_inferences": 1,
+        "inference_errors": 0,
+        "cuda_errors": 0,
+        "init_errors": 0,
+        "fallback_count": 0,
+        "last_recovery_ms": null,
+        "frontal_aux_triggers": 1,
+        "frontal_aux_recoveries": 1,
+        "duplicates_suppressed": 2,
+        "latency_mean_ms": 390.037,
+        "latency_p50_ms": 390.037,
+        "latency_p95_ms": 390.037,
+        "latency_p99_ms": 390.037,
+        "inference_fps": 2.56,
+        "queue_wait_mean_ms": 0.002,
+        "last_queue_wait_ms": 0.002,
+        "last_camera_code": "CAM-ENTRADA",
+        "last_inference_at": "2026-11-17T00:21:24.618903+00:00"
+      },
+      "gpu_memory": {
+        "vram_allocated_mb": 371.78,
+        "vram_reserved_mb": 566.0
+      }
+    }
+  },
+  "phase_5_controlled_dataset_tests": {
+    "evaluated_cases_count": 11,
+    "hit_at_070_count": 9,
+    "hit_at_070_pct": 81.8,
+    "mean_latency_ms": 60.87,
+    "results": [
+      {
+        "sample_id": "EV-0625",
+        "category": "Automóvil frontal (cian, corta distancia)",
+        "relative_path": "20261116/CAM-SALIDA/20261116T172015_568913Z_c43de572acc5_orig.jpg",
+        "latency_ms": 56.42,
+        "total_raw_detections": 1,
+        "in_roi_at_070": 1,
+        "in_roi_at_025": 1,
+        "hit_at_070": true,
+        "primary_label_070": "car",
+        "primary_conf_070": 0.7969,
+        "primary_bbox_070": {
+          "x_min": 225,
+          "y_min": 104,
+          "x_max": 493,
+          "y_max": 342
+        },
+        "primary_label_025": "car",
+        "primary_conf_025": 0.7969
+      },
+      {
+        "sample_id": "EV-0637",
+        "category": "Automóvil frontal (rosa, desenfoque / primer plano)",
+        "relative_path": "20261116/CAM-SALIDA/20261116T172044_969280Z_957178f6e593_orig.jpg",
+        "latency_ms": 62.89,
+        "total_raw_detections": 1,
+        "in_roi_at_070": 1,
+        "in_roi_at_025": 1,
+        "hit_at_070": true,
+        "primary_label_070": "car",
+        "primary_conf_070": 0.8179,
+        "primary_bbox_070": {
+          "x_min": 285,
+          "y_min": 117,
+          "x_max": 639,
+          "y_max": 438
+        },
+        "primary_label_025": "car",
+        "primary_conf_025": 0.8179
+      },
+      {
+        "sample_id": "EV-0657",
+        "category": "Automóvil frontal (rosa, rotación leve)",
+        "relative_path": "20261116/CAM-SALIDA/20261116T172113_418425Z_e8a735512bc2_orig.jpg",
+        "latency_ms": 62.02,
+        "total_raw_detections": 1,
+        "in_roi_at_070": 1,
+        "in_roi_at_025": 1,
+        "hit_at_070": true,
+        "primary_label_070": "car",
+        "primary_conf_070": 0.9744,
+        "primary_bbox_070": {
+          "x_min": 178,
+          "y_min": 126,
+          "x_max": 542,
+          "y_max": 356
+        },
+        "primary_label_025": "car",
+        "primary_conf_025": 0.9744
+      },
+      {
+        "sample_id": "EV-0581",
+        "category": "Autobús frontal escolar 0° (Type C)",
+        "relative_path": "20261114/CAM-SALIDA/20261114T010037_321148Z_29a0e74bbe1e_orig.jpg",
+        "latency_ms": 27.85,
+        "total_raw_detections": 2,
+        "in_roi_at_070": 2,
+        "in_roi_at_025": 2,
+        "hit_at_070": true,
+        "primary_label_070": "truck",
+        "primary_conf_070": 0.7785,
+        "primary_bbox_070": {
+          "x_min": 301,
+          "y_min": 158,
+          "x_max": 433,
+          "y_max": 333
+        },
+        "primary_label_025": "truck",
+        "primary_conf_025": 0.7785
+      },
+      {
+        "sample_id": "EV-0584",
+        "category": "Autobús frontal escolar 0° (Type C + auto)",
+        "relative_path": "20261114/CAM-SALIDA/20261114T010046_419841Z_1d02f0a21e97_orig.jpg",
+        "latency_ms": 29.75,
+        "total_raw_detections": 2,
+        "in_roi_at_070": 2,
+        "in_roi_at_025": 2,
+        "hit_at_070": true,
+        "primary_label_070": "car",
+        "primary_conf_070": 0.8984,
+        "primary_bbox_070": {
+          "x_min": 240,
+          "y_min": 98,
+          "x_max": 338,
+          "y_max": 168
+        },
+        "primary_label_025": "car",
+        "primary_conf_025": 0.8984
+      },
+      {
+        "sample_id": "EV-0588",
+        "category": "Autobús frontal escolar 0° (Type C)",
+        "relative_path": "20261114/CAM-SALIDA/20261114T010054_443040Z_bbf2d0cdf38b_orig.jpg",
+        "latency_ms": 57.85,
+        "total_raw_detections": 2,
+        "in_roi_at_070": 1,
+        "in_roi_at_025": 2,
+        "hit_at_070": true,
+        "primary_label_070": "car",
+        "primary_conf_070": 0.8535,
+        "primary_bbox_070": {
+          "x_min": 42,
+          "y_min": 71,
+          "x_max": 321,
+          "y_max": 236
+        },
+        "primary_label_025": "car",
+        "primary_conf_025": 0.8535
+      },
+      {
+        "sample_id": "EV-0550",
+        "category": "Vehículo lateral (autobús escolar lateral)",
+        "relative_path": "20261114/CAM-SALIDA/20261114T005953_419239Z_5f4588730e82_orig.jpg",
+        "latency_ms": 56.09,
+        "total_raw_detections": 2,
+        "in_roi_at_070": 1,
+        "in_roi_at_025": 1,
+        "hit_at_070": true,
+        "primary_label_070": "bus",
+        "primary_conf_070": 0.8572,
+        "primary_bbox_070": {
+          "x_min": 95,
+          "y_min": 97,
+          "x_max": 474,
+          "y_max": 256
+        },
+        "primary_label_025": "bus",
+        "primary_conf_025": 0.8572
+      },
+      {
+        "sample_id": "EV-0665",
+        "category": "Vehículo frontal oblicuo (autobús escolar rotado)",
+        "relative_path": "20261116/CAM-SALIDA/20261116T172140_190972Z_c2499a3ef3d5_orig.jpg",
+        "latency_ms": 61.67,
+        "total_raw_detections": 1,
+        "in_roi_at_070": 0,
+        "in_roi_at_025": 1,
+        "hit_at_070": false,
+        "primary_label_070": null,
+        "primary_conf_070": null,
+        "primary_bbox_070": null,
+        "primary_label_025": "bus",
+        "primary_conf_025": 0.4419
+      },
+      {
+        "sample_id": "EV-0446",
+        "category": "Vehículo trasero (auto rojo sobre mesa)",
+        "relative_path": "20261110/CAM-ENTRADA/20261110T184456_859308Z_d30f0fa6dafd_orig.jpg",
+        "latency_ms": 92.84,
+        "total_raw_detections": 1,
+        "in_roi_at_070": 1,
+        "in_roi_at_025": 1,
+        "hit_at_070": true,
+        "primary_label_070": "truck",
+        "primary_conf_070": 0.8868,
+        "primary_bbox_070": {
+          "x_min": 206,
+          "y_min": 524,
+          "x_max": 581,
+          "y_max": 753
+        },
+        "primary_label_025": "truck",
+        "primary_conf_025": 0.8868
+      },
+      {
+        "sample_id": "EV-0450",
+        "category": "Vehículo pequeño (recaptura pantalla)",
+        "relative_path": "20261111/CAM-ENTRADA/20261111T224045_274030Z_95edf2ebf66c_orig.jpg",
+        "latency_ms": 116.6,
+        "total_raw_detections": 14,
+        "in_roi_at_070": 6,
+        "in_roi_at_025": 10,
+        "hit_at_070": true,
+        "primary_label_070": "car",
+        "primary_conf_070": 0.9648,
+        "primary_bbox_070": {
+          "x_min": 151,
+          "y_min": 576,
+          "x_max": 432,
+          "y_max": 715
+        },
+        "primary_label_025": "car",
+        "primary_conf_025": 0.9648
+      },
+      {
+        "sample_id": "EV-0494",
+        "category": "Baja iluminación severa (auto rojo en penumbra)",
+        "relative_path": "20261114/CAM-SALIDA/20261114T004957_154790Z_2271be730b5b_orig.jpg",
+        "latency_ms": 45.56,
+        "total_raw_detections": 1,
+        "in_roi_at_070": 0,
+        "in_roi_at_025": 1,
+        "hit_at_070": false,
+        "primary_label_070": null,
+        "primary_conf_070": null,
+        "primary_bbox_070": null,
+        "primary_label_025": "car",
+        "primary_conf_025": 0.5776
+      }
+    ],
+    "runtime_metrics": {
+      "total_inferences": 12,
+      "inference_errors": 0,
+      "cuda_errors": 0,
+      "init_errors": 0,
+      "fallback_count": 0,
+      "last_recovery_ms": null,
+      "frontal_aux_triggers": 9,
+      "frontal_aux_recoveries": 7,
+      "duplicates_suppressed": 35,
+      "latency_mean_ms": 79.628,
+      "latency_p50_ms": 57.816,
+      "latency_p95_ms": 286.408,
+      "latency_p99_ms": 286.408,
+      "inference_fps": 12.56,
+      "queue_wait_mean_ms": 0.002,
+      "last_queue_wait_ms": 0.001,
+      "last_camera_code": "EV-0494",
+      "last_inference_at": "2026-11-17T00:21:26.052248+00:00"
+    }
+  },
+  "phase_6_fallback_and_stability": {
+    "case_a_init_fallback": {
+      "success": true,
+      "requested_model": "weights_non_existent.pt",
+      "effective_model": "yolo11n.pt",
+      "fallback_reason": "[model_init] FileNotFoundError: Archivo de pesos YOLO no encontrado en 'C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\weights_non_existent.pt' (solicitado: 'weights_non_existent.pt').",
+      "recovery_time_ms": 2913.72
+    },
+    "case_b_runtime_fallback": {
+      "success": true,
+      "requested_model": "yolo26x.pt",
+      "effective_model": "yolo11n.pt",
+      "fallback_reason": "[runtime_inference] RuntimeError: Simulated transient CUDA kernel failure",
+      "recovery_time_ms": 0.24,
+      "single_retry_completed": true,
+      "detections_count": 0
+    },
+    "case_c_non_finite_fallback": {
+      "success": true,
+      "requested_model": "yolo26x.pt",
+      "effective_model": "yolo11n.pt",
+      "fallback_reason": "[runtime_inference] InferenceError: Salida no finita (NaN/Inf) detectada en predicción YOLO: xyxy=(nan, 10.0, 100.0, 100.0), conf=0.949999988079071.",
+      "recovery_time_ms": 0.31
+    },
+    "case_d_vram_soak_10": {
+      "vram_start_allocated_mb": 52.34,
+      "vram_start_reserved_mb": 174.0,
+      "vram_peak_allocated_mb": 390.13,
+      "vram_peak_reserved_mb": 588.0,
+      "inferences_executed": 10,
+      "inference_errors": 0,
+      "clean_unload_verified": true
+    }
+  },
+  "verdict": "APPROVED FOR CONTROLLED OPERATIONAL VALIDATION"
+}

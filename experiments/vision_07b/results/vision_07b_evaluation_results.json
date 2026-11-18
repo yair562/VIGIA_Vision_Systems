@@ -1,0 +1,6044 @@
+{
+  "generated_at_utc": "2026-11-17T02:06:21.459167+00:00",
+  "total_eval_runtime_sec": 65.7,
+  "runtime_config_verified": {
+    "yolo_model": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+    "device": "cuda:0",
+    "imgsz": 640,
+    "quantize": 16,
+    "nms": false,
+    "deduplicate_iou": 0.55,
+    "frontal_aux_enabled": true,
+    "frontal_aux_imgsz": 384,
+    "frontal_aux_trigger_conf": 0.7,
+    "vehicle_confidence_threshold_prod": 0.7,
+    "prod_color_config": {
+      "min_detection_confidence": 0.25,
+      "min_confidence_threshold": 0.4,
+      "min_margin_over_runner_up": 0.1,
+      "min_luminance_v": 26.0,
+      "max_glare_ratio": 0.65,
+      "apply_illuminant_normalization": true
+    }
+  },
+  "fase_b_historical_279": {
+    "total_unique_images": 279,
+    "ground_truth_scope_note": "Evaluacion basada en ground truth visual nivel-imagen (confirmed_visual_classification). No existen anotaciones manuales de bounding-box en pixeles [x1,y1,x2,y2] (manifest_v1=UNANNOTATED, vigia_bench_v1=PENDING_HUMAN_REVIEW), por lo cual AP por clase, mAP@0.5 y mAP@0.5:0.95 no son calculables.",
+    "overall_presence": {
+      "total": 279,
+      "detected_roi_070": 241,
+      "missed_roi_070": 38,
+      "presence_recall_070_pct": 86.38,
+      "detected_roi_025": 270,
+      "presence_recall_025_pct": 96.77,
+      "avg_conf_070": 0.887,
+      "avg_conf_025": 0.8455,
+      "avg_latency_ms": 34.17,
+      "pred_labels_070": {
+        "bus": 31,
+        "car": 193,
+        "truck": 17,
+        "NONE": 38
+      },
+      "pred_labels_025": {
+        "bus": 40,
+        "car": 205,
+        "truck": 25,
+        "NONE": 9
+      }
+    },
+    "latency_stats_ms": {
+      "count": 279,
+      "mean": 34.172,
+      "median": 31.181,
+      "stdev": 13.238,
+      "p10": 20.92,
+      "p90": 50.527,
+      "p95": 56.126,
+      "p99": 69.344,
+      "min": 18.613,
+      "max": 105.442
+    },
+    "by_orientation": {
+      "FRONTAL": {
+        "total": 87,
+        "detected_roi_070": 76,
+        "missed_roi_070": 11,
+        "presence_recall_070_pct": 87.36,
+        "detected_roi_025": 83,
+        "presence_recall_025_pct": 95.4,
+        "avg_conf_070": 0.8969,
+        "avg_conf_025": 0.861,
+        "avg_latency_ms": 31.85,
+        "pred_labels_070": {
+          "car": 71,
+          "bus": 1,
+          "truck": 4,
+          "NONE": 11
+        },
+        "pred_labels_025": {
+          "car": 77,
+          "bus": 1,
+          "truck": 5,
+          "NONE": 4
+        }
+      },
+      "FRONTAL_OBLICUO": {
+        "total": 36,
+        "detected_roi_070": 27,
+        "missed_roi_070": 9,
+        "presence_recall_070_pct": 75.0,
+        "detected_roi_025": 36,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.8581,
+        "avg_conf_025": 0.7776,
+        "avg_latency_ms": 39.52,
+        "pred_labels_070": {
+          "bus": 3,
+          "car": 15,
+          "truck": 9,
+          "NONE": 9
+        },
+        "pred_labels_025": {
+          "bus": 8,
+          "car": 15,
+          "truck": 13
+        }
+      },
+      "LATERAL": {
+        "total": 120,
+        "detected_roi_070": 102,
+        "missed_roi_070": 18,
+        "presence_recall_070_pct": 85.0,
+        "detected_roi_025": 115,
+        "presence_recall_025_pct": 95.83,
+        "avg_conf_070": 0.8731,
+        "avg_conf_025": 0.8298,
+        "avg_latency_ms": 33.23,
+        "pred_labels_070": {
+          "NONE": 18,
+          "car": 74,
+          "truck": 1,
+          "bus": 27
+        },
+        "pred_labels_025": {
+          "truck": 4,
+          "car": 80,
+          "NONE": 5,
+          "bus": 31
+        }
+      },
+      "MULTI_ORIENTATION_SCREEN": {
+        "total": 17,
+        "detected_roi_070": 17,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 17,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.9585,
+        "avg_conf_025": 0.9585,
+        "avg_latency_ms": 52.49,
+        "pred_labels_070": {
+          "car": 17
+        },
+        "pred_labels_025": {
+          "car": 17
+        }
+      },
+      "TRASERO": {
+        "total": 19,
+        "detected_roi_070": 19,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 19,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.8996,
+        "avg_conf_025": 0.8996,
+        "avg_latency_ms": 24.23,
+        "pred_labels_070": {
+          "car": 16,
+          "truck": 3
+        },
+        "pred_labels_025": {
+          "car": 16,
+          "truck": 3
+        }
+      }
+    },
+    "by_primary_gt_class": {
+      "MULTI_SCREEN": {
+        "total": 8,
+        "detected_roi_070": 8,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 8,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.9662,
+        "avg_conf_025": 0.9662,
+        "avg_latency_ms": 54.06,
+        "pred_labels_070": {
+          "car": 8
+        },
+        "pred_labels_025": {
+          "car": 8
+        }
+      },
+      "bus": {
+        "total": 68,
+        "detected_roi_070": 55,
+        "missed_roi_070": 13,
+        "presence_recall_070_pct": 80.88,
+        "detected_roi_025": 67,
+        "presence_recall_025_pct": 98.53,
+        "avg_conf_070": 0.8608,
+        "avg_conf_025": 0.789,
+        "avg_latency_ms": 36.61,
+        "pred_labels_070": {
+          "bus": 30,
+          "NONE": 13,
+          "truck": 8,
+          "car": 17
+        },
+        "pred_labels_025": {
+          "bus": 39,
+          "truck": 11,
+          "car": 17,
+          "NONE": 1
+        }
+      },
+      "car": {
+        "total": 203,
+        "detected_roi_070": 178,
+        "missed_roi_070": 25,
+        "presence_recall_070_pct": 87.68,
+        "detected_roi_025": 195,
+        "presence_recall_025_pct": 96.06,
+        "avg_conf_070": 0.8916,
+        "avg_conf_025": 0.8599,
+        "avg_latency_ms": 32.57,
+        "pred_labels_070": {
+          "NONE": 25,
+          "car": 168,
+          "truck": 9,
+          "bus": 1
+        },
+        "pred_labels_025": {
+          "truck": 14,
+          "car": 180,
+          "NONE": 8,
+          "bus": 1
+        }
+      }
+    },
+    "by_lighting": {
+      "BACKLIGHT_GLARE": {
+        "total": 53,
+        "detected_roi_070": 52,
+        "missed_roi_070": 1,
+        "presence_recall_070_pct": 98.11,
+        "detected_roi_025": 53,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.9172,
+        "avg_conf_025": 0.9093,
+        "avg_latency_ms": 36.75,
+        "pred_labels_070": {
+          "NONE": 1,
+          "car": 49,
+          "truck": 2,
+          "bus": 1
+        },
+        "pred_labels_025": {
+          "truck": 3,
+          "car": 49,
+          "bus": 1
+        }
+      },
+      "LOW_LIGHT": {
+        "total": 37,
+        "detected_roi_070": 27,
+        "missed_roi_070": 10,
+        "presence_recall_070_pct": 72.97,
+        "detected_roi_025": 33,
+        "presence_recall_025_pct": 89.19,
+        "avg_conf_070": 0.8688,
+        "avg_conf_025": 0.8101,
+        "avg_latency_ms": 36.06,
+        "pred_labels_070": {
+          "car": 27,
+          "NONE": 10
+        },
+        "pred_labels_025": {
+          "car": 33,
+          "NONE": 4
+        }
+      },
+      "NORMAL_DAY": {
+        "total": 189,
+        "detected_roi_070": 162,
+        "missed_roi_070": 27,
+        "presence_recall_070_pct": 85.71,
+        "detected_roi_025": 184,
+        "presence_recall_025_pct": 97.35,
+        "avg_conf_070": 0.8804,
+        "avg_conf_025": 0.8334,
+        "avg_latency_ms": 33.08,
+        "pred_labels_070": {
+          "bus": 30,
+          "car": 117,
+          "truck": 15,
+          "NONE": 27
+        },
+        "pred_labels_025": {
+          "bus": 39,
+          "car": 123,
+          "truck": 22,
+          "NONE": 5
+        }
+      }
+    },
+    "by_blur": {
+      "MODERATE_BLUR": {
+        "total": 83,
+        "detected_roi_070": 64,
+        "missed_roi_070": 19,
+        "presence_recall_070_pct": 77.11,
+        "detected_roi_025": 79,
+        "presence_recall_025_pct": 95.18,
+        "avg_conf_070": 0.8976,
+        "avg_conf_025": 0.8222,
+        "avg_latency_ms": 33.09,
+        "pred_labels_070": {
+          "NONE": 19,
+          "car": 57,
+          "truck": 7
+        },
+        "pred_labels_025": {
+          "truck": 12,
+          "car": 59,
+          "NONE": 4,
+          "bus": 8
+        }
+      },
+      "SEVERE_BLUR": {
+        "total": 152,
+        "detected_roi_070": 133,
+        "missed_roi_070": 19,
+        "presence_recall_070_pct": 87.5,
+        "detected_roi_025": 147,
+        "presence_recall_025_pct": 96.71,
+        "avg_conf_070": 0.8716,
+        "avg_conf_025": 0.8362,
+        "avg_latency_ms": 34.04,
+        "pred_labels_070": {
+          "car": 96,
+          "NONE": 19,
+          "bus": 28,
+          "truck": 9
+        },
+        "pred_labels_025": {
+          "car": 106,
+          "NONE": 5,
+          "bus": 29,
+          "truck": 12
+        }
+      },
+      "SHARP": {
+        "total": 44,
+        "detected_roi_070": 44,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 44,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.9181,
+        "avg_conf_025": 0.9181,
+        "avg_latency_ms": 36.67,
+        "pred_labels_070": {
+          "bus": 3,
+          "car": 40,
+          "truck": 1
+        },
+        "pred_labels_025": {
+          "bus": 3,
+          "car": 40,
+          "truck": 1
+        }
+      }
+    },
+    "by_apparent_bbox_size_070_approx": {
+      "10-25% (Intermedio)": {
+        "total": 106,
+        "detected_roi_070": 106,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 106,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.8752,
+        "avg_conf_025": 0.8752,
+        "avg_latency_ms": 33.08,
+        "pred_labels_070": {
+          "car": 73,
+          "bus": 28,
+          "truck": 5
+        },
+        "pred_labels_025": {
+          "car": 73,
+          "bus": 28,
+          "truck": 5
+        }
+      },
+      "2-10% (Intermedio-Lejano)": {
+        "total": 104,
+        "detected_roi_070": 104,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 104,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.9066,
+        "avg_conf_025": 0.9066,
+        "avg_latency_ms": 32.84,
+        "pred_labels_070": {
+          "car": 97,
+          "truck": 7
+        },
+        "pred_labels_025": {
+          "car": 97,
+          "truck": 7
+        }
+      },
+      "<2% (Lejano/Pequeno)": {
+        "total": 2,
+        "detected_roi_070": 2,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 2,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.8254,
+        "avg_conf_025": 0.8254,
+        "avg_latency_ms": 40.84,
+        "pred_labels_070": {
+          "car": 2
+        },
+        "pred_labels_025": {
+          "car": 2
+        }
+      },
+      ">25% (Cercano)": {
+        "total": 29,
+        "detected_roi_070": 29,
+        "missed_roi_070": 0,
+        "presence_recall_070_pct": 100.0,
+        "detected_roi_025": 29,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.8643,
+        "avg_conf_025": 0.8643,
+        "avg_latency_ms": 28.64,
+        "pred_labels_070": {
+          "bus": 3,
+          "car": 21,
+          "truck": 5
+        },
+        "pred_labels_025": {
+          "bus": 3,
+          "car": 21,
+          "truck": 5
+        }
+      },
+      "MISSED_AT_070": {
+        "total": 38,
+        "detected_roi_070": 0,
+        "missed_roi_070": 38,
+        "presence_recall_070_pct": 0.0,
+        "detected_roi_025": 29,
+        "presence_recall_025_pct": 76.32,
+        "avg_conf_070": null,
+        "avg_conf_025": 0.5002,
+        "avg_latency_ms": 44.74,
+        "pred_labels_070": {
+          "NONE": 38
+        },
+        "pred_labels_025": {
+          "truck": 8,
+          "car": 12,
+          "NONE": 9,
+          "bus": 9
+        }
+      }
+    },
+    "special_subsets": {
+      "school_bus_type_c_frontal_0deg": {
+        "total": 18,
+        "detected_roi_070": 17,
+        "missed_roi_070": 1,
+        "presence_recall_070_pct": 94.44,
+        "detected_roi_025": 18,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.8277,
+        "avg_conf_025": 0.8134,
+        "avg_latency_ms": 30.32,
+        "pred_labels_070": {
+          "car": 13,
+          "truck": 4,
+          "NONE": 1
+        },
+        "pred_labels_025": {
+          "car": 13,
+          "truck": 5
+        }
+      },
+      "partial_occlusion": {
+        "total": 107,
+        "detected_roi_070": 83,
+        "missed_roi_070": 24,
+        "presence_recall_070_pct": 77.57,
+        "detected_roi_025": 102,
+        "presence_recall_025_pct": 95.33,
+        "avg_conf_070": 0.876,
+        "avg_conf_025": 0.7995,
+        "avg_latency_ms": 35.46,
+        "pred_labels_070": {
+          "bus": 31,
+          "car": 48,
+          "NONE": 24,
+          "truck": 4
+        },
+        "pred_labels_025": {
+          "bus": 40,
+          "car": 54,
+          "truck": 8,
+          "NONE": 5
+        }
+      },
+      "small_or_distant": {
+        "total": 66,
+        "detected_roi_070": 65,
+        "missed_roi_070": 1,
+        "presence_recall_070_pct": 98.48,
+        "detected_roi_025": 66,
+        "presence_recall_025_pct": 100.0,
+        "avg_conf_070": 0.9052,
+        "avg_conf_025": 0.899,
+        "avg_latency_ms": 37.96,
+        "pred_labels_070": {
+          "NONE": 1,
+          "car": 61,
+          "truck": 4
+        },
+        "pred_labels_025": {
+          "truck": 5,
+          "car": 61
+        }
+      }
+    },
+    "class_confusion_single_primary_070": {
+      "total": 271,
+      "correct": 198,
+      "accuracy_pct": 73.06,
+      "labels": [
+        "car",
+        "bus",
+        "truck",
+        "motorcycle",
+        "NONE"
+      ],
+      "confusion_matrix": {
+        "car": {
+          "car": 168,
+          "bus": 1,
+          "truck": 9,
+          "motorcycle": 0,
+          "NONE": 25
+        },
+        "bus": {
+          "car": 17,
+          "bus": 30,
+          "truck": 8,
+          "motorcycle": 0,
+          "NONE": 13
+        },
+        "truck": {
+          "car": 0,
+          "bus": 0,
+          "truck": 0,
+          "motorcycle": 0,
+          "NONE": 0
+        },
+        "motorcycle": {
+          "car": 0,
+          "bus": 0,
+          "truck": 0,
+          "motorcycle": 0,
+          "NONE": 0
+        },
+        "NONE": {
+          "car": 0,
+          "bus": 0,
+          "truck": 0,
+          "motorcycle": 0,
+          "NONE": 0
+        }
+      },
+      "per_class": {
+        "car": {
+          "support": 203,
+          "tp": 168,
+          "fp": 17,
+          "fn": 35,
+          "precision": 0.9081,
+          "recall": 0.8276,
+          "f1": 0.866
+        },
+        "bus": {
+          "support": 68,
+          "tp": 30,
+          "fp": 1,
+          "fn": 38,
+          "precision": 0.9677,
+          "recall": 0.4412,
+          "f1": 0.6061
+        },
+        "truck": {
+          "support": 0,
+          "tp": 0,
+          "fp": 17,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": null,
+          "f1": null
+        },
+        "motorcycle": {
+          "support": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "NONE": {
+          "support": 0,
+          "tp": 0,
+          "fp": 38,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": null,
+          "f1": null
+        }
+      }
+    },
+    "class_confusion_single_primary_025": {
+      "total": 271,
+      "correct": 219,
+      "accuracy_pct": 80.81,
+      "labels": [
+        "car",
+        "bus",
+        "truck",
+        "motorcycle",
+        "NONE"
+      ],
+      "confusion_matrix": {
+        "car": {
+          "car": 180,
+          "bus": 1,
+          "truck": 14,
+          "motorcycle": 0,
+          "NONE": 8
+        },
+        "bus": {
+          "car": 17,
+          "bus": 39,
+          "truck": 11,
+          "motorcycle": 0,
+          "NONE": 1
+        },
+        "truck": {
+          "car": 0,
+          "bus": 0,
+          "truck": 0,
+          "motorcycle": 0,
+          "NONE": 0
+        },
+        "motorcycle": {
+          "car": 0,
+          "bus": 0,
+          "truck": 0,
+          "motorcycle": 0,
+          "NONE": 0
+        },
+        "NONE": {
+          "car": 0,
+          "bus": 0,
+          "truck": 0,
+          "motorcycle": 0,
+          "NONE": 0
+        }
+      },
+      "per_class": {
+        "car": {
+          "support": 203,
+          "tp": 180,
+          "fp": 17,
+          "fn": 23,
+          "precision": 0.9137,
+          "recall": 0.8867,
+          "f1": 0.9
+        },
+        "bus": {
+          "support": 68,
+          "tp": 39,
+          "fp": 1,
+          "fn": 29,
+          "precision": 0.975,
+          "recall": 0.5735,
+          "f1": 0.7222
+        },
+        "truck": {
+          "support": 0,
+          "tp": 0,
+          "fp": 25,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": null,
+          "f1": null
+        },
+        "motorcycle": {
+          "support": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "NONE": {
+          "support": 0,
+          "tp": 0,
+          "fp": 9,
+          "fn": 0,
+          "precision": 0.0,
+          "recall": null,
+          "f1": null
+        }
+      }
+    }
+  },
+  "fase_b_operational_20261117_unannotated": {
+    "CAM-ENTRADA": {
+      "total_files_on_disk": 2108,
+      "evaluated_files": 375,
+      "resolutions": {
+        "640x480": 375
+      },
+      "operational_detection_rate_roi_070_pct": 92.8,
+      "multi_vehicle_frames_roi_070": 282,
+      "roi_det_count_histogram_070": {
+        "0": 27,
+        "1": 66,
+        "2": 117,
+        "3": 165
+      },
+      "raw_labels_roi_070": {
+        "car": 741,
+        "truck": 54
+      },
+      "raw_labels_roi_025": {
+        "car": 827,
+        "truck": 60,
+        "bus": 2
+      },
+      "prod_primary_colors_070": {
+        "RED": 151,
+        "ORANGE": 12,
+        "UNKNOWN": 32,
+        "BLUE": 128,
+        "OTHER": 17,
+        "BLACK": 4,
+        "GREEN": 1,
+        "BROWN": 3
+      },
+      "bench_primary_colors_070": {
+        "RED": 129,
+        "UNKNOWN": 8,
+        "OTHER": 52,
+        "GREEN": 5,
+        "BLUE": 128,
+        "BROWN": 22,
+        "ORANGE": 4
+      },
+      "inference_latency_ms": {
+        "count": 375,
+        "mean": 40.924,
+        "median": 41.79,
+        "stdev": 10.271,
+        "p10": 22.594,
+        "p90": 50.952,
+        "p95": 58.44,
+        "p99": 73.13,
+        "min": 17.639,
+        "max": 74.834
+      },
+      "note": "Tasa operativa en capturas fisicas recientes sin anotacion bbox formal; no representa Precision/Recall."
+    },
+    "CAM-SALIDA": {
+      "total_files_on_disk": 303,
+      "evaluated_files": 303,
+      "resolutions": {
+        "720x1280": 303
+      },
+      "operational_detection_rate_roi_070_pct": 100.0,
+      "multi_vehicle_frames_roi_070": 296,
+      "roi_det_count_histogram_070": {
+        "1": 7,
+        "2": 6,
+        "3": 290
+      },
+      "raw_labels_roi_070": {
+        "car": 855,
+        "truck": 34
+      },
+      "raw_labels_roi_025": {
+        "car": 859,
+        "truck": 35
+      },
+      "prod_primary_colors_070": {
+        "RED": 121,
+        "BLUE": 40,
+        "UNKNOWN": 138,
+        "GREEN": 1,
+        "OTHER": 3
+      },
+      "bench_primary_colors_070": {
+        "RED": 112,
+        "BLUE": 40,
+        "OTHER": 148,
+        "GREEN": 2,
+        "UNKNOWN": 1
+      },
+      "inference_latency_ms": {
+        "count": 303,
+        "mean": 35.794,
+        "median": 39.567,
+        "stdev": 12.837,
+        "p10": 20.139,
+        "p90": 49.733,
+        "p95": 56.138,
+        "p99": 68.633,
+        "min": 18.252,
+        "max": 82.244
+      },
+      "note": "Tasa operativa en capturas fisicas recientes sin anotacion bbox formal; no representa Precision/Recall."
+    },
+    "CAM-03": {
+      "total_files_on_disk": 3,
+      "evaluated_files": 3,
+      "resolutions": {
+        "640x480": 3
+      },
+      "operational_detection_rate_roi_070_pct": 100.0,
+      "multi_vehicle_frames_roi_070": 0,
+      "roi_det_count_histogram_070": {
+        "1": 3
+      },
+      "raw_labels_roi_070": {
+        "car": 3
+      },
+      "raw_labels_roi_025": {
+        "car": 3
+      },
+      "prod_primary_colors_070": {
+        "RED": 3
+      },
+      "bench_primary_colors_070": {
+        "OTHER": 3
+      },
+      "inference_latency_ms": {
+        "count": 3,
+        "mean": 41.995,
+        "median": 40.906,
+        "stdev": 1.84,
+        "p10": 40.494,
+        "p90": 44.587,
+        "p95": 44.587,
+        "p99": 44.587,
+        "min": 40.494,
+        "max": 44.587
+      },
+      "note": "Tasa operativa en capturas fisicas recientes sin anotacion bbox formal; no representa Precision/Recall."
+    }
+  },
+  "fase_c_color_evaluation": {
+    "architecture_audit_note": "VisionEngineCoordinator usa VIGIA_Vision.detection.color_classifier.VehicleColorClassifier (Produccion), mientras que el benchmark VISION-05B evaluo VIGIA_Vision.classification.color_classifier.VehicleColorClassifier.",
+    "synthetic_12_category_suite_36_cases": {
+      "production_classifier": {
+        "total": 36,
+        "unknown_count": 6,
+        "unknown_rate_pct": 16.67,
+        "absolute_concordance_correct": 32,
+        "absolute_concordance_pct": 88.89,
+        "accuracy_excluding_unknown_correct": 29,
+        "accuracy_excluding_unknown_pct": 96.67,
+        "matrix_and_per_class": {
+          "total": 36,
+          "correct": 32,
+          "accuracy_pct": 88.89,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 2,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 1,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 2
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 3,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "SILVER": {
+              "WHITE": 1,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 2,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 3,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 3,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 3,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 3,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 3,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 3,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 3,
+              "UNKNOWN": 0
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 3
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 3,
+              "tp": 2,
+              "fp": 1,
+              "fn": 1,
+              "precision": 0.6667,
+              "recall": 0.6667,
+              "f1": 0.6667
+            },
+            "BLACK": {
+              "support": 3,
+              "tp": 1,
+              "fp": 0,
+              "fn": 2,
+              "precision": 1.0,
+              "recall": 0.3333,
+              "f1": 0.5
+            },
+            "GRAY": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "SILVER": {
+              "support": 3,
+              "tp": 2,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1.0,
+              "recall": 0.6667,
+              "f1": 0.8
+            },
+            "RED": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "BLUE": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "GREEN": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "YELLOW": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "BROWN": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "ORANGE": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "OTHER": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "UNKNOWN": {
+              "support": 3,
+              "tp": 3,
+              "fp": 3,
+              "fn": 0,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6667
+            }
+          }
+        }
+      },
+      "vision05b_classifier": {
+        "total": 36,
+        "unknown_count": 5,
+        "unknown_rate_pct": 13.89,
+        "absolute_concordance_correct": 31,
+        "absolute_concordance_pct": 86.11,
+        "accuracy_excluding_unknown_correct": 28,
+        "accuracy_excluding_unknown_pct": 90.32,
+        "matrix_and_per_class": {
+          "total": 36,
+          "correct": 31,
+          "accuracy_pct": 86.11,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 2,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 2,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 3,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "SILVER": {
+              "WHITE": 2,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 1,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 3,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 3,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 3,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 3,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 2,
+              "ORANGE": 1,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 3,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 3,
+              "UNKNOWN": 0
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 3
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 3,
+              "tp": 2,
+              "fp": 2,
+              "fn": 1,
+              "precision": 0.5,
+              "recall": 0.6667,
+              "f1": 0.5714
+            },
+            "BLACK": {
+              "support": 3,
+              "tp": 2,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1.0,
+              "recall": 0.6667,
+              "f1": 0.8
+            },
+            "GRAY": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "SILVER": {
+              "support": 3,
+              "tp": 1,
+              "fp": 0,
+              "fn": 2,
+              "precision": 1.0,
+              "recall": 0.3333,
+              "f1": 0.5
+            },
+            "RED": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "BLUE": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "GREEN": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "YELLOW": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "BROWN": {
+              "support": 3,
+              "tp": 2,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1.0,
+              "recall": 0.6667,
+              "f1": 0.8
+            },
+            "ORANGE": {
+              "support": 3,
+              "tp": 3,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571
+            },
+            "OTHER": {
+              "support": 3,
+              "tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "UNKNOWN": {
+              "support": 3,
+              "tp": 3,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.6,
+              "recall": 1.0,
+              "f1": 0.75
+            }
+          }
+        }
+      },
+      "sample_details": [
+        {
+          "variant": "WHITE_v0",
+          "bgr": [
+            238,
+            240,
+            242
+          ],
+          "gt_color": "WHITE",
+          "prod_pred": "WHITE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "WHITE",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "WHITE_v1",
+          "bgr": [
+            218,
+            222,
+            226
+          ],
+          "gt_color": "WHITE",
+          "prod_pred": "WHITE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "WHITE",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "WHITE_v2",
+          "bgr": [
+            250,
+            250,
+            248
+          ],
+          "gt_color": "WHITE",
+          "prod_pred": "UNKNOWN",
+          "prod_conf": 0.0,
+          "prod_status": "OVEREXPOSED_GLARE",
+          "bench_pred": "UNKNOWN",
+          "bench_conf": 0.0,
+          "bench_status": "LOW_QUALITY"
+        },
+        {
+          "variant": "BLACK_v0",
+          "bgr": [
+            18,
+            18,
+            20
+          ],
+          "gt_color": "BLACK",
+          "prod_pred": "UNKNOWN",
+          "prod_conf": 0.0,
+          "prod_status": "LOW_ILLUMINATION",
+          "bench_pred": "BLACK",
+          "bench_conf": 0.7376,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BLACK_v1",
+          "bgr": [
+            30,
+            32,
+            34
+          ],
+          "gt_color": "BLACK",
+          "prod_pred": "BLACK",
+          "prod_conf": 0.92,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "BLACK",
+          "bench_conf": 0.98,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BLACK_v2",
+          "bgr": [
+            12,
+            12,
+            14
+          ],
+          "gt_color": "BLACK",
+          "prod_pred": "UNKNOWN",
+          "prod_conf": 0.0,
+          "prod_status": "LOW_ILLUMINATION",
+          "bench_pred": "UNKNOWN",
+          "bench_conf": 0.0,
+          "bench_status": "LOW_QUALITY"
+        },
+        {
+          "variant": "GRAY_v0",
+          "bgr": [
+            105,
+            108,
+            110
+          ],
+          "gt_color": "GRAY",
+          "prod_pred": "GRAY",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "GRAY",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "GRAY_v1",
+          "bgr": [
+            85,
+            88,
+            92
+          ],
+          "gt_color": "GRAY",
+          "prod_pred": "GRAY",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "GRAY",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "GRAY_v2",
+          "bgr": [
+            125,
+            124,
+            122
+          ],
+          "gt_color": "GRAY",
+          "prod_pred": "GRAY",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "GRAY",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "SILVER_v0",
+          "bgr": [
+            192,
+            195,
+            200
+          ],
+          "gt_color": "SILVER",
+          "prod_pred": "SILVER",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "WHITE",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "SILVER_v1",
+          "bgr": [
+            175,
+            180,
+            185
+          ],
+          "gt_color": "SILVER",
+          "prod_pred": "SILVER",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "SILVER",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "SILVER_v2",
+          "bgr": [
+            205,
+            210,
+            214
+          ],
+          "gt_color": "SILVER",
+          "prod_pred": "WHITE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "WHITE",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "RED_v0",
+          "bgr": [
+            25,
+            25,
+            210
+          ],
+          "gt_color": "RED",
+          "prod_pred": "RED",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "RED",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "RED_v1",
+          "bgr": [
+            35,
+            30,
+            175
+          ],
+          "gt_color": "RED",
+          "prod_pred": "RED",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "RED",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "RED_v2",
+          "bgr": [
+            45,
+            38,
+            235
+          ],
+          "gt_color": "RED",
+          "prod_pred": "RED",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "RED",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BLUE_v0",
+          "bgr": [
+            205,
+            70,
+            25
+          ],
+          "gt_color": "BLUE",
+          "prod_pred": "BLUE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "BLUE",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BLUE_v1",
+          "bgr": [
+            160,
+            50,
+            20
+          ],
+          "gt_color": "BLUE",
+          "prod_pred": "BLUE",
+          "prod_conf": 0.92,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "BLUE",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BLUE_v2",
+          "bgr": [
+            225,
+            130,
+            45
+          ],
+          "gt_color": "BLUE",
+          "prod_pred": "BLUE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "BLUE",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "GREEN_v0",
+          "bgr": [
+            40,
+            170,
+            40
+          ],
+          "gt_color": "GREEN",
+          "prod_pred": "GREEN",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "GREEN",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "GREEN_v1",
+          "bgr": [
+            35,
+            125,
+            35
+          ],
+          "gt_color": "GREEN",
+          "prod_pred": "GREEN",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "GREEN",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "GREEN_v2",
+          "bgr": [
+            85,
+            190,
+            55
+          ],
+          "gt_color": "GREEN",
+          "prod_pred": "GREEN",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "GREEN",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "YELLOW_v0",
+          "bgr": [
+            20,
+            215,
+            235
+          ],
+          "gt_color": "YELLOW",
+          "prod_pred": "YELLOW",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "YELLOW",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "YELLOW_v1",
+          "bgr": [
+            25,
+            185,
+            215
+          ],
+          "gt_color": "YELLOW",
+          "prod_pred": "YELLOW",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "YELLOW",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "YELLOW_v2",
+          "bgr": [
+            40,
+            235,
+            245
+          ],
+          "gt_color": "YELLOW",
+          "prod_pred": "YELLOW",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "YELLOW",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BROWN_v0",
+          "bgr": [
+            35,
+            70,
+            115
+          ],
+          "gt_color": "BROWN",
+          "prod_pred": "BROWN",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "BROWN",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BROWN_v1",
+          "bgr": [
+            45,
+            85,
+            130
+          ],
+          "gt_color": "BROWN",
+          "prod_pred": "BROWN",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "ORANGE",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "BROWN_v2",
+          "bgr": [
+            25,
+            50,
+            88
+          ],
+          "gt_color": "BROWN",
+          "prod_pred": "BROWN",
+          "prod_conf": 0.9122,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "BROWN",
+          "bench_conf": 0.8874,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "ORANGE_v0",
+          "bgr": [
+            20,
+            115,
+            235
+          ],
+          "gt_color": "ORANGE",
+          "prod_pred": "ORANGE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "ORANGE",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "ORANGE_v1",
+          "bgr": [
+            25,
+            135,
+            245
+          ],
+          "gt_color": "ORANGE",
+          "prod_pred": "ORANGE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "ORANGE",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "ORANGE_v2",
+          "bgr": [
+            30,
+            95,
+            205
+          ],
+          "gt_color": "ORANGE",
+          "prod_pred": "ORANGE",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "ORANGE",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "OTHER_v0",
+          "bgr": [
+            180,
+            95,
+            235
+          ],
+          "gt_color": "OTHER",
+          "prod_pred": "OTHER",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "OTHER",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "OTHER_v1",
+          "bgr": [
+            210,
+            65,
+            165
+          ],
+          "gt_color": "OTHER",
+          "prod_pred": "OTHER",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "OTHER",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "OTHER_v2",
+          "bgr": [
+            150,
+            80,
+            215
+          ],
+          "gt_color": "OTHER",
+          "prod_pred": "OTHER",
+          "prod_conf": 0.98,
+          "prod_status": "CLASSIFIED",
+          "bench_pred": "OTHER",
+          "bench_conf": 0.954,
+          "bench_status": "SUCCESS"
+        },
+        {
+          "variant": "UNKNOWN_dark",
+          "bgr": null,
+          "gt_color": "UNKNOWN",
+          "prod_pred": "UNKNOWN",
+          "prod_conf": 0.0,
+          "prod_status": "LOW_ILLUMINATION",
+          "bench_pred": "UNKNOWN",
+          "bench_conf": 0.0,
+          "bench_status": "LOW_QUALITY"
+        },
+        {
+          "variant": "UNKNOWN_glare",
+          "bgr": null,
+          "gt_color": "UNKNOWN",
+          "prod_pred": "UNKNOWN",
+          "prod_conf": 0.0,
+          "prod_status": "OVEREXPOSED_GLARE",
+          "bench_pred": "UNKNOWN",
+          "bench_conf": 0.0,
+          "bench_status": "LOW_QUALITY"
+        },
+        {
+          "variant": "UNKNOWN_tiny",
+          "bgr": null,
+          "gt_color": "UNKNOWN",
+          "prod_pred": "UNKNOWN",
+          "prod_conf": 0.0,
+          "prod_status": "INSUFFICIENT_REGION",
+          "bench_pred": "UNKNOWN",
+          "bench_conf": 0.0,
+          "bench_status": "LOW_QUALITY"
+        }
+      ]
+    },
+    "vision05b_185_gt_comparison": {
+      "production_classifier_all_185": {
+        "total": 185,
+        "unknown_count": 18,
+        "unknown_rate_pct": 9.73,
+        "absolute_concordance_correct": 145,
+        "absolute_concordance_pct": 78.38,
+        "accuracy_excluding_unknown_correct": 145,
+        "accuracy_excluding_unknown_pct": 86.83,
+        "matrix_and_per_class": {
+          "total": 185,
+          "correct": 145,
+          "accuracy_pct": 78.38,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "SILVER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 2,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 103,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 1,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 11
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 1,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 2,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 28,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 6,
+              "SILVER": 1,
+              "RED": 6,
+              "BLUE": 2,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 1,
+              "ORANGE": 1,
+              "OTHER": 13,
+              "UNKNOWN": 6
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "BLACK": {
+              "support": 0,
+              "tp": 0,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "GRAY": {
+              "support": 0,
+              "tp": 0,
+              "fp": 6,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "SILVER": {
+              "support": 0,
+              "tp": 0,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "RED": {
+              "support": 117,
+              "tp": 103,
+              "fp": 8,
+              "fn": 14,
+              "precision": 0.9279,
+              "recall": 0.8803,
+              "f1": 0.9035
+            },
+            "BLUE": {
+              "support": 2,
+              "tp": 1,
+              "fp": 2,
+              "fn": 1,
+              "precision": 0.3333,
+              "recall": 0.5,
+              "f1": 0.4
+            },
+            "GREEN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "YELLOW": {
+              "support": 30,
+              "tp": 28,
+              "fp": 1,
+              "fn": 2,
+              "precision": 0.9655,
+              "recall": 0.9333,
+              "f1": 0.9492
+            },
+            "BROWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "ORANGE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "OTHER": {
+              "support": 36,
+              "tp": 13,
+              "fp": 0,
+              "fn": 23,
+              "precision": 1.0,
+              "recall": 0.3611,
+              "f1": 0.5306
+            },
+            "UNKNOWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 18,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            }
+          }
+        }
+      },
+      "vision05b_baseline_saved_185": {
+        "total": 185,
+        "unknown_count": 20,
+        "unknown_rate_pct": 10.81,
+        "absolute_concordance_correct": 142,
+        "absolute_concordance_pct": 76.76,
+        "accuracy_excluding_unknown_correct": 142,
+        "accuracy_excluding_unknown_pct": 86.06,
+        "matrix_and_per_class": {
+          "total": 185,
+          "correct": 142,
+          "accuracy_pct": 76.76,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "SILVER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 95,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 1,
+              "BROWN": 4,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 17
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 2,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 3,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 27,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 2,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 2,
+              "BLUE": 9,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 2,
+              "OTHER": 18,
+              "UNKNOWN": 3
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "BLACK": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "GRAY": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "SILVER": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "RED": {
+              "support": 117,
+              "tp": 95,
+              "fp": 5,
+              "fn": 22,
+              "precision": 0.95,
+              "recall": 0.812,
+              "f1": 0.8756
+            },
+            "BLUE": {
+              "support": 2,
+              "tp": 2,
+              "fp": 9,
+              "fn": 0,
+              "precision": 0.1818,
+              "recall": 1.0,
+              "f1": 0.3077
+            },
+            "GREEN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "YELLOW": {
+              "support": 30,
+              "tp": 27,
+              "fp": 1,
+              "fn": 3,
+              "precision": 0.9643,
+              "recall": 0.9,
+              "f1": 0.931
+            },
+            "BROWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 4,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "ORANGE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "OTHER": {
+              "support": 36,
+              "tp": 18,
+              "fp": 0,
+              "fn": 18,
+              "precision": 1.0,
+              "recall": 0.5,
+              "f1": 0.6667
+            },
+            "UNKNOWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 20,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            }
+          }
+        }
+      },
+      "production_excluding_screen_collages": {
+        "total": 176,
+        "unknown_count": 16,
+        "unknown_rate_pct": 9.09,
+        "absolute_concordance_correct": 145,
+        "absolute_concordance_pct": 82.39,
+        "accuracy_excluding_unknown_correct": 145,
+        "accuracy_excluding_unknown_pct": 90.62,
+        "matrix_and_per_class": {
+          "total": 176,
+          "correct": 145,
+          "accuracy_pct": 82.39,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "SILVER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 2,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 103,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 1,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 11
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 1,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 2,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 28,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 1,
+              "RED": 5,
+              "BLUE": 2,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 1,
+              "ORANGE": 1,
+              "OTHER": 13,
+              "UNKNOWN": 4
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "BLACK": {
+              "support": 0,
+              "tp": 0,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "GRAY": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "SILVER": {
+              "support": 0,
+              "tp": 0,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "RED": {
+              "support": 117,
+              "tp": 103,
+              "fp": 7,
+              "fn": 14,
+              "precision": 0.9364,
+              "recall": 0.8803,
+              "f1": 0.9075
+            },
+            "BLUE": {
+              "support": 2,
+              "tp": 1,
+              "fp": 2,
+              "fn": 1,
+              "precision": 0.3333,
+              "recall": 0.5,
+              "f1": 0.4
+            },
+            "GREEN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "YELLOW": {
+              "support": 30,
+              "tp": 28,
+              "fp": 1,
+              "fn": 2,
+              "precision": 0.9655,
+              "recall": 0.9333,
+              "f1": 0.9492
+            },
+            "BROWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "ORANGE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "OTHER": {
+              "support": 27,
+              "tp": 13,
+              "fp": 0,
+              "fn": 14,
+              "precision": 1.0,
+              "recall": 0.4815,
+              "f1": 0.65
+            },
+            "UNKNOWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 16,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            }
+          }
+        }
+      },
+      "vision05b_excluding_screen_collages": {
+        "total": 176,
+        "unknown_count": 19,
+        "unknown_rate_pct": 10.8,
+        "absolute_concordance_correct": 142,
+        "absolute_concordance_pct": 80.68,
+        "accuracy_excluding_unknown_correct": 142,
+        "accuracy_excluding_unknown_pct": 90.45,
+        "matrix_and_per_class": {
+          "total": 176,
+          "correct": 142,
+          "accuracy_pct": 80.68,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "SILVER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 95,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 1,
+              "BROWN": 4,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 17
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 2,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 3,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 27,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 2,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 1,
+              "BLUE": 2,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 2,
+              "OTHER": 18,
+              "UNKNOWN": 2
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "BLACK": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "GRAY": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "SILVER": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "RED": {
+              "support": 117,
+              "tp": 95,
+              "fp": 4,
+              "fn": 22,
+              "precision": 0.9596,
+              "recall": 0.812,
+              "f1": 0.8796
+            },
+            "BLUE": {
+              "support": 2,
+              "tp": 2,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6667
+            },
+            "GREEN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "YELLOW": {
+              "support": 30,
+              "tp": 27,
+              "fp": 1,
+              "fn": 3,
+              "precision": 0.9643,
+              "recall": 0.9,
+              "f1": 0.931
+            },
+            "BROWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 4,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "ORANGE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "OTHER": {
+              "support": 27,
+              "tp": 18,
+              "fp": 0,
+              "fn": 9,
+              "precision": 1.0,
+              "recall": 0.6667,
+              "f1": 0.8
+            },
+            "UNKNOWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 19,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            }
+          }
+        }
+      },
+      "production_by_lighting": {
+        "NORMAL": {
+          "total": 142,
+          "unknown_count": 7,
+          "unknown_rate_pct": 4.93,
+          "absolute_concordance_correct": 115,
+          "absolute_concordance_pct": 80.99,
+          "accuracy_excluding_unknown_correct": 115,
+          "accuracy_excluding_unknown_pct": 85.19,
+          "matrix_and_per_class": {
+            "total": 142,
+            "correct": 115,
+            "accuracy_pct": 80.99,
+            "labels": [
+              "WHITE",
+              "BLACK",
+              "GRAY",
+              "SILVER",
+              "RED",
+              "BLUE",
+              "GREEN",
+              "YELLOW",
+              "BROWN",
+              "ORANGE",
+              "OTHER",
+              "UNKNOWN"
+            ],
+            "confusion_matrix": {
+              "WHITE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BLACK": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "GRAY": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "SILVER": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "RED": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 73,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 1,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BLUE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 1,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 1
+              },
+              "GREEN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "YELLOW": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 2,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 28,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BROWN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "ORANGE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "OTHER": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 6,
+                "SILVER": 1,
+                "RED": 6,
+                "BLUE": 2,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 1,
+                "ORANGE": 1,
+                "OTHER": 13,
+                "UNKNOWN": 6
+              },
+              "UNKNOWN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              }
+            },
+            "per_class": {
+              "WHITE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "BLACK": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "GRAY": {
+                "support": 0,
+                "tp": 0,
+                "fp": 6,
+                "fn": 0,
+                "precision": 0.0,
+                "recall": null,
+                "f1": null
+              },
+              "SILVER": {
+                "support": 0,
+                "tp": 0,
+                "fp": 1,
+                "fn": 0,
+                "precision": 0.0,
+                "recall": null,
+                "f1": null
+              },
+              "RED": {
+                "support": 74,
+                "tp": 73,
+                "fp": 8,
+                "fn": 1,
+                "precision": 0.9012,
+                "recall": 0.9865,
+                "f1": 0.9419
+              },
+              "BLUE": {
+                "support": 2,
+                "tp": 1,
+                "fp": 2,
+                "fn": 1,
+                "precision": 0.3333,
+                "recall": 0.5,
+                "f1": 0.4
+              },
+              "GREEN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "YELLOW": {
+                "support": 30,
+                "tp": 28,
+                "fp": 1,
+                "fn": 2,
+                "precision": 0.9655,
+                "recall": 0.9333,
+                "f1": 0.9492
+              },
+              "BROWN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 1,
+                "fn": 0,
+                "precision": 0.0,
+                "recall": null,
+                "f1": null
+              },
+              "ORANGE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 1,
+                "fn": 0,
+                "precision": 0.0,
+                "recall": null,
+                "f1": null
+              },
+              "OTHER": {
+                "support": 36,
+                "tp": 13,
+                "fp": 0,
+                "fn": 23,
+                "precision": 1.0,
+                "recall": 0.3611,
+                "f1": 0.5306
+              },
+              "UNKNOWN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 7,
+                "fn": 0,
+                "precision": 0.0,
+                "recall": null,
+                "f1": null
+              }
+            }
+          }
+        },
+        "GLARE_OR_HIGH_CONTRAST": {
+          "total": 25,
+          "unknown_count": 0,
+          "unknown_rate_pct": 0.0,
+          "absolute_concordance_correct": 25,
+          "absolute_concordance_pct": 100.0,
+          "accuracy_excluding_unknown_correct": 25,
+          "accuracy_excluding_unknown_pct": 100.0,
+          "matrix_and_per_class": {
+            "total": 25,
+            "correct": 25,
+            "accuracy_pct": 100.0,
+            "labels": [
+              "WHITE",
+              "BLACK",
+              "GRAY",
+              "SILVER",
+              "RED",
+              "BLUE",
+              "GREEN",
+              "YELLOW",
+              "BROWN",
+              "ORANGE",
+              "OTHER",
+              "UNKNOWN"
+            ],
+            "confusion_matrix": {
+              "WHITE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BLACK": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "GRAY": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "SILVER": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "RED": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 25,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BLUE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "GREEN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "YELLOW": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BROWN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "ORANGE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "OTHER": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "UNKNOWN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              }
+            },
+            "per_class": {
+              "WHITE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "BLACK": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "GRAY": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "SILVER": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "RED": {
+                "support": 25,
+                "tp": 25,
+                "fp": 0,
+                "fn": 0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1": 1.0
+              },
+              "BLUE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "GREEN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "YELLOW": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "BROWN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "ORANGE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "OTHER": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "UNKNOWN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              }
+            }
+          }
+        },
+        "LOW_LIGHT": {
+          "total": 18,
+          "unknown_count": 11,
+          "unknown_rate_pct": 61.11,
+          "absolute_concordance_correct": 5,
+          "absolute_concordance_pct": 27.78,
+          "accuracy_excluding_unknown_correct": 5,
+          "accuracy_excluding_unknown_pct": 71.43,
+          "matrix_and_per_class": {
+            "total": 18,
+            "correct": 5,
+            "accuracy_pct": 27.78,
+            "labels": [
+              "WHITE",
+              "BLACK",
+              "GRAY",
+              "SILVER",
+              "RED",
+              "BLUE",
+              "GREEN",
+              "YELLOW",
+              "BROWN",
+              "ORANGE",
+              "OTHER",
+              "UNKNOWN"
+            ],
+            "confusion_matrix": {
+              "WHITE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BLACK": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "GRAY": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "SILVER": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "RED": {
+                "WHITE": 0,
+                "BLACK": 2,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 5,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 11
+              },
+              "BLUE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "GREEN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "YELLOW": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "BROWN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "ORANGE": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "OTHER": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              },
+              "UNKNOWN": {
+                "WHITE": 0,
+                "BLACK": 0,
+                "GRAY": 0,
+                "SILVER": 0,
+                "RED": 0,
+                "BLUE": 0,
+                "GREEN": 0,
+                "YELLOW": 0,
+                "BROWN": 0,
+                "ORANGE": 0,
+                "OTHER": 0,
+                "UNKNOWN": 0
+              }
+            },
+            "per_class": {
+              "WHITE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "BLACK": {
+                "support": 0,
+                "tp": 0,
+                "fp": 2,
+                "fn": 0,
+                "precision": 0.0,
+                "recall": null,
+                "f1": null
+              },
+              "GRAY": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "SILVER": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "RED": {
+                "support": 18,
+                "tp": 5,
+                "fp": 0,
+                "fn": 13,
+                "precision": 1.0,
+                "recall": 0.2778,
+                "f1": 0.4348
+              },
+              "BLUE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "GREEN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "YELLOW": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "BROWN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "ORANGE": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "OTHER": {
+                "support": 0,
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "precision": null,
+                "recall": null,
+                "f1": null
+              },
+              "UNKNOWN": {
+                "support": 0,
+                "tp": 0,
+                "fp": 11,
+                "fn": 0,
+                "precision": 0.0,
+                "recall": null,
+                "f1": null
+              }
+            }
+          }
+        }
+      },
+      "production_status_counts": {
+        "CLASSIFIED": 167,
+        "AMBIGUOUS_COLOR": 7,
+        "LOW_CONFIDENCE_UNKNOWN": 1,
+        "LOW_ILLUMINATION": 10
+      },
+      "production_latency_ms": {
+        "count": 185,
+        "mean": 2.561,
+        "median": 2.433,
+        "stdev": 0.774,
+        "p10": 1.755,
+        "p90": 3.556,
+        "p95": 3.934,
+        "p99": 4.684,
+        "min": 0.854,
+        "max": 5.103
+      }
+    },
+    "historical_unique_unambiguous_color_gt": {
+      "production_classifier": {
+        "total": 222,
+        "unknown_count": 31,
+        "unknown_rate_pct": 13.96,
+        "absolute_concordance_correct": 174,
+        "absolute_concordance_pct": 78.38,
+        "accuracy_excluding_unknown_correct": 174,
+        "accuracy_excluding_unknown_pct": 91.1,
+        "matrix_and_per_class": {
+          "total": 222,
+          "correct": 174,
+          "accuracy_pct": 78.38,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "SILVER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 3,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 107,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 26
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 3,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 2
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 8,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 51,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 6,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 13,
+              "UNKNOWN": 2
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "BLACK": {
+              "support": 0,
+              "tp": 0,
+              "fp": 3,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "GRAY": {
+              "support": 1,
+              "tp": 0,
+              "fp": 0,
+              "fn": 1,
+              "precision": null,
+              "recall": 0.0,
+              "f1": null
+            },
+            "SILVER": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "RED": {
+              "support": 136,
+              "tp": 107,
+              "fp": 14,
+              "fn": 29,
+              "precision": 0.8843,
+              "recall": 0.7868,
+              "f1": 0.8327
+            },
+            "BLUE": {
+              "support": 5,
+              "tp": 3,
+              "fp": 0,
+              "fn": 2,
+              "precision": 1.0,
+              "recall": 0.6,
+              "f1": 0.75
+            },
+            "GREEN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "YELLOW": {
+              "support": 59,
+              "tp": 51,
+              "fp": 0,
+              "fn": 8,
+              "precision": 1.0,
+              "recall": 0.8644,
+              "f1": 0.9273
+            },
+            "BROWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "ORANGE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "OTHER": {
+              "support": 21,
+              "tp": 13,
+              "fp": 0,
+              "fn": 8,
+              "precision": 1.0,
+              "recall": 0.619,
+              "f1": 0.7647
+            },
+            "UNKNOWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 31,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            }
+          }
+        }
+      },
+      "vision05b_classifier": {
+        "total": 222,
+        "unknown_count": 42,
+        "unknown_rate_pct": 18.92,
+        "absolute_concordance_correct": 168,
+        "absolute_concordance_pct": 75.68,
+        "accuracy_excluding_unknown_correct": 168,
+        "accuracy_excluding_unknown_pct": 93.33,
+        "matrix_and_per_class": {
+          "total": 222,
+          "correct": 168,
+          "accuracy_pct": 75.68,
+          "labels": [
+            "WHITE",
+            "BLACK",
+            "GRAY",
+            "SILVER",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "BROWN",
+            "ORANGE",
+            "OTHER",
+            "UNKNOWN"
+          ],
+          "confusion_matrix": {
+            "WHITE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "BLACK": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "GRAY": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "SILVER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "RED": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 99,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 4,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 33
+            },
+            "BLUE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 4,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 1
+            },
+            "GREEN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "YELLOW": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 7,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 44,
+              "BROWN": 1,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 7
+            },
+            "BROWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "ORANGE": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            },
+            "OTHER": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 21,
+              "UNKNOWN": 0
+            },
+            "UNKNOWN": {
+              "WHITE": 0,
+              "BLACK": 0,
+              "GRAY": 0,
+              "SILVER": 0,
+              "RED": 0,
+              "BLUE": 0,
+              "GREEN": 0,
+              "YELLOW": 0,
+              "BROWN": 0,
+              "ORANGE": 0,
+              "OTHER": 0,
+              "UNKNOWN": 0
+            }
+          },
+          "per_class": {
+            "WHITE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "BLACK": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "GRAY": {
+              "support": 1,
+              "tp": 0,
+              "fp": 0,
+              "fn": 1,
+              "precision": null,
+              "recall": 0.0,
+              "f1": null
+            },
+            "SILVER": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "RED": {
+              "support": 136,
+              "tp": 99,
+              "fp": 7,
+              "fn": 37,
+              "precision": 0.934,
+              "recall": 0.7279,
+              "f1": 0.8182
+            },
+            "BLUE": {
+              "support": 5,
+              "tp": 4,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1.0,
+              "recall": 0.8,
+              "f1": 0.8889
+            },
+            "GREEN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "YELLOW": {
+              "support": 59,
+              "tp": 44,
+              "fp": 0,
+              "fn": 15,
+              "precision": 1.0,
+              "recall": 0.7458,
+              "f1": 0.8544
+            },
+            "BROWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 5,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            },
+            "ORANGE": {
+              "support": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            },
+            "OTHER": {
+              "support": 21,
+              "tp": 21,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "UNKNOWN": {
+              "support": 0,
+              "tp": 0,
+              "fp": 42,
+              "fn": 0,
+              "precision": 0.0,
+              "recall": null,
+              "f1": null
+            }
+          }
+        }
+      }
+    },
+    "sensitivity_brightness": [
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "brightness_scale": 0.25,
+        "pred": "BLACK",
+        "conf": 0.8621,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "brightness_scale": 0.5,
+        "pred": "YELLOW",
+        "conf": 0.8204,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "brightness_scale": 0.75,
+        "pred": "YELLOW",
+        "conf": 0.841,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "brightness_scale": 1.0,
+        "pred": "YELLOW",
+        "conf": 0.8383,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "brightness_scale": 1.35,
+        "pred": "YELLOW",
+        "conf": 0.9079,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "brightness_scale": 0.25,
+        "pred": "BLACK",
+        "conf": 0.7548,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "brightness_scale": 0.5,
+        "pred": "BLACK",
+        "conf": 0.4545,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "brightness_scale": 0.75,
+        "pred": "BLUE",
+        "conf": 0.674,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "brightness_scale": 1.0,
+        "pred": "BLUE",
+        "conf": 0.7416,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "brightness_scale": 1.35,
+        "pred": "BLUE",
+        "conf": 0.7939,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "brightness_scale": 0.25,
+        "pred": "RED",
+        "conf": 0.7535,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "brightness_scale": 0.5,
+        "pred": "RED",
+        "conf": 0.8451,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "brightness_scale": 0.75,
+        "pred": "RED",
+        "conf": 0.8683,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "brightness_scale": 1.0,
+        "pred": "RED",
+        "conf": 0.8804,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "brightness_scale": 1.35,
+        "pred": "RED",
+        "conf": 0.892,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "brightness_scale": 0.25,
+        "pred": "BLACK",
+        "conf": 0.524,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "brightness_scale": 0.5,
+        "pred": "BLACK",
+        "conf": 0.7256,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "brightness_scale": 0.75,
+        "pred": "BLACK",
+        "conf": 0.6869,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "brightness_scale": 1.0,
+        "pred": "UNKNOWN",
+        "conf": 0.3536,
+        "status": "AMBIGUOUS_COLOR"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "brightness_scale": 1.35,
+        "pred": "UNKNOWN",
+        "conf": 0.3147,
+        "status": "AMBIGUOUS_COLOR"
+      }
+    ],
+    "sensitivity_partial_crop": [
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "crop_mode": "full",
+        "pred": "YELLOW",
+        "conf": 0.8383,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "crop_mode": "left_50pct",
+        "pred": "YELLOW",
+        "conf": 0.7129,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "crop_mode": "right_50pct",
+        "pred": "YELLOW",
+        "conf": 0.9014,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "crop_mode": "top_50pct",
+        "pred": "YELLOW",
+        "conf": 0.8526,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "yellow_bus",
+        "expected": "YELLOW",
+        "crop_mode": "bottom_50pct",
+        "pred": "YELLOW",
+        "conf": 0.8429,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "crop_mode": "full",
+        "pred": "BLUE",
+        "conf": 0.7416,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "crop_mode": "left_50pct",
+        "pred": "BLUE",
+        "conf": 0.4316,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "crop_mode": "right_50pct",
+        "pred": "BLUE",
+        "conf": 0.7894,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "crop_mode": "top_50pct",
+        "pred": "UNKNOWN",
+        "conf": 0.2832,
+        "status": "AMBIGUOUS_COLOR"
+      },
+      {
+        "case": "blue_bus",
+        "expected": "BLUE",
+        "crop_mode": "bottom_50pct",
+        "pred": "BLUE",
+        "conf": 0.8231,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "crop_mode": "full",
+        "pred": "RED",
+        "conf": 0.8804,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "crop_mode": "left_50pct",
+        "pred": "RED",
+        "conf": 0.9154,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "crop_mode": "right_50pct",
+        "pred": "RED",
+        "conf": 0.8649,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "crop_mode": "top_50pct",
+        "pred": "RED",
+        "conf": 0.9677,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "red_toy_cam_salida",
+        "expected": "RED",
+        "crop_mode": "bottom_50pct",
+        "pred": "RED",
+        "conf": 0.9471,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "crop_mode": "full",
+        "pred": "UNKNOWN",
+        "conf": 0.3536,
+        "status": "AMBIGUOUS_COLOR"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "crop_mode": "left_50pct",
+        "pred": "BLACK",
+        "conf": 0.8759,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "crop_mode": "right_50pct",
+        "pred": "RED",
+        "conf": 0.4268,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "crop_mode": "top_50pct",
+        "pred": "RED",
+        "conf": 0.4009,
+        "status": "CLASSIFIED"
+      },
+      {
+        "case": "dark_blue_corsa",
+        "expected": "BLUE",
+        "crop_mode": "bottom_50pct",
+        "pred": "UNKNOWN",
+        "conf": 0.3478,
+        "status": "AMBIGUOUS_COLOR"
+      }
+    ],
+    "temporal_stability_bursts_20261117": [
+      {
+        "burst_name": "20261117_CAM-ENTRADA_burst_inicio",
+        "camera": "CAM-ENTRADA",
+        "frames": 20,
+        "detected_frames": 20,
+        "labels_counter": {
+          "car": 20
+        },
+        "prod_color_sequence": [
+          "OTHER",
+          "OTHER",
+          "OTHER",
+          "OTHER",
+          "OTHER",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED"
+        ],
+        "prod_mode_color": "RED",
+        "prod_mode_consistency_pct": 75.0,
+        "prod_frame_to_frame_flips": 1,
+        "prod_conf_stdev": 0.1107,
+        "bench_mode_color": "RED",
+        "bench_mode_consistency_pct": 60.0,
+        "bench_frame_to_frame_flips": 4
+      },
+      {
+        "burst_name": "20261117_CAM-ENTRADA_burst_medio",
+        "camera": "CAM-ENTRADA",
+        "frames": 20,
+        "detected_frames": 13,
+        "labels_counter": {
+          "car": 12,
+          "truck": 1,
+          "NONE": 7
+        },
+        "prod_color_sequence": [
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "UNKNOWN",
+          "RED",
+          "NO_DET",
+          "NO_DET",
+          "NO_DET",
+          "NO_DET",
+          "NO_DET",
+          "RED",
+          "NO_DET",
+          "BLUE",
+          "NO_DET",
+          "BLUE",
+          "OTHER",
+          "BLUE",
+          "BLUE"
+        ],
+        "prod_mode_color": "RED",
+        "prod_mode_consistency_pct": 53.85,
+        "prod_frame_to_frame_flips": 5,
+        "prod_conf_stdev": 0.121,
+        "bench_mode_color": "RED",
+        "bench_mode_consistency_pct": 61.54,
+        "bench_frame_to_frame_flips": 3
+      },
+      {
+        "burst_name": "20261117_CAM-ENTRADA_burst_ocluido_final",
+        "camera": "CAM-ENTRADA",
+        "frames": 20,
+        "detected_frames": 14,
+        "labels_counter": {
+          "car": 13,
+          "truck": 1,
+          "NONE": 6
+        },
+        "prod_color_sequence": [
+          "BLUE",
+          "BLUE",
+          "UNKNOWN",
+          "UNKNOWN",
+          "RED",
+          "RED",
+          "BLUE",
+          "UNKNOWN",
+          "NO_DET",
+          "UNKNOWN",
+          "BLACK",
+          "NO_DET",
+          "NO_DET",
+          "BLACK",
+          "NO_DET",
+          "NO_DET",
+          "NO_DET",
+          "RED",
+          "RED",
+          "RED"
+        ],
+        "prod_mode_color": "RED",
+        "prod_mode_consistency_pct": 35.71,
+        "prod_frame_to_frame_flips": 6,
+        "prod_conf_stdev": 0.2085,
+        "bench_mode_color": "BROWN",
+        "bench_mode_consistency_pct": 50.0,
+        "bench_frame_to_frame_flips": 8
+      },
+      {
+        "burst_name": "20261117_CAM-SALIDA_burst_nitido_multi",
+        "camera": "CAM-SALIDA",
+        "frames": 20,
+        "detected_frames": 20,
+        "labels_counter": {
+          "car": 20
+        },
+        "prod_color_sequence": [
+          "BLUE",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "BLUE",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "BLUE",
+          "BLUE",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN"
+        ],
+        "prod_mode_color": "UNKNOWN",
+        "prod_mode_consistency_pct": 80.0,
+        "prod_frame_to_frame_flips": 5,
+        "prod_conf_stdev": 0.158,
+        "bench_mode_color": "OTHER",
+        "bench_mode_consistency_pct": 80.0,
+        "bench_frame_to_frame_flips": 5
+      },
+      {
+        "burst_name": "20261117_CAM-SALIDA_burst_inicio",
+        "camera": "CAM-SALIDA",
+        "frames": 20,
+        "detected_frames": 20,
+        "labels_counter": {
+          "car": 20
+        },
+        "prod_color_sequence": [
+          "RED",
+          "BLUE",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "UNKNOWN",
+          "GREEN",
+          "BLUE",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED",
+          "RED"
+        ],
+        "prod_mode_color": "RED",
+        "prod_mode_consistency_pct": 80.0,
+        "prod_frame_to_frame_flips": 6,
+        "prod_conf_stdev": 0.1315,
+        "bench_mode_color": "RED",
+        "bench_mode_consistency_pct": 70.0,
+        "bench_frame_to_frame_flips": 6
+      }
+    ]
+  },
+  "fase_d_association_integrity": {
+    "all_multi_vehicle_crops_isolated": true,
+    "multi_vehicle_crop_isolation": [
+      {
+        "case": "20261117_multi_3veh",
+        "roi_detections_025": 3,
+        "detections": [
+          {
+            "det_index": 0,
+            "label": "car",
+            "det_conf": 0.8696,
+            "bbox": [
+              242,
+              324,
+              598,
+              570
+            ],
+            "color_pred": "UNKNOWN",
+            "color_conf": 0.4221,
+            "color_status": "AMBIGUOUS_COLOR",
+            "strict_crop_isolated": true
+          },
+          {
+            "det_index": 1,
+            "label": "car",
+            "det_conf": 0.7607,
+            "bbox": [
+              519,
+              615,
+              581,
+              706
+            ],
+            "color_pred": "RED",
+            "color_conf": 0.8804,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          },
+          {
+            "det_index": 2,
+            "label": "car",
+            "det_conf": 0.729,
+            "bbox": [
+              164,
+              525,
+              445,
+              748
+            ],
+            "color_pred": "BLUE",
+            "color_conf": 0.8098,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          }
+        ]
+      },
+      {
+        "case": "20261116_bus_red_2veh",
+        "roi_detections_025": 2,
+        "detections": [
+          {
+            "det_index": 0,
+            "label": "car",
+            "det_conf": 0.9331,
+            "bbox": [
+              258,
+              236,
+              462,
+              328
+            ],
+            "color_pred": "RED",
+            "color_conf": 0.8037,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          },
+          {
+            "det_index": 1,
+            "label": "car",
+            "det_conf": 0.2892,
+            "bbox": [
+              147,
+              232,
+              264,
+              359
+            ],
+            "color_pred": "YELLOW",
+            "color_conf": 0.8393,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          }
+        ]
+      },
+      {
+        "case": "20261116_pink_cyan_2veh",
+        "roi_detections_025": 2,
+        "detections": [
+          {
+            "det_index": 0,
+            "label": "car",
+            "det_conf": 0.9375,
+            "bbox": [
+              0,
+              106,
+              239,
+              276
+            ],
+            "color_pred": "RED",
+            "color_conf": 0.7514,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          },
+          {
+            "det_index": 1,
+            "label": "car",
+            "det_conf": 0.875,
+            "bbox": [
+              259,
+              195,
+              397,
+              306
+            ],
+            "color_pred": "BLUE",
+            "color_conf": 0.8733,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          }
+        ]
+      },
+      {
+        "case": "20261117_occluded_multi",
+        "roi_detections_025": 3,
+        "detections": [
+          {
+            "det_index": 0,
+            "label": "car",
+            "det_conf": 0.7819,
+            "bbox": [
+              385,
+              221,
+              464,
+              339
+            ],
+            "color_pred": "BLUE",
+            "color_conf": 0.8782,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          },
+          {
+            "det_index": 1,
+            "label": "car",
+            "det_conf": 0.7768,
+            "bbox": [
+              495,
+              266,
+              547,
+              315
+            ],
+            "color_pred": "RED",
+            "color_conf": 0.7226,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          },
+          {
+            "det_index": 2,
+            "label": "car",
+            "det_conf": 0.5391,
+            "bbox": [
+              372,
+              110,
+              452,
+              231
+            ],
+            "color_pred": "RED",
+            "color_conf": 0.8385,
+            "color_status": "CLASSIFIED",
+            "strict_crop_isolated": true
+          }
+        ]
+      }
+    ],
+    "synthetic_overlap_contamination": [
+      {
+        "neighbor_intrusion_width_frac": 0.0,
+        "target_true_color": "RED",
+        "intruder_color": "BLUE",
+        "predicted_color": "RED",
+        "confidence": 0.92,
+        "status": "CLASSIFIED"
+      },
+      {
+        "neighbor_intrusion_width_frac": 0.15,
+        "target_true_color": "RED",
+        "intruder_color": "BLUE",
+        "predicted_color": "RED",
+        "confidence": 0.9473,
+        "status": "CLASSIFIED"
+      },
+      {
+        "neighbor_intrusion_width_frac": 0.3,
+        "target_true_color": "RED",
+        "intruder_color": "BLUE",
+        "predicted_color": "RED",
+        "confidence": 0.7367,
+        "status": "CLASSIFIED"
+      },
+      {
+        "neighbor_intrusion_width_frac": 0.5,
+        "target_true_color": "RED",
+        "intruder_color": "BLUE",
+        "predicted_color": "BLUE",
+        "confidence": 0.4745,
+        "status": "CLASSIFIED"
+      }
+    ],
+    "coordinator_association_and_dual_camera": {
+      "multi_vehicle_coordinator_test": {
+        "detections_in_roi_count": 3,
+        "primary_bbox": [
+          242,
+          324,
+          598,
+          570
+        ],
+        "vision_result_color_pred": "UNKNOWN",
+        "vision_result_color_conf": 0.4221,
+        "envelope_color_status": "AMBIGUOUS_COLOR",
+        "secondary_vehicles_color_dropped": true,
+        "note": "VisionEngineCoordinator clasifica unicamente detections_in_roi[0]; colores de vehiculos secundarios [1..N] no se evaluan ni persisten."
+      },
+      "dual_camera_isolation_test": {
+        "cam_entrada_multi_primary_preds": [
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN"
+        ],
+        "cam_salida_yellow_bus_preds": [
+          "YELLOW",
+          "YELLOW",
+          "YELLOW",
+          "YELLOW"
+        ],
+        "cam_salida_blue_bus_preds": [
+          "BLUE",
+          "BLUE",
+          "BLUE",
+          "BLUE"
+        ],
+        "zero_cross_camera_contamination": true,
+        "coordinator_metrics_color_block": {
+          "enabled": true,
+          "class_name": "VehicleColorClassifier",
+          "classified_total": 17,
+          "unknown_total": 9,
+          "error_total": 0,
+          "mean_latency_ms": 5.946
+        }
+      }
+    },
+    "unknown_abstention_checks": [
+      {
+        "scenario": "dark",
+        "pred": "UNKNOWN",
+        "conf": 0.0,
+        "status": "LOW_ILLUMINATION",
+        "is_unknown": true
+      },
+      {
+        "scenario": "glare",
+        "pred": "UNKNOWN",
+        "conf": 0.0,
+        "status": "OVEREXPOSED_GLARE",
+        "is_unknown": true
+      },
+      {
+        "scenario": "tiny_bbox",
+        "pred": "UNKNOWN",
+        "conf": 0.0,
+        "status": "INSUFFICIENT_REGION",
+        "is_unknown": true
+      },
+      {
+        "scenario": "low_det_conf",
+        "pred": "UNKNOWN",
+        "conf": 0.0,
+        "status": "INVALID_DETECTION",
+        "is_unknown": true
+      }
+    ]
+  },
+  "fase_g_lpr_optical_feasibility": {
+    "CAM-ENTRADA": {
+      "resolutions": {
+        "640x480": 375
+      },
+      "file_size_kb": {
+        "count": 375,
+        "mean": 48.427,
+        "median": 50.814,
+        "stdev": 7.914,
+        "p10": 37.388,
+        "p90": 54.951,
+        "p95": 57.297,
+        "p99": 59.241,
+        "min": 17.598,
+        "max": 61.836
+      },
+      "sharpness_laplacian": {
+        "count": 375,
+        "mean": 100.72,
+        "median": 106.99,
+        "stdev": 39.67,
+        "p10": 17.5,
+        "p90": 139.49,
+        "p95": 150.15,
+        "p99": 161.87,
+        "min": 1.9,
+        "max": 186.64
+      },
+      "sharpness_distribution": {
+        "severe_blur_<50": 56,
+        "moderate_50_120": 220,
+        "sharp_>=120": 99
+      },
+      "luminance_mean": {
+        "count": 375,
+        "mean": 110.077,
+        "median": 99.23,
+        "stdev": 28.564,
+        "p10": 85.5,
+        "p90": 146.01,
+        "p95": 150.58,
+        "p99": 155.53,
+        "min": 26.04,
+        "max": 165.6
+      },
+      "glare_pct": {
+        "count": 375,
+        "mean": 4.341,
+        "median": 4.859,
+        "stdev": 3.713,
+        "p10": 0.0,
+        "p90": 8.035,
+        "p95": 8.969,
+        "p99": 11.999,
+        "min": 0.0,
+        "max": 22.817
+      },
+      "detected_bbox_width_px": {
+        "count": 795,
+        "mean": 127.582,
+        "median": 105.0,
+        "stdev": 68.308,
+        "p10": 52.0,
+        "p90": 232.0,
+        "p95": 237.0,
+        "p99": 301.0,
+        "min": 47.0,
+        "max": 313.0
+      },
+      "detected_bbox_height_px": {
+        "count": 795,
+        "mean": 114.096,
+        "median": 122.0,
+        "stdev": 45.956,
+        "p10": 48.0,
+        "p90": 163.0,
+        "p95": 187.0,
+        "p99": 246.0,
+        "min": 46.0,
+        "max": 256.0
+      },
+      "detected_bbox_rel_area_pct": {
+        "count": 795,
+        "mean": 5.555,
+        "median": 4.725,
+        "stdev": 4.637,
+        "p10": 0.812,
+        "p90": 12.031,
+        "p95": 14.427,
+        "p99": 24.902,
+        "min": 0.734,
+        "max": 25.083
+      },
+      "estimated_plate_width_px_167ratio": {
+        "count": 795,
+        "mean": 21.306,
+        "median": 17.535,
+        "stdev": 11.407,
+        "p10": 8.684,
+        "p90": 38.744,
+        "p95": 39.579,
+        "p99": 50.267,
+        "min": 7.849,
+        "max": 52.271
+      },
+      "estimated_plate_height_px_080ratio": {
+        "count": 795,
+        "mean": 9.128,
+        "median": 9.76,
+        "stdev": 3.677,
+        "p10": 3.84,
+        "p90": 13.04,
+        "p95": 14.96,
+        "p99": 19.68,
+        "min": 3.68,
+        "max": 20.48
+      },
+      "detections_with_est_plate_>=80px": 0,
+      "detections_with_est_plate_>=60px": 0,
+      "detections_total_for_lpr_est": 795,
+      "pct_est_plate_>=80px": 0.0,
+      "capture_cadence": {
+        "total_orig_files": 2108,
+        "delta_t_sec_stats": {
+          "count": 2107,
+          "mean": 3.309,
+          "median": 3.012,
+          "stdev": 18.2,
+          "p10": 0.203,
+          "p90": 3.048,
+          "p95": 3.057,
+          "p99": 12.539,
+          "min": 0.134,
+          "max": 494.194
+        },
+        "effective_saved_detection_rate_hz": 0.332
+      }
+    },
+    "CAM-SALIDA": {
+      "resolutions": {
+        "720x1280": 303
+      },
+      "file_size_kb": {
+        "count": 303,
+        "mean": 215.373,
+        "median": 220.12,
+        "stdev": 18.96,
+        "p10": 211.217,
+        "p90": 221.513,
+        "p95": 222.377,
+        "p99": 223.334,
+        "min": 67.67,
+        "max": 223.64
+      },
+      "sharpness_laplacian": {
+        "count": 303,
+        "mean": 200.704,
+        "median": 207.89,
+        "stdev": 32.107,
+        "p10": 196.12,
+        "p90": 212.83,
+        "p95": 214.21,
+        "p99": 216.76,
+        "min": 3.35,
+        "max": 220.69
+      },
+      "sharpness_distribution": {
+        "severe_blur_<50": 6,
+        "moderate_50_120": 3,
+        "sharp_>=120": 294
+      },
+      "luminance_mean": {
+        "count": 303,
+        "mean": 81.895,
+        "median": 82.21,
+        "stdev": 4.666,
+        "p10": 80.46,
+        "p90": 83.45,
+        "p95": 85.84,
+        "p99": 93.97,
+        "min": 47.57,
+        "max": 112.02
+      },
+      "glare_pct": {
+        "count": 303,
+        "mean": 0.009,
+        "median": 0.006,
+        "stdev": 0.023,
+        "p10": 0.004,
+        "p90": 0.01,
+        "p95": 0.026,
+        "p99": 0.054,
+        "min": 0.0,
+        "max": 0.376
+      },
+      "detected_bbox_width_px": {
+        "count": 889,
+        "mean": 228.553,
+        "median": 281.0,
+        "stdev": 110.404,
+        "p10": 62.0,
+        "p90": 359.0,
+        "p95": 359.0,
+        "p99": 359.0,
+        "min": 60.0,
+        "max": 495.0
+      },
+      "detected_bbox_height_px": {
+        "count": 889,
+        "mean": 204.756,
+        "median": 226.0,
+        "stdev": 75.146,
+        "p10": 93.0,
+        "p90": 292.0,
+        "p95": 294.0,
+        "p99": 298.0,
+        "min": 64.0,
+        "max": 442.0
+      },
+      "detected_bbox_rel_area_pct": {
+        "count": 889,
+        "mean": 5.857,
+        "median": 6.915,
+        "stdev": 3.612,
+        "p10": 0.626,
+        "p90": 9.583,
+        "p95": 9.622,
+        "p99": 9.688,
+        "min": 0.596,
+        "max": 18.033
+      },
+      "estimated_plate_width_px_167ratio": {
+        "count": 889,
+        "mean": 38.168,
+        "median": 46.927,
+        "stdev": 18.438,
+        "p10": 10.354,
+        "p90": 59.953,
+        "p95": 59.953,
+        "p99": 59.953,
+        "min": 10.02,
+        "max": 82.665
+      },
+      "estimated_plate_height_px_080ratio": {
+        "count": 889,
+        "mean": 16.38,
+        "median": 18.08,
+        "stdev": 6.012,
+        "p10": 7.44,
+        "p90": 23.36,
+        "p95": 23.52,
+        "p99": 23.84,
+        "min": 5.12,
+        "max": 35.36
+      },
+      "detections_with_est_plate_>=80px": 1,
+      "detections_with_est_plate_>=60px": 6,
+      "detections_total_for_lpr_est": 889,
+      "pct_est_plate_>=80px": 0.11,
+      "capture_cadence": {
+        "total_orig_files": 303,
+        "delta_t_sec_stats": {
+          "count": 302,
+          "mean": 11.993,
+          "median": 3.525,
+          "stdev": 145.387,
+          "p10": 3.031,
+          "p90": 4.159,
+          "p95": 4.355,
+          "p99": 5.112,
+          "min": 1.878,
+          "max": 2534.309
+        },
+        "effective_saved_detection_rate_hz": 0.284
+      }
+    },
+    "CAM-03": {
+      "resolutions": {
+        "640x480": 3
+      },
+      "file_size_kb": {
+        "count": 3,
+        "mean": 40.765,
+        "median": 40.765,
+        "stdev": 0.0,
+        "p10": 40.765,
+        "p90": 40.765,
+        "p95": 40.765,
+        "p99": 40.765,
+        "min": 40.765,
+        "max": 40.765
+      },
+      "sharpness_laplacian": {
+        "count": 3,
+        "mean": 24.71,
+        "median": 24.71,
+        "stdev": 0.0,
+        "p10": 24.71,
+        "p90": 24.71,
+        "p95": 24.71,
+        "p99": 24.71,
+        "min": 24.71,
+        "max": 24.71
+      },
+      "sharpness_distribution": {
+        "severe_blur_<50": 3,
+        "moderate_50_120": 0,
+        "sharp_>=120": 0
+      },
+      "luminance_mean": {
+        "count": 3,
+        "mean": 110.28,
+        "median": 110.28,
+        "stdev": 0.0,
+        "p10": 110.28,
+        "p90": 110.28,
+        "p95": 110.28,
+        "p99": 110.28,
+        "min": 110.28,
+        "max": 110.28
+      },
+      "glare_pct": {
+        "count": 3,
+        "mean": 0.018,
+        "median": 0.018,
+        "stdev": 0.0,
+        "p10": 0.018,
+        "p90": 0.018,
+        "p95": 0.018,
+        "p99": 0.018,
+        "min": 0.018,
+        "max": 0.018
+      },
+      "detected_bbox_width_px": {
+        "count": 3,
+        "mean": 364.0,
+        "median": 364.0,
+        "stdev": 0.0,
+        "p10": 364.0,
+        "p90": 364.0,
+        "p95": 364.0,
+        "p99": 364.0,
+        "min": 364.0,
+        "max": 364.0
+      },
+      "detected_bbox_height_px": {
+        "count": 3,
+        "mean": 230.0,
+        "median": 230.0,
+        "stdev": 0.0,
+        "p10": 230.0,
+        "p90": 230.0,
+        "p95": 230.0,
+        "p99": 230.0,
+        "min": 230.0,
+        "max": 230.0
+      },
+      "detected_bbox_rel_area_pct": {
+        "count": 3,
+        "mean": 27.253,
+        "median": 27.253,
+        "stdev": 0.0,
+        "p10": 27.253,
+        "p90": 27.253,
+        "p95": 27.253,
+        "p99": 27.253,
+        "min": 27.253,
+        "max": 27.253
+      },
+      "estimated_plate_width_px_167ratio": {
+        "count": 3,
+        "mean": 60.788,
+        "median": 60.788,
+        "stdev": 0.0,
+        "p10": 60.788,
+        "p90": 60.788,
+        "p95": 60.788,
+        "p99": 60.788,
+        "min": 60.788,
+        "max": 60.788
+      },
+      "estimated_plate_height_px_080ratio": {
+        "count": 3,
+        "mean": 18.4,
+        "median": 18.4,
+        "stdev": 0.0,
+        "p10": 18.4,
+        "p90": 18.4,
+        "p95": 18.4,
+        "p99": 18.4,
+        "min": 18.4,
+        "max": 18.4
+      },
+      "detections_with_est_plate_>=80px": 0,
+      "detections_with_est_plate_>=60px": 3,
+      "detections_total_for_lpr_est": 3,
+      "pct_est_plate_>=80px": 0.0,
+      "capture_cadence": {
+        "total_orig_files": 3,
+        "delta_t_sec_stats": {
+          "count": 2,
+          "mean": 43.687,
+          "median": 43.687,
+          "stdev": 2.973,
+          "p10": 40.714,
+          "p90": 46.661,
+          "p95": 46.661,
+          "p99": 46.661,
+          "min": 40.714,
+          "max": 46.661
+        },
+        "effective_saved_detection_rate_hz": 0.023
+      }
+    }
+  }
+}

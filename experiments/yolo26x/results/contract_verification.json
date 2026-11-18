@@ -1,0 +1,1043 @@
+{
+  "generated_at_utc": "2026-11-14T19:10:34.055941Z",
+  "cuda_available": true,
+  "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "unfused_load_state": {
+    "ckpt_yaml_end2end": true,
+    "head_end2end_on_load": false,
+    "head_reg_max": 1,
+    "head_has_one2one": true
+  },
+  "predictor_branch_audit": {
+    "nms_false_mode": {
+      "autobackend_end2end": true,
+      "cv2_pruned_is_none": true,
+      "one2one_cv2_present": true
+    },
+    "nms_true_mode": {
+      "autobackend_end2end": false,
+      "cv2_present": true,
+      "one2one_pruned_is_none": true
+    },
+    "default_nms_none_mode": {
+      "autobackend_end2end": false,
+      "cv2_present": true,
+      "one2one_pruned_is_none": true
+    }
+  },
+  "coco_vehicle_classes_in_weights": {
+    "2": "car",
+    "3": "motorcycle",
+    "5": "bus",
+    "7": "truck"
+  },
+  "multiresolution_fp32_vs_fp16": [
+    {
+      "input_name": "real_jpeg_640x480",
+      "shape_hw": [
+        480,
+        640
+      ],
+      "fp32_end2end_active": true,
+      "fp16_end2end_active": true,
+      "fp16_param_dtype": "torch.float16",
+      "fp32_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9311,
+          "xyxy": [
+            284.02,
+            108.59,
+            428.95,
+            240.25
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.277,
+          "xyxy": [
+            489.85,
+            95.02,
+            613.17,
+            160.65
+          ]
+        }
+      ],
+      "fp16_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9312,
+          "xyxy": [
+            284.0,
+            108.62,
+            429.0,
+            240.25
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.2798,
+          "xyxy": [
+            489.75,
+            95.0,
+            613.0,
+            160.62
+          ]
+        }
+      ]
+    },
+    {
+      "input_name": "real_jpeg_720x1280",
+      "shape_hw": [
+        1280,
+        720
+      ],
+      "fp32_end2end_active": true,
+      "fp16_end2end_active": true,
+      "fp16_param_dtype": "torch.float16",
+      "fp32_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9267,
+          "xyxy": [
+            24.25,
+            485.89,
+            416.79,
+            637.48
+          ]
+        }
+      ],
+      "fp16_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9268,
+          "xyxy": [
+            24.25,
+            486.0,
+            417.0,
+            637.5
+          ]
+        }
+      ]
+    },
+    {
+      "input_name": "synthetic_1280x720",
+      "shape_hw": [
+        720,
+        1280
+      ],
+      "fp32_end2end_active": true,
+      "fp16_end2end_active": true,
+      "fp16_param_dtype": "torch.float16",
+      "fp32_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.924,
+          "xyxy": [
+            568.24,
+            162.29,
+            858.87,
+            359.04
+          ]
+        },
+        {
+          "cls_id": 5,
+          "label": "bus",
+          "conf": 0.3898,
+          "xyxy": [
+            979.59,
+            141.13,
+            1226.53,
+            240.09
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.3196,
+          "xyxy": [
+            980.15,
+            141.21,
+            1226.08,
+            240.11
+          ]
+        }
+      ],
+      "fp16_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9238,
+          "xyxy": [
+            568.0,
+            162.25,
+            859.0,
+            359.0
+          ]
+        },
+        {
+          "cls_id": 5,
+          "label": "bus",
+          "conf": 0.3904,
+          "xyxy": [
+            979.5,
+            141.12,
+            1226.0,
+            240.0
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.3191,
+          "xyxy": [
+            980.0,
+            141.25,
+            1226.0,
+            240.0
+          ]
+        }
+      ]
+    },
+    {
+      "input_name": "synthetic_1920x1080",
+      "shape_hw": [
+        1080,
+        1920
+      ],
+      "fp32_end2end_active": true,
+      "fp16_end2end_active": true,
+      "fp16_param_dtype": "torch.float16",
+      "fp32_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9184,
+          "xyxy": [
+            852.46,
+            243.44,
+            1288.24,
+            539.73
+          ]
+        },
+        {
+          "cls_id": 5,
+          "label": "bus",
+          "conf": 0.4661,
+          "xyxy": [
+            1469.48,
+            212.1,
+            1839.53,
+            360.26
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.2766,
+          "xyxy": [
+            1470.25,
+            212.24,
+            1838.83,
+            360.3
+          ]
+        }
+      ],
+      "fp16_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.918,
+          "xyxy": [
+            852.75,
+            243.38,
+            1288.5,
+            539.62
+          ]
+        },
+        {
+          "cls_id": 5,
+          "label": "bus",
+          "conf": 0.4707,
+          "xyxy": [
+            1469.25,
+            212.06,
+            1839.0,
+            360.38
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.2751,
+          "xyxy": [
+            1470.0,
+            212.25,
+            1839.0,
+            360.38
+          ]
+        }
+      ]
+    }
+  ],
+  "end2end_vs_traditional_nms_sample": [
+    {
+      "file": "20261114T004711_021481Z_7c42c94d5d0e_orig.jpg",
+      "end2end_count": 1,
+      "nms_count": 1,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9336,
+          "xyxy": [
+            221.19,
+            161.53,
+            529.36,
+            367.04
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.884,
+          "xyxy": [
+            221.69,
+            161.83,
+            529.58,
+            367.11
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T004923_249112Z_9cdaba53251a_orig.jpg",
+      "end2end_count": 1,
+      "nms_count": 1,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.8518,
+          "xyxy": [
+            62.03,
+            733.72,
+            466.78,
+            917.1
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.8098,
+          "xyxy": [
+            60.61,
+            733.92,
+            467.42,
+            916.55
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T004926_257051Z_93997dcbf838_orig.jpg",
+      "end2end_count": 1,
+      "nms_count": 1,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9063,
+          "xyxy": [
+            71.06,
+            701.57,
+            483.47,
+            881.83
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.919,
+          "xyxy": [
+            70.83,
+            701.5,
+            483.67,
+            882.3
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T004929_252484Z_32261d956178_orig.jpg",
+      "end2end_count": 1,
+      "nms_count": 1,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9079,
+          "xyxy": [
+            85.27,
+            655.05,
+            499.91,
+            834.01
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.8914,
+          "xyxy": [
+            83.26,
+            655.08,
+            501.68,
+            833.16
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T004934_249770Z_d6c92f5bb113_orig.jpg",
+      "end2end_count": 1,
+      "nms_count": 1,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9473,
+          "xyxy": [
+            107.15,
+            609.6,
+            535.5,
+            790.89
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9019,
+          "xyxy": [
+            105.51,
+            609.42,
+            536.24,
+            790.89
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010109_676925Z_5d4bcd088a26_orig.jpg",
+      "end2end_count": 3,
+      "nms_count": 3,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.796,
+          "xyxy": [
+            212.22,
+            96.6,
+            487.47,
+            223.62
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.3375,
+          "xyxy": [
+            499.47,
+            95.0,
+            613.4,
+            156.42
+          ]
+        },
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.3311,
+          "xyxy": [
+            499.75,
+            94.94,
+            613.43,
+            156.38
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.8383,
+          "xyxy": [
+            211.94,
+            96.94,
+            486.63,
+            223.58
+          ]
+        },
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.3819,
+          "xyxy": [
+            499.39,
+            94.9,
+            613.61,
+            156.51
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.3644,
+          "xyxy": [
+            499.4,
+            94.93,
+            613.55,
+            156.51
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010110_148372Z_12db005c80d3_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 2,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9127,
+          "xyxy": [
+            211.47,
+            94.7,
+            485.98,
+            223.95
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5014,
+          "xyxy": [
+            490.24,
+            90.28,
+            615.46,
+            156.1
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.8943,
+          "xyxy": [
+            211.57,
+            94.36,
+            486.5,
+            224.23
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5488,
+          "xyxy": [
+            490.01,
+            90.21,
+            615.57,
+            156.21
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010111_698740Z_918a38f8202c_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 2,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.8827,
+          "xyxy": [
+            217.59,
+            95.62,
+            462.43,
+            225.73
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.4083,
+          "xyxy": [
+            507.35,
+            91.08,
+            613.79,
+            156.4
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.88,
+          "xyxy": [
+            218.21,
+            95.54,
+            462.44,
+            225.72
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.4763,
+          "xyxy": [
+            507.3,
+            91.01,
+            613.96,
+            156.48
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010115_896638Z_b12553047693_orig.jpg",
+      "end2end_count": 3,
+      "nms_count": 2,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.8124,
+          "xyxy": [
+            277.57,
+            97.15,
+            424.98,
+            226.33
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5839,
+          "xyxy": [
+            488.55,
+            90.42,
+            611.77,
+            155.28
+          ]
+        },
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.3027,
+          "xyxy": [
+            277.52,
+            97.1,
+            425.1,
+            226.52
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9346,
+          "xyxy": [
+            277.28,
+            96.98,
+            424.95,
+            226.63
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.6798,
+          "xyxy": [
+            488.11,
+            90.46,
+            611.8,
+            155.49
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010116_233096Z_75618ff1ba7d_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 2,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9406,
+          "xyxy": [
+            277.29,
+            98.84,
+            424.56,
+            226.87
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5644,
+          "xyxy": [
+            488.66,
+            90.05,
+            611.42,
+            154.91
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9281,
+          "xyxy": [
+            276.95,
+            98.63,
+            424.42,
+            227.22
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.6301,
+          "xyxy": [
+            488.31,
+            90.2,
+            611.61,
+            155.26
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010116_504289Z_98798fc47ed0_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 3,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9454,
+          "xyxy": [
+            277.36,
+            97.6,
+            424.58,
+            226.32
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5622,
+          "xyxy": [
+            487.68,
+            90.38,
+            610.99,
+            155.49
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9389,
+          "xyxy": [
+            277.17,
+            97.47,
+            424.44,
+            226.63
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5714,
+          "xyxy": [
+            487.42,
+            90.44,
+            611.03,
+            155.72
+          ]
+        },
+        {
+          "cls_id": 5,
+          "label": "bus",
+          "conf": 0.2889,
+          "xyxy": [
+            487.74,
+            90.41,
+            611.06,
+            155.66
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010116_842108Z_77b17cdec55b_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 2,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9033,
+          "xyxy": [
+            278.47,
+            97.99,
+            424.67,
+            227.48
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.4704,
+          "xyxy": [
+            489.12,
+            90.1,
+            611.83,
+            155.52
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9269,
+          "xyxy": [
+            278.18,
+            97.74,
+            424.65,
+            227.7
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5314,
+          "xyxy": [
+            488.84,
+            90.35,
+            612.03,
+            155.91
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010117_111651Z_49c6668403fb_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 3,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9364,
+          "xyxy": [
+            277.88,
+            98.29,
+            425.31,
+            227.32
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.4705,
+          "xyxy": [
+            488.29,
+            90.77,
+            610.95,
+            155.86
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9288,
+          "xyxy": [
+            277.88,
+            98.12,
+            425.16,
+            227.49
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.5654,
+          "xyxy": [
+            488.02,
+            91.01,
+            611.07,
+            156.22
+          ]
+        },
+        {
+          "cls_id": 5,
+          "label": "bus",
+          "conf": 0.3863,
+          "xyxy": [
+            488.42,
+            90.62,
+            610.65,
+            155.85
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010118_460286Z_7b5331e6e360_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 2,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9216,
+          "xyxy": [
+            284.81,
+            107.3,
+            430.13,
+            239.13
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.3986,
+          "xyxy": [
+            491.45,
+            95.05,
+            614.67,
+            161.28
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9176,
+          "xyxy": [
+            284.58,
+            107.22,
+            430.05,
+            239.31
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.4753,
+          "xyxy": [
+            491.28,
+            94.97,
+            614.93,
+            161.35
+          ]
+        }
+      ]
+    },
+    {
+      "file": "20261114T010119_401950Z_1f711d4a8258_orig.jpg",
+      "end2end_count": 2,
+      "nms_count": 2,
+      "end2end_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9311,
+          "xyxy": [
+            284.02,
+            108.59,
+            428.95,
+            240.25
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.277,
+          "xyxy": [
+            489.85,
+            95.02,
+            613.17,
+            160.65
+          ]
+        }
+      ],
+      "nms_boxes": [
+        {
+          "cls_id": 2,
+          "label": "car",
+          "conf": 0.9207,
+          "xyxy": [
+            283.8,
+            108.49,
+            428.86,
+            240.56
+          ]
+        },
+        {
+          "cls_id": 7,
+          "label": "truck",
+          "conf": 0.4068,
+          "xyxy": [
+            489.67,
+            95.0,
+            612.94,
+            160.71
+          ]
+        }
+      ]
+    }
+  ],
+  "vigia_contract_integration_smoke": {
+    "raw_detections_count": 2,
+    "in_roi_count": 1,
+    "excluded_outside_roi": 0,
+    "all_raw_are_RawVehicleDetection": true,
+    "all_bboxes_are_BoundingBox": true,
+    "mapped_domain_type": "AUTOMOVIL",
+    "vision_result_status": "VEHICLE_DETECTED_NO_PLATE",
+    "fsm_state_after_1_frame": "VEHICLE_CANDIDATE",
+    "yolo_detector_default_end2end_active": false
+  }
+}

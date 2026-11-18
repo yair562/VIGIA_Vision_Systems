@@ -1,0 +1,147 @@
+{
+  "generated_at_utc": "2026-11-14T17:55:56.978607Z",
+  "evaluated_samples": 87,
+  "has_human_ground_truth": false,
+  "real_world_representative": false,
+  "note": "Smoke test diagnostico sobre fotogramas sin GT de caja ni etiqueta humana; no reportar como accuracy de produccion.",
+  "predicted_color_distribution": {
+    "BLUE": 8,
+    "INDETERMINATE": 8,
+    "RED": 1,
+    "BROWN": 5,
+    "ORANGE": 62,
+    "BLACK": 3
+  },
+  "indeterminate_rate": 0.092,
+  "source_domains": {
+    "SCREEN_RECAPTURE": 11,
+    "SCALE_MODEL_LAB": 76
+  },
+  "quality_flags": {
+    "OK": 79,
+    "AMBIGUOUS_CHROMA": 5,
+    "INSUFFICIENT_ILLUMINATION_OR_SIGNAL": 3
+  },
+  "sample_outputs_preview": [
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224042_3076_7c77d1d3",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.5692,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.879
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224045_2740_20c42677",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.5739,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.871
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224048_2908_21332613",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.592,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.8979
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224051_3042_4e8d4194",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.5944,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.8661
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224055_3072_8e9ea351",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.5227,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.9221
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224059_2998_01b7b008",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.4484,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.9185
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224102_2851_947dd1ec",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.4667,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.9274
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224105_2838_9ba02a0d",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BLUE",
+      "confidence": 0.5398,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.9511
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224107_2758_105763ae",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "INDETERMINATE",
+      "confidence": 0.2979,
+      "is_indeterminate": true,
+      "quality_flag": "AMBIGUOUS_CHROMA",
+      "usable_pixel_ratio": 0.9774
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224110_3107_fb07958b",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "INDETERMINATE",
+      "confidence": 0.3055,
+      "is_indeterminate": true,
+      "quality_flag": "AMBIGUOUS_CHROMA",
+      "usable_pixel_ratio": 0.9532
+    },
+    {
+      "sample_id": "20261111_CAM-ENTRADA_20261111T224113_3008_1c7f4bad",
+      "source_domain": "SCREEN_RECAPTURE",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "RED",
+      "confidence": 0.3258,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 0.9622
+    },
+    {
+      "sample_id": "20261114_CAM-ENTRADA_20261114T004711_0214_71c37425",
+      "source_domain": "SCALE_MODEL_LAB",
+      "camera_id": "CAM-ENTRADA",
+      "predicted_color": "BROWN",
+      "confidence": 0.3541,
+      "is_indeterminate": false,
+      "quality_flag": "OK",
+      "usable_pixel_ratio": 1.0
+    }
+  ]
+}

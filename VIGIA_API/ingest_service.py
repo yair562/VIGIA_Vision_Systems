@@ -38,6 +38,8 @@ import sys
 import threading
 import time
 import uuid
+import weakref
+import atexit
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
@@ -87,8 +89,13 @@ from VIGIA_Core.repository.user_repository import (
 )
 from VIGIA_Core.security.password_hasher import hash_password
 from VIGIA_Vision.capture.registry import BoundCameraSlot, UnregisteredCameraError
-from VIGIA_Vision.capture.sources import MobilePushFrameBuffer, OpenCVCaptureSource
-from VIGIA_API.pull_worker import CameraPullWorker, CameraPullWorkerManager
+from VIGIA_API.usb_worker import CameraPullWorkerManager
+from VIGIA_Vision.capture.sources import (
+    MobilePushFrameBuffer,
+    OpenCVCaptureSource,
+    parse_usb_source_uri,
+    probe_local_usb_cameras,
+)
 from VIGIA_Vision.config.engine_settings import VisionEngineSettings
 from VIGIA_Vision.config.psycopg_topology_repository import PsycopgTopologyConfigRepository
 from VIGIA_Vision.config.topology_validator import (
@@ -106,6 +113,7 @@ from VIGIA_Vision.detection.yolo_detector import (
     ModelLoadError,
     YoloDetectorConfig,
     YoloVehicleDetector,
+    load_yolo_config_from_env,
     resolve_inference_device,
 )
 from VIGIA_Vision.runtime.coordinator import IVehicleDetector, VisionEngineCoordinator
@@ -280,27 +288,41 @@ def build_vision_engine_coordinator(
     if detector is not None:
         resolved_detector = detector
     else:
-        raw_weights = (
-            str(yolo_weights_path).strip()
-            if yolo_weights_path is not None
-            else os.environ.get("VIGIA_YOLO_WEIGHTS", "").strip()
-        )
-        weights_file = Path(raw_weights).resolve() if raw_weights else (repo_root / "yolo11n.pt").resolve()
-        if not weights_file.is_file():
-            raise ModelLoadError(
-                f"No se encontró el archivo de pesos del modelo YOLO en '{weights_file}'."
+        try:
+            yolo_cfg = load_yolo_config_from_env(
+                yolo_weights_override=yolo_weights_path,
+                confidence_threshold=min(0.25, resolved_settings.vehicle_confidence_threshold),
             )
-        device_setting = get_setting("VIGIA_INFERENCE_DEVICE", "auto")
-        target_device = resolve_inference_device(device_setting)
+        except ValueError as cfg_err:
+            raise ModelLoadError(
+                f"Configuración YOLO inválida en entorno: {cfg_err}"
+            ) from cfg_err
+
+        primary_exists = Path(yolo_cfg.model_path).is_file()
+        fallback_exists = Path(yolo_cfg.fallback_model_path).is_file()
+        if not primary_exists and (not yolo_cfg.fallback_enabled or not fallback_exists):
+            raise ModelLoadError(
+                f"No se encontró el archivo de pesos del modelo YOLO en '{yolo_cfg.model_path}'."
+            )
+        if not primary_exists and yolo_cfg.fallback_enabled and fallback_exists:
+            logger.warning(
+                "Pesos primarios YOLO no encontrados en '%s'. El detector operará fallback "
+                "automático hacia '%s' al cargar.",
+                yolo_cfg.model_path,
+                yolo_cfg.fallback_model_path,
+            )
+
         logger.info(
-            "Configurando detector YOLO11n en dispositivo '%s' (VIGIA_INFERENCE_DEVICE='%s').",
-            target_device,
-            device_setting,
-        )
-        yolo_cfg = YoloDetectorConfig(
-            model_path=str(weights_file),
-            confidence_threshold=min(0.25, resolved_settings.vehicle_confidence_threshold),
-            device=target_device,
+            "Configurando detector YOLO: model='%s' (weights='%s'), device='%s', imgsz=%d, "
+            "quantize=%r, nms=%r, fallback_enabled=%s, fallback_model='%s'.",
+            Path(yolo_cfg.model_path).name,
+            yolo_cfg.model_path,
+            yolo_cfg.device,
+            yolo_cfg.imgsz,
+            yolo_cfg.quantize,
+            yolo_cfg.nms,
+            yolo_cfg.fallback_enabled,
+            Path(yolo_cfg.fallback_model_path).name,
         )
         resolved_detector = YoloVehicleDetector(config=yolo_cfg)
 
@@ -351,6 +373,7 @@ _camera_conditions: Dict[str, threading.Condition] = {}
 _camera_conditions_lock = threading.Lock()
 _last_persist_timestamps: Dict[str, float] = {}
 _standby_cache: Dict[Tuple[str, str], bytes] = {}
+_usb_enrollment_lock = threading.Lock()
 
 
 def _get_camera_condition(codigo_camara: str) -> threading.Condition:
@@ -405,6 +428,7 @@ def create_ingest_app(
     enable_tls: Optional[bool] = None,
     dev_port: Optional[int] = None,
     certs_dir: Optional[Union[str, Path]] = None,
+    start_pull_workers: bool = True,
 ) -> Flask:
     """
     Fábrica de la aplicación web Flask para el servicio de ingesta de VIGIA_API.
@@ -577,34 +601,121 @@ def create_ingest_app(
             if clean_code not in camera_process_locks:
                 camera_process_locks[clean_code] = threading.RLock()
             return camera_process_locks[clean_code]
-
-    def _update_camera_latest_frame(cam_code: str, payload: Dict[str, Any]) -> None:
-        cam_clean = cam_code.strip().upper()
-        cond = _get_camera_condition(cam_clean)
-        with cond:
-            _latest_camera_frames[cam_clean] = payload
-            cond.notify_all()
-
-    pull_worker_mgr = CameraPullWorkerManager(
-        coordinator=resolved_coordinator,
-        frame_consumer=_update_camera_latest_frame,
-        process_lock_provider=get_camera_process_lock,
-        target_fps=15.0,
-        debounce_seconds=float(os.environ.get("STREAM_PERSIST_DEBOUNCE_SECONDS", "3.0")),
-    )
-    app.config["PULL_WORKER_MANAGER"] = pull_worker_mgr
-
-    # Auto-iniciar workers para fuentes Pull existentes al arranque (persistencia)
-    if resolved_coordinator is not None and getattr(resolved_coordinator, "registry", None) is not None:
-        try:
-            for c_code in resolved_coordinator.registry.registered_camera_codes:
-                c_slot = resolved_coordinator.registry.get_slot(c_code)
-                if isinstance(c_slot.source, OpenCVCaptureSource):
-                    pull_worker_mgr.start_worker(c_code)
-        except Exception as p_err:
-            logger.warning("Fallo al auto-iniciar pull workers al arranque: %s", p_err)
     persisted_retry_cache: Dict[Tuple[str, str], Dict[str, Any]] = {}
     camera_persist_states: Dict[str, Dict[str, Any]] = {}
+
+    # Gestor de hilos Pull para cámaras USB locales (VIGIA-USB-02)
+    usb_worker_manager = CameraPullWorkerManager(
+        latest_frames_store=_latest_camera_frames,
+        get_condition_fn=_get_camera_condition,
+        get_process_lock_fn=get_camera_process_lock,
+        camera_persist_states=camera_persist_states,
+        last_persist_timestamps=_last_persist_timestamps,
+        get_debounce_ttl_fn=lambda: float(app.config.get("STREAM_PERSIST_DEBOUNCE_SECONDS", 3.0)),
+    )
+    app.config["USB_WORKER_MANAGER"] = usb_worker_manager
+
+    _usb_mgr_ref = weakref.ref(usb_worker_manager)
+    _coord_ref = weakref.ref(resolved_coordinator) if resolved_coordinator is not None else None
+
+    def _cleanup_usb_workers_on_exit() -> None:
+        mgr = _usb_mgr_ref()
+        if mgr is not None:
+            try:
+                mgr.stop_all(clear_frames=False, timeout=3.0)
+            except Exception as exc:
+                logger.warning("Error deteniendo workers USB en salida: %s", exc)
+        if _coord_ref is not None:
+            coord_obj = _coord_ref()
+            if coord_obj is not None:
+                try:
+                    coord_obj.shutdown()
+                except Exception as exc:
+                    logger.warning("Error cerrando coordinador de visión en salida: %s", exc)
+
+    atexit.register(_cleanup_usb_workers_on_exit)
+
+    def _list_registry_codes(reg: Any) -> List[str]:
+        if reg is None:
+            return []
+        if hasattr(reg, "registered_camera_codes"):
+            return list(reg.registered_camera_codes)
+        if hasattr(reg, "list_cameras"):
+            return [c.codigo for c in reg.list_cameras()]
+        return []
+
+    def _reset_slot_to_push(
+        coord_obj: Optional[VisionEngineCoordinator],
+        cam_code: str,
+        target_cam_dto: Optional[CameraConfigDTO] = None,
+    ) -> None:
+        if coord_obj is None or coord_obj.registry is None:
+            return
+        code_clean = cam_code.strip().upper()
+        try:
+            old_slot = coord_obj.registry.get_slot(code_clean)
+        except UnregisteredCameraError:
+            return
+        try:
+            old_slot.source.release()
+        except Exception:
+            pass
+        ttl_sec = float(
+            getattr(getattr(coord_obj, "settings", None), "mobile_frame_ttl_seconds", 3.0) or 3.0
+        )
+        push_src = MobilePushFrameBuffer(code_clean, ttl_seconds=ttl_sec)
+        push_src.open()
+        cam_dto = target_cam_dto or old_slot.camera
+        restored_cam = CameraConfigDTO(
+            id_camara=cam_dto.id_camara,
+            codigo=cam_dto.codigo,
+            nombre=cam_dto.nombre,
+            uri_stream=f"push://{code_clean.lower()}",
+            activa=cam_dto.activa,
+        )
+        new_slot = BoundCameraSlot(
+            camera=restored_cam,
+            area=old_slot.area,
+            source=push_src,
+        )
+        if hasattr(coord_obj.registry, "register_slot"):
+            coord_obj.registry.register_slot(new_slot)
+        elif hasattr(coord_obj.registry, "_slots"):
+            coord_obj.registry._slots[code_clean] = new_slot
+
+    if start_pull_workers and resolved_coordinator is not None and resolved_coordinator.registry is not None:
+        for _reg_code in _list_registry_codes(resolved_coordinator.registry):
+            try:
+                _reg_slot = resolved_coordinator.registry.get_slot(_reg_code)
+            except Exception:
+                continue
+            if isinstance(_reg_slot.source, OpenCVCaptureSource) and getattr(_reg_slot.source, "is_usb", False):
+                _dev_idx = (
+                    _reg_slot.source.source_uri
+                    if isinstance(_reg_slot.source.source_uri, int)
+                    else None
+                )
+                if _dev_idx is None:
+                    continue
+                if usb_worker_manager.get_camera_using_device(_dev_idx) is not None:
+                    logger.warning(
+                        "Índice USB %s ya asignado en arranque; se omite worker duplicado en '%s'.",
+                        _dev_idx,
+                        _reg_code,
+                    )
+                    continue
+                try:
+                    usb_worker_manager.start_worker(
+                        codigo_camara=_reg_slot.camera.codigo,
+                        coordinator=resolved_coordinator,
+                        device_index=_dev_idx,
+                    )
+                except Exception as _usb_boot_exc:
+                    logger.error(
+                        "No se pudo iniciar worker USB persistido para '%s': %s",
+                        _reg_code,
+                        _usb_boot_exc,
+                    )
 
     @app.errorhandler(RequestEntityTooLarge)
     def handle_entity_too_large(exc: Exception):  # type: ignore
@@ -1121,6 +1232,21 @@ def create_ingest_app(
         engine_coordinator: Optional[VisionEngineCoordinator] = app.config.get("COORDINATOR")
         engine_ready = bool(engine_coordinator and engine_coordinator.is_initialized)
 
+        vision_metrics = None
+        if engine_coordinator is not None:
+            metrics_fn = getattr(engine_coordinator, "get_operational_metrics", None)
+            if callable(metrics_fn):
+                raw_metrics = metrics_fn()
+                det_info = dict(raw_metrics.get("detector") or {})
+                det_info.pop("weights_path", None)
+                det_info.pop("requested_weights_path", None)
+                vision_metrics = {
+                    "engine_initialized": raw_metrics.get("engine_initialized"),
+                    "temporal_fsm_integrated": raw_metrics.get("temporal_fsm_integrated"),
+                    "detector": det_info,
+                    "cameras": raw_metrics.get("cameras") or {},
+                }
+
         return jsonify(
             {
                 "ok": True,
@@ -1129,6 +1255,7 @@ def create_ingest_app(
                 "user": sess.username,
                 "role": sess.rol,
                 "supervised_positions": ["ENTRADA", "SALIDA"],
+                "vision_metrics": vision_metrics,
             }
         )
 
@@ -2071,7 +2198,7 @@ def create_ingest_app(
                     try:
                         active_devs = pairing_repo.list_active_devices()
                         has_enrolled_device = any(
-                            d.codigo_camara.strip().upper() == codigo_clean for d in active_devs
+                            d.codigo_camara.strip().upper() == codigo_clean and d.activa for d in active_devs
                         )
                     except Exception:
                         pass
@@ -2269,7 +2396,7 @@ def create_ingest_app(
     @app.route("/api/v1/devices/<uuid:id_credencial>/revoke", methods=["POST"])
     @require_rbac("ADMINISTRADOR")
     def revoke_device_credential(id_credencial):
-        """Revoca de forma inmediata una credencial de dispositivo físico."""
+        """Revoca de forma inmediata una credencial física (móvil o USB local)."""
         pairing_repo = app.config.get("PAIRING_REPOSITORY")
         if pairing_repo is None:
             return jsonify({"ok": False, "error": "PAIRING_UNAVAILABLE"}), 503
@@ -2279,19 +2406,358 @@ def create_ingest_app(
 
         body = request.get_json(silent=True) or {}
         motivo = (body.get("motivo") or "Revocación solicitada por Administrador").strip()
+        usb_mgr: Optional[CameraPullWorkerManager] = app.config.get("USB_WORKER_MANAGER")
+        coord: Optional[VisionEngineCoordinator] = app.config.get("COORDINATOR")
 
         try:
-            revoked = pairing_repo.revoke_credential(
-                id_credencial=id_credencial,
-                revocado_por=user_id,
-                motivo=motivo,
+            details = (
+                pairing_repo.get_credential_details(id_credencial)
+                if hasattr(pairing_repo, "get_credential_details")
+                else None
             )
-            if not revoked:
+            if details is not None and not details.get("activa", True):
                 return jsonify({"ok": False, "error": "DEVICE_NOT_FOUND_OR_INACTIVE", "message": "Dispositivo no encontrado o ya revocado."}), 404
+
+            cam_code = str(details.get("codigo_camara") or "").strip().upper() if details else ""
+            was_usb = bool(details.get("is_usb")) if details else False
+            if was_usb and cam_code and usb_mgr is not None:
+                usb_mgr.stop_worker(cam_code, clear_frames=True, timeout=5.0)
+
+            if hasattr(pairing_repo, "revoke_credential_and_restore_lane"):
+                revoked_info = pairing_repo.revoke_credential_and_restore_lane(
+                    id_credencial=id_credencial,
+                    revocado_por=user_id,
+                    motivo=motivo,
+                )
+                if not revoked_info:
+                    return jsonify({"ok": False, "error": "DEVICE_NOT_FOUND_OR_INACTIVE", "message": "Dispositivo no encontrado o ya revocado."}), 404
+                cam_code = str(revoked_info.get("codigo_camara") or cam_code).strip().upper()
+                was_usb = bool(revoked_info.get("is_usb", was_usb))
+            else:
+                revoked = pairing_repo.revoke_credential(
+                    id_credencial=id_credencial,
+                    revocado_por=user_id,
+                    motivo=motivo,
+                )
+                if not revoked:
+                    return jsonify({"ok": False, "error": "DEVICE_NOT_FOUND_OR_INACTIVE", "message": "Dispositivo no encontrado o ya revocado."}), 404
+
+            if was_usb and cam_code:
+                if usb_mgr is not None:
+                    usb_mgr.stop_worker(cam_code, clear_frames=True, timeout=5.0)
+                camera_persist_states.pop(cam_code, None)
+                _reset_slot_to_push(coord, cam_code)
+                cond = _get_camera_condition(cam_code)
+                with cond:
+                    _latest_camera_frames.pop(cam_code, None)
+                    cond.notify_all()
+
             return jsonify({"ok": True, "message": "Credencial de dispositivo revocada exitosamente."}), 200
         except Exception as exc:
             logger.error("Error al revocar dispositivo: %s", exc)
             return jsonify({"ok": False, "error": "REVOCATION_FAILED", "message": str(exc)}), 500
+
+    # -------------------------------------------------------------------------
+    # Gestión y Enrolamiento de Cámaras USB Locales (VIGIA-USB-02)
+    # -------------------------------------------------------------------------
+
+    @app.route("/api/v1/devices/usb-cameras", methods=["GET"])
+    @require_rbac("ADMINISTRADOR", "GUARDIA")
+    def list_local_usb_cameras():
+        """
+        Sondea y lista las cámaras USB locales detectables sin abrir dos veces
+        aquellas que ya están capturando en un CameraPullWorker activo.
+        """
+        usb_mgr: Optional[CameraPullWorkerManager] = app.config.get("USB_WORKER_MANAGER")
+        active_map = usb_mgr.get_active_usb_map() if usb_mgr is not None else {}
+        raw_max = request.args.get("max_index", "4").strip()
+        try:
+            max_idx = max(1, min(10, int(raw_max)))
+        except ValueError:
+            max_idx = 4
+
+        probe_fn = app.config.get("USB_PROBE_FN") or probe_local_usb_cameras
+        try:
+            cameras_found = probe_fn(max_index=max_idx, active_indices=active_map)
+            return jsonify({
+                "ok": True,
+                "cameras": cameras_found,
+                "total": len(cameras_found),
+            }), 200
+        except Exception as exc:
+            logger.error("Error sondeando cámaras USB locales: %s", exc)
+            return jsonify({"ok": False, "error": "USB_PROBE_FAILED", "message": str(exc)}), 500
+
+    @app.route("/api/v1/devices/usb/enroll", methods=["POST"])
+    @require_rbac("ADMINISTRADOR")
+    def enroll_local_usb_camera():
+        """
+        Asigna transaccionalmente una cámara USB local a una cámara lógica (carril),
+        verifica conflictos sin revocar silenciosamente e inicia su CameraPullWorker.
+        """
+        pairing_repo = app.config.get("PAIRING_REPOSITORY")
+        topo_repo = app.config.get("TOPOLOGY_REPOSITORY")
+        if pairing_repo is None or topo_repo is None:
+            return jsonify({
+                "ok": False,
+                "error": "PAIRING_UNAVAILABLE",
+                "message": "Servicio de enrolamiento no disponible en este modo.",
+            }), 503
+
+        current_sess = getattr(g, "current_session", None)
+        if not current_sess:
+            return jsonify({"ok": False, "error": "UNAUTHORIZED"}), 401
+        user_id = current_sess.user_id
+
+        data = request.get_json(silent=True) or {}
+        codigo_camara = (data.get("codigo_camara") or data.get("codigo") or "").strip().upper()
+        if not codigo_camara:
+            return jsonify({
+                "ok": False,
+                "error": "MISSING_CAMERA_CODE",
+                "message": "Debe especificar el código de la cámara destino (ej. CAM-ENTRADA).",
+            }), 400
+
+        if "device_index" in data:
+            raw_index = data.get("device_index")
+        elif "index" in data:
+            raw_index = data.get("index")
+        elif "uri" in data:
+            raw_index = data.get("uri")
+        else:
+            raw_index = None
+
+        if raw_index is None or isinstance(raw_index, bool) or (isinstance(raw_index, str) and not raw_index.strip()):
+            return jsonify({
+                "ok": False,
+                "error": "INVALID_DEVICE_INDEX",
+                "message": "Debe proporcionar un índice numérico válido para la cámara USB (>= 0).",
+            }), 400
+
+        try:
+            parsed_val, is_usb = parse_usb_source_uri(raw_index)
+        except ValueError as val_err:
+            return jsonify({
+                "ok": False,
+                "error": "INVALID_DEVICE_INDEX",
+                "message": str(val_err),
+            }), 400
+
+        if not is_usb or not isinstance(parsed_val, int):
+            return jsonify({
+                "ok": False,
+                "error": "INVALID_DEVICE_INDEX",
+                "message": "La fuente proporcionada no corresponde a un índice de cámara USB local válido.",
+            }), 400
+
+        device_index = parsed_val
+        confirm_replace = bool(data.get("confirm_replace") or data.get("replace_active"))
+        device_name = str(data.get("device_name") or data.get("nombre") or f"Cámara USB Local ({device_index})").strip()[:60]
+        if not device_name:
+            device_name = f"Cámara USB Local ({device_index})"
+
+        raw_cams = topo_repo.get_cameras() if hasattr(topo_repo, "get_cameras") else topo_repo.get_all_cameras()
+        target_cam = next((c for c in raw_cams if c.codigo.strip().upper() == codigo_camara and c.activa), None)
+        if not target_cam:
+            return jsonify({
+                "ok": False,
+                "error": "CAMERA_NOT_FOUND",
+                "message": f"La cámara '{codigo_camara}' no existe o no está activa.",
+            }), 404
+
+        usb_mgr: CameraPullWorkerManager = app.config["USB_WORKER_MANAGER"]
+        coord: Optional[VisionEngineCoordinator] = app.config.get("COORDINATOR")
+
+        with _usb_enrollment_lock:
+            # Verificar exclusión de dispositivo físico entre carriles antes de abrir hardware
+            in_use_cam = usb_mgr.get_camera_using_device(device_index)
+            if in_use_cam is not None and in_use_cam != codigo_camara:
+                return jsonify({
+                    "ok": False,
+                    "error": "USB_DEVICE_IN_USE",
+                    "message": f"El dispositivo USB {device_index} ya se encuentra en uso por la cámara '{in_use_cam}'. Revóquelo primero antes de reasignarlo.",
+                    "in_use_by_camera": in_use_cam,
+                }), 409
+    
+            active_devices = pairing_repo.list_active_devices()
+            for active_dev in active_devices:
+                if not active_dev.activa:
+                    continue
+                dev_cam_code = active_dev.codigo_camara.strip().upper()
+                d_info = active_dev.dispositivo_info if isinstance(active_dev.dispositivo_info, dict) else {}
+                if (
+                    dev_cam_code != codigo_camara
+                    and d_info.get("modo") == "pull_usb"
+                    and d_info.get("device_index") == device_index
+                ):
+                    return jsonify({
+                        "ok": False,
+                        "error": "USB_DEVICE_IN_USE",
+                        "message": f"El dispositivo USB {device_index} figura asignado activamente a '{dev_cam_code}'. Revóquelo primero.",
+                        "in_use_by_camera": dev_cam_code,
+                    }), 409
+    
+            same_lane_active = [
+                d for d in active_devices
+                if d.activa and d.codigo_camara.strip().upper() == codigo_camara
+            ]
+            if same_lane_active and not confirm_replace:
+                existing_dev = same_lane_active[0]
+                return jsonify({
+                    "ok": False,
+                    "error": "ACTIVE_CREDENTIAL_CONFLICT",
+                    "message": (
+                        f"La cámara '{codigo_camara}' ya tiene un dispositivo activo ('{existing_dev.nombre_dispositivo}'). "
+                        "Confirme explícitamente con confirm_replace=true para sustituirlo."
+                    ),
+                    "existing_device": {
+                        "id_credencial": str(existing_dev.id_credencial),
+                        "nombre_dispositivo": existing_dev.nombre_dispositivo,
+                    },
+                }), 409
+    
+            # Si esta misma cámara ya tiene un worker corriendo sobre el MISMO índice físico,
+            # liberar primero el descriptor para evitar doble apertura simultánea.
+            stopped_same_index = False
+            if in_use_cam == codigo_camara:
+                usb_mgr.stop_worker(codigo_camara, clear_frames=True, timeout=5.0)
+                stopped_same_index = True
+    
+            source_factory = app.config.get("USB_SOURCE_FACTORY")
+            if source_factory is not None:
+                new_source = source_factory(device_index)
+            else:
+                new_source = OpenCVCaptureSource(source_uri=f"usb://{device_index}")
+    
+            if not new_source.open():
+                try:
+                    new_source.release()
+                except Exception:
+                    pass
+                return jsonify({
+                    "ok": False,
+                    "error": "USB_CAMERA_OPEN_FAILED",
+                    "message": f"No fue posible abrir la cámara USB en el índice {device_index}. Verifique que esté conectada y disponible.",
+                }), 422
+    
+            # Si otro worker (distinto índice o móvil) seguía en este carril, detenerlo antes de persistir cambio
+            if not stopped_same_index:
+                usb_mgr.stop_worker(codigo_camara, clear_frames=True, timeout=5.0)
+    
+            disp_info = {
+                "nombre": device_name,
+                "modo": "pull_usb",
+                "tipo": "USB_LOCAL",
+                "device_index": device_index,
+                "uri_stream": f"usb://{device_index}",
+                "backend": getattr(new_source, "resolved_backend", None) or "OPENCV",
+                "ip_origen": request.remote_addr or "127.0.0.1",
+                "enrolado_en": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            }
+    
+            try:
+                req_dto, cred_dto = pairing_repo.enroll_usb_device(
+                    id_camara=target_cam.id_camara,
+                    codigo_camara=target_cam.codigo,
+                    device_index=device_index,
+                    device_name=device_name,
+                    creado_por=user_id,
+                    dispositivo_info=disp_info,
+                    replace_active=confirm_replace,
+                )
+            except ActiveCredentialConflictError as conflict_err:
+                try:
+                    new_source.release()
+                except Exception:
+                    pass
+                return jsonify({
+                    "ok": False,
+                    "error": "ACTIVE_CREDENTIAL_CONFLICT",
+                    "message": str(conflict_err),
+                    "existing_device": conflict_err.existing_info,
+                }), 409
+            except Exception as exc:
+                try:
+                    new_source.release()
+                except Exception:
+                    pass
+                logger.error("Error persistiendo enrolamiento USB en '%s': %s", codigo_camara, exc)
+                return jsonify({
+                    "ok": False,
+                    "error": "USB_ENROLL_FAILED",
+                    "message": str(exc),
+                }), 500
+    
+            worker_started = False
+            camera_persist_states.pop(codigo_camara, None)
+            cond = _get_camera_condition(codigo_camara)
+            with cond:
+                _latest_camera_frames.pop(codigo_camara, None)
+                cond.notify_all()
+    
+            if coord is not None and coord.registry is not None:
+                try:
+                    old_slot = coord.registry.get_slot(codigo_camara)
+                    area_dto = old_slot.area
+                    try:
+                        old_slot.source.release()
+                    except Exception:
+                        pass
+                    updated_cam = CameraConfigDTO(
+                        id_camara=target_cam.id_camara,
+                        codigo=target_cam.codigo,
+                        nombre=target_cam.nombre,
+                        uri_stream=f"usb://{device_index}",
+                        activa=target_cam.activa,
+                    )
+                    new_slot = BoundCameraSlot(
+                        camera=updated_cam,
+                        area=area_dto,
+                        source=new_source,
+                    )
+                    if hasattr(coord.registry, "register_slot"):
+                        coord.registry.register_slot(new_slot)
+                    elif hasattr(coord.registry, "_slots"):
+                        coord.registry._slots[codigo_camara] = new_slot
+    
+                    usb_mgr.start_worker(
+                        codigo_camara=codigo_camara,
+                        coordinator=coord,
+                        device_index=device_index,
+                        target_fps=app.config.get("USB_TARGET_FPS"),
+                    )
+                    worker_started = True
+                except Exception as worker_exc:
+                    logger.error("Error al iniciar worker USB para '%s': %s", codigo_camara, worker_exc)
+                    try:
+                        new_source.release()
+                    except Exception:
+                        pass
+                    return jsonify({
+                        "ok": False,
+                        "error": "WORKER_START_FAILED",
+                        "message": str(worker_exc),
+                    }), 500
+            else:
+                # Sin coordinador adjunto no debe quedar el descriptor abierto
+                try:
+                    new_source.release()
+                except Exception:
+                    pass
+    
+            return jsonify({
+                "ok": True,
+                "codigo_camara": target_cam.codigo,
+                "nombre_camara": target_cam.nombre,
+                "device_index": device_index,
+                "uri_stream": f"usb://{device_index}",
+                "device_name": device_name,
+                "backend": disp_info["backend"],
+                "id_solicitud": str(req_dto.id_solicitud),
+                "id_credencial": str(cred_dto.id_credencial),
+                "worker_started": worker_started,
+                "replaced_previous": bool(same_lane_active and confirm_replace),
+            }), 201
 
     # -------------------------------------------------------------------------
     # Flujo Móvil (Reclamo, Sondeo y Confirmación)
@@ -2343,6 +2809,27 @@ def create_ingest_app(
                 token_transmision_hash=stream_hash,
                 credencial_cifrada=raw_stream_token,
             )
+
+            usb_mgr: Optional[CameraPullWorkerManager] = app.config.get("USB_WORKER_MANAGER")
+            coord: Optional[VisionEngineCoordinator] = app.config.get("COORDINATOR")
+            cam_code_clean = cam_code.strip().upper()
+            need_push_reset = False
+            if usb_mgr is not None and usb_mgr.is_running(cam_code_clean):
+                usb_mgr.stop_worker(cam_code_clean, clear_frames=True, timeout=5.0)
+                need_push_reset = True
+            if coord is not None and coord.registry is not None:
+                try:
+                    cur_slot = coord.registry.get_slot(cam_code_clean)
+                    if not isinstance(cur_slot.source, MobilePushFrameBuffer):
+                        need_push_reset = True
+                except Exception:
+                    pass
+            if need_push_reset:
+                camera_persist_states.pop(cam_code_clean, None)
+                if target_cam and hasattr(pairing_repo, "restore_push_uri"):
+                    pairing_repo.restore_push_uri(id_camara=target_cam.id_camara, codigo_camara=cam_code_clean)
+                _reset_slot_to_push(coord, cam_code_clean, target_cam)
+
             return jsonify({
                 "ok": True,
                 "estado": "APROBADA",
@@ -3995,13 +4482,18 @@ def run_ingest_server(
     else:
         logger.info("Servidor de ingesta VIGÍA escuchando en %s", access_url)
 
-    run_simple(
-        hostname=host,
-        port=port,
-        application=app,
-        ssl_context=ssl_context,
-        threaded=True,
-    )
+    try:
+        run_simple(
+            hostname=host,
+            port=port,
+            application=app,
+            ssl_context=ssl_context,
+            threaded=True,
+        )
+    finally:
+        usb_mgr = app.config.get("USB_WORKER_MANAGER")
+        if usb_mgr is not None:
+            usb_mgr.stop_all(clear_frames=False, timeout=5.0)
 
 
 if __name__ == "__main__":
@@ -4157,6 +4649,9 @@ if __name__ == "__main__":
             finally:
                 if crl_server:
                     crl_server.stop()
+                usb_mgr = dev_app.config.get("USB_WORKER_MANAGER")
+                if usb_mgr is not None:
+                    usb_mgr.stop_all(clear_frames=False, timeout=5.0)
         except (TLSConfigError, NetworkDiscoveryError, ValueError, FileNotFoundError) as tls_err:
             sys.stderr.write(f"ERROR DE CONFIGURACIÓN TLS / RED LOCAL: {tls_err}\n")
             sys.exit(1)
@@ -4188,13 +4683,18 @@ if __name__ == "__main__":
         sys.stdout.write("=" * 70 + "\n\n")
         sys.stdout.flush()
 
-        run_simple(
-            hostname=dev_host,
-            port=dev_port,
-            application=dev_app,
-            use_reloader=False,
-            use_debugger=False,
-            threaded=True,
-        )
+        try:
+            run_simple(
+                hostname=dev_host,
+                port=dev_port,
+                application=dev_app,
+                use_reloader=False,
+                use_debugger=False,
+                threaded=True,
+            )
+        finally:
+            usb_mgr = dev_app.config.get("USB_WORKER_MANAGER")
+            if usb_mgr is not None:
+                usb_mgr.stop_all(clear_frames=False, timeout=5.0)
 
 

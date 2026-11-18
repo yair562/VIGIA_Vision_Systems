@@ -1,0 +1,75 @@
+{
+  "generated_at_utc": "2026-11-14T19:04:01.591711Z",
+  "production_yolo11n_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+  "models": {
+    "yolo11n.pt": {
+      "weights_relpath": "yolo11n.pt",
+      "size_bytes": 5613764,
+      "size_mb": 5.354,
+      "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+      "num_parameters": 2624080,
+      "num_torch_modules": 319,
+      "end2end": false,
+      "has_one2one_head": false,
+      "reg_max": 16,
+      "stride": [
+        8.0,
+        16.0,
+        32.0
+      ],
+      "nc": 80,
+      "coco_vehicle_classes": {
+        "2": "car",
+        "3": "motorcycle",
+        "5": "bus",
+        "7": "truck"
+      }
+    },
+    "yolo11x.pt": {
+      "weights_relpath": "yolo11x.pt",
+      "size_bytes": 114636239,
+      "size_mb": 109.326,
+      "sha256": "7bc158aa95c0ebfdd87f70f01653c1131b93e92522dbe15c228bcd742e773a24",
+      "num_parameters": 56966176,
+      "num_torch_modules": 631,
+      "end2end": false,
+      "has_one2one_head": false,
+      "reg_max": 16,
+      "stride": [
+        8.0,
+        16.0,
+        32.0
+      ],
+      "nc": 80,
+      "coco_vehicle_classes": {
+        "2": "car",
+        "3": "motorcycle",
+        "5": "bus",
+        "7": "truck"
+      }
+    },
+    "yolo26x.pt": {
+      "weights_relpath": "yolo26x.pt",
+      "size_bytes": 118667365,
+      "size_mb": 113.17,
+      "sha256": "9fdd44a31c504547ffb81d2c6d9e6dac3493c8eaa8b0398d3f43bae6c7003e92",
+      "num_parameters": 58993368,
+      "num_torch_modules": 687,
+      "end2end": false,
+      "has_one2one_head": true,
+      "reg_max": 1,
+      "stride": [
+        8.0,
+        16.0,
+        32.0
+      ],
+      "nc": 80,
+      "coco_vehicle_classes": {
+        "2": "car",
+        "3": "motorcycle",
+        "5": "bus",
+        "7": "truck"
+      }
+    }
+  }
+}

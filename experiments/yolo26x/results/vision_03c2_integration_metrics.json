@@ -1,0 +1,131 @@
+{
+  "generated_at_utc": "2026-11-14T19:34:51.365740+00:00",
+  "hardware": {
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "total_vram_mb": 6140.5,
+    "torch_version": "2.6.0+cu124",
+    "ultralytics_version": "8.4.171"
+  },
+  "scenario_1_default_yolo11n": {
+    "runtime_status": {
+      "requested_model": "yolo11n.pt",
+      "requested_weights_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\yolo11n.pt",
+      "effective_model": "yolo11n.pt",
+      "weights_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\yolo11n.pt",
+      "device": "cuda:0",
+      "imgsz": 640,
+      "quantize": null,
+      "nms": null,
+      "augment": false,
+      "end2end": false,
+      "end2end_verified": true,
+      "fallback_enabled": true,
+      "using_fallback": false,
+      "fallback_reason": null,
+      "fallback_timestamp": null,
+      "is_loaded": true,
+      "ultralytics_version": "8.4.171"
+    },
+    "load_time_ms": 141.85,
+    "latency": {
+      "count": 30,
+      "mean_ms": 9.892,
+      "median_ms": 9.939,
+      "p95_ms": 10.976,
+      "min_ms": 8.598,
+      "max_ms": 11.657,
+      "fps_effective": 101.1
+    },
+    "vram": {
+      "allocated_mb": 52.32,
+      "reserved_mb": 98.0,
+      "peak_allocated_mb": 81.96,
+      "peak_reserved_mb": 98.0
+    },
+    "roi_detections_by_class": {
+      "car": 30
+    }
+  },
+  "scenario_2_experimental_yolo26x": {
+    "runtime_status": {
+      "requested_model": "yolo26x.pt",
+      "requested_weights_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+      "effective_model": "yolo26x.pt",
+      "weights_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+      "device": "cuda:0",
+      "imgsz": 640,
+      "quantize": 16,
+      "nms": false,
+      "augment": false,
+      "end2end": true,
+      "end2end_verified": true,
+      "fallback_enabled": true,
+      "using_fallback": false,
+      "fallback_reason": null,
+      "fallback_timestamp": null,
+      "is_loaded": true,
+      "ultralytics_version": "8.4.171"
+    },
+    "load_time_ms": 246.46,
+    "autobackend_inspection": {
+      "end2end": true,
+      "one2one_cv2_present": true,
+      "one2many_cv2_released": true,
+      "param_dtype": "torch.float16"
+    },
+    "alternating_40_frames": {
+      "latency": {
+        "count": 40,
+        "mean_ms": 18.962,
+        "median_ms": 18.936,
+        "p95_ms": 20.152,
+        "min_ms": 17.546,
+        "max_ms": 20.278,
+        "fps_effective": 52.74
+      },
+      "statuses": {
+        "VEHICLE_DETECTED_NO_PLATE": 40
+      },
+      "roi_detections_by_class": {
+        "car": 40
+      }
+    },
+    "concurrent_40_frames_multithread": {
+      "total_wall_ms": 885.05,
+      "effective_throughput_fps": 45.2,
+      "statuses": {
+        "VEHICLE_DETECTED_NO_PLATE": 40
+      },
+      "errors": []
+    },
+    "vram": {
+      "after_load_allocated_mb": 262.13,
+      "post_warmup_allocated_mb": 370.86,
+      "post_seq_allocated_mb": 370.86,
+      "post_burst_allocated_mb": 434.86,
+      "delta_warmup_to_burst_mb": 64.0,
+      "reserved_mb": 626.0,
+      "peak_allocated_mb": 513.93,
+      "peak_reserved_mb": 626.0
+    }
+  },
+  "scenario_3_fallback_gpu": {
+    "init_corrupt_weights": {
+      "using_fallback": true,
+      "fallback_reason": "[model_init] TypeError: ERROR  C:\\Users\\ROG\\AppData\\Local\\Temp\\vigia_03c2_val_7ulk2_21\\corrupt_primary.pt is not a loadable checkpoint  the file is empty, truncated or corrupted (UnpicklingError: pickle data was truncated).\nRecommended fixes are to re-download or re-export the file, or to run a command with an official Ultralytics model, i.e. 'yolo predict model=yolo26n.pt'",
+      "effective_model": "yolo11n.pt",
+      "detections_count": 1,
+      "labels": [
+        "bus"
+      ]
+    },
+    "runtime_coordinator_recovery": {
+      "using_fallback": true,
+      "fallback_reason": "[runtime_inference] RuntimeError: CUDA out of memory simulated on runtime batch",
+      "effective_model": "yolo11n.pt",
+      "recovered_frame_status": "VEHICLE_DETECTED_NO_PLATE",
+      "recovered_detections": 1,
+      "next_camera_frame_status": "VEHICLE_DETECTED_NO_PLATE"
+    }
+  }
+}

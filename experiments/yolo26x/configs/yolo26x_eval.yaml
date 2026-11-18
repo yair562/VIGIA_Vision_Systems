@@ -1,0 +1,44 @@
+# Configuracion experimental desacoplada — VISION-03C.1 (YOLO26x)
+experiment:
+  name: vision_03c1_yolo26x_eval
+  version: "1.0.0"
+  device: "cuda:0"
+  seed: 42
+
+models:
+  yolo11n:
+    weights_relpath: "weights/yolo11n.pt"
+    role: baseline_actual
+    expected_end2end: false
+  yolo11x:
+    weights_relpath: "weights/yolo11x.pt"
+    role: historical_heavy_reference
+    expected_end2end: false
+  yolo26x:
+    weights_relpath: "weights/yolo26x.pt"
+    role: target_architecture
+    expected_end2end: true
+
+inference_defaults:
+  classes: [2, 3, 5, 7] # COCO: car, motorcycle, bus, truck
+  conf_detect: 0.25
+  conf_prod_roi: 0.70
+  iou_nms: 0.45
+  roi_normalized:
+    x_min: 0.10
+    y_min: 0.15
+    x_max: 0.90
+    y_max: 0.95
+
+benchmark:
+  imgsz_list: [640, 800, 960]
+  precisions: ["fp32", "fp16"]
+  warmup_iters: 5
+  measured_iters: 30
+  sustained_iters: 200
+  tta_probe_imgsz: 640
+
+data:
+  sandbox_manifest_relpath: "../vigia_ml/data/processed/sandbox_raw_manifest_v1.json"
+  sandbox_root_relpath: "../vigia_ml"
+  source_weights_relpath: "../../yolo11n.pt"

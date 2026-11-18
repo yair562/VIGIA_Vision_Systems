@@ -1,0 +1,124 @@
+{
+  "generated_at_utc": "2026-11-16T20:19:30.921283+00:00",
+  "audit_phase": "VISION-05B.1",
+  "description": "Auditoría de concurrencia multicanal (1, 2, 4, 8 cámaras) para VehicleColorClassifier",
+  "pool_size": 40,
+  "concurrency_benchmarks": [
+    {
+      "num_channels": 1,
+      "iterations_per_channel": 100,
+      "total_requests": 100,
+      "shared_instance": true,
+      "total_duration_sec": 0.491,
+      "throughput_fps": 203.74,
+      "latencies_ms": {
+        "p50": 3.72,
+        "p95": 10.161,
+        "p99": 12.043,
+        "mean": 4.882,
+        "min": 1.524,
+        "max": 110.596
+      },
+      "system_metrics": {
+        "memory_initial_mb": 99.36,
+        "memory_final_mb": 104.71,
+        "memory_delta_mb": 5.35,
+        "cpu_process_percent": 96.8
+      },
+      "robustness": {
+        "error_count": 0,
+        "errors": [],
+        "isolation_violations_count": 0,
+        "isolation_violations": [],
+        "deadlocks_detected": false
+      }
+    },
+    {
+      "num_channels": 2,
+      "iterations_per_channel": 100,
+      "total_requests": 200,
+      "shared_instance": true,
+      "total_duration_sec": 0.48,
+      "throughput_fps": 416.66,
+      "latencies_ms": {
+        "p50": 4.486,
+        "p95": 11.361,
+        "p99": 13.073,
+        "mean": 4.759,
+        "min": 1.952,
+        "max": 14.401
+      },
+      "system_metrics": {
+        "memory_initial_mb": 105.82,
+        "memory_final_mb": 106.39,
+        "memory_delta_mb": 0.57,
+        "cpu_process_percent": 174.3
+      },
+      "robustness": {
+        "error_count": 0,
+        "errors": [],
+        "isolation_violations_count": 0,
+        "isolation_violations": [],
+        "deadlocks_detected": false
+      }
+    },
+    {
+      "num_channels": 4,
+      "iterations_per_channel": 75,
+      "total_requests": 300,
+      "shared_instance": true,
+      "total_duration_sec": 0.536,
+      "throughput_fps": 560.09,
+      "latencies_ms": {
+        "p50": 6.714,
+        "p95": 15.55,
+        "p99": 17.026,
+        "mean": 7.068,
+        "min": 3.027,
+        "max": 18.372
+      },
+      "system_metrics": {
+        "memory_initial_mb": 106.16,
+        "memory_final_mb": 106.38,
+        "memory_delta_mb": 0.23,
+        "cpu_process_percent": 294.3
+      },
+      "robustness": {
+        "error_count": 0,
+        "errors": [],
+        "isolation_violations_count": 0,
+        "isolation_violations": [],
+        "deadlocks_detected": false
+      }
+    },
+    {
+      "num_channels": 8,
+      "iterations_per_channel": 50,
+      "total_requests": 400,
+      "shared_instance": true,
+      "total_duration_sec": 1.065,
+      "throughput_fps": 375.65,
+      "latencies_ms": {
+        "p50": 19.949,
+        "p95": 32.167,
+        "p99": 37.605,
+        "mean": 21.155,
+        "min": 8.52,
+        "max": 43.116
+      },
+      "system_metrics": {
+        "memory_initial_mb": 106.18,
+        "memory_final_mb": 108.07,
+        "memory_delta_mb": 1.89,
+        "cpu_process_percent": 302.8
+      },
+      "robustness": {
+        "error_count": 0,
+        "errors": [],
+        "isolation_violations_count": 0,
+        "isolation_violations": [],
+        "deadlocks_detected": false
+      }
+    }
+  ]
+}

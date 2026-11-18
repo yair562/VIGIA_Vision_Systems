@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import secrets
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
@@ -32,12 +33,12 @@ from VIGIA_Core.repository.detection_repository import (
 logger = logging.getLogger(__name__)
 
 
-class ActiveCredentialConflictError(DatabasePersistenceError):
-    """Lanzada cuando se intenta enrolar un dispositivo en un carril con credencial activa sin confirmación."""
+class ActiveCredentialConflictError(ValueError):
+    """Se intentó activar una nueva fuente USB cuando existe una credencial activa sin confirmación."""
 
-    def __init__(self, message: str, active_device: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, existing_info: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(message)
-        self.active_device = active_device or {}
+        self.existing_info = existing_info or {}
 
 
 def hash_token_sha256(raw_token: str) -> str:
@@ -378,67 +379,190 @@ class PsycopgPairingRepository:
         finally:
             conn.close()
 
-    def revoke_credential(
+    def enroll_usb_device(
         self,
         *,
-        id_credencial: UUID,
-        revocado_por: UUID,
-        motivo: str = "Revocación manual desde Dashboard",
-        reset_uri_stream: Optional[str] = None,
-    ) -> bool:
-        """Revoca de forma inmediata una credencial de transmisión activa."""
+        id_camara: UUID,
+        codigo_camara: str,
+        device_index: int,
+        device_name: str,
+        creado_por: UUID,
+        dispositivo_info: Dict[str, Any],
+        replace_active: bool = False,
+    ) -> Tuple[PairingRequestDTO, CameraCredentialDTO]:
+        """
+        Registra y activa transaccionalmente una cámara local USB sobre una cámara lógica.
+
+        Cumple íntegramente el DDL V004 sin migraciones adicionales:
+        1. Bloquea la cámara lógica en `camara` y comprueba si existe credencial activa.
+        2. Si existe credencial activa y `replace_active` es False, aborta con
+           `ActiveCredentialConflictError` sin revocar automáticamente dispositivos previos.
+        3. Si `replace_active` es True, revoca explícitamente la credencial anterior y
+           cancela solicitudes QR vivas para liberar los índices parciales de unicidad.
+        4. Inserta solicitud sintética de enrolamiento local en `camera_pairing_request`
+           con estado `'CONSUMIDA'` (auditoría relacional de creador, timestamp e info USB).
+        5. Inserta la credencial vinculada en `camara_credencial` con `clave_cifrado_id = 'usb-local-pull'`.
+        6. Actualiza `camara.uri_stream = 'usb://<índice>'` dentro de la misma transacción.
+        """
+        target_uri = f"usb://{int(device_index)}"
+        raw_claim = f"vigia_usb_claim_{secrets.token_urlsafe(32)}"
+        raw_stream = f"vigia_usb_local_{secrets.token_urlsafe(32)}"
+        claim_hash = hash_token_sha256(raw_claim)
+        stream_hash = hash_token_sha256(raw_stream)
+
         conn = self._get_connection()
         try:
             with conn:
-                with conn.cursor() as cur:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    # 1. Verificar existencia y bloquear credencial activa previa
                     cur.execute(
                         """
-                        UPDATE camara_credencial
-                        SET activa = FALSE,
-                            revocado_por = %s,
-                            revocado_en = CURRENT_TIMESTAMP,
-                            motivo_revocacion = %s
-                        WHERE id_credencial = %s
-                          AND activa = TRUE
-                        RETURNING id_camara;
+                        SELECT cc.id_credencial, cc.clave_cifrado_id, pr.dispositivo_info
+                        FROM camara_credencial cc
+                        LEFT JOIN camera_pairing_request pr ON pr.id_solicitud = cc.id_solicitud
+                        WHERE cc.id_camara = %s
+                          AND cc.activa = TRUE
+                        FOR UPDATE OF cc;
                         """,
-                        (str(revocado_por), motivo, str(id_credencial)),
+                        (str(id_camara),),
                     )
-                    row = cur.fetchone()
-                    if not row:
-                        return False
-                    id_cam = row[0]
-                    if reset_uri_stream:
+                    existing = cur.fetchone()
+                    if existing is not None:
+                        if not replace_active:
+                            ext_info = existing.get("dispositivo_info") or {}
+                            ext_name = ext_info.get("nombre") or "Dispositivo activo"
+                            raise ActiveCredentialConflictError(
+                                f"La cámara '{codigo_camara}' ya tiene un dispositivo activo ('{ext_name}'). "
+                                "Confirme explícitamente la sustitución para reemplazarlo.",
+                                existing_info={
+                                    "id_credencial": str(existing["id_credencial"]),
+                                    "clave_cifrado_id": existing["clave_cifrado_id"],
+                                    "nombre_dispositivo": ext_name,
+                                    "dispositivo_info": ext_info,
+                                },
+                            )
+
                         cur.execute(
-                            "UPDATE camara SET uri_stream = %s WHERE id_camara = %s;",
-                            (reset_uri_stream, str(id_cam)),
+                            """
+                            UPDATE camara_credencial
+                            SET activa = FALSE,
+                                revocado_por = %s,
+                                revocado_en = CURRENT_TIMESTAMP,
+                                motivo_revocacion = 'Sustituida explícitamente por cámara USB local'
+                            WHERE id_credencial = %s
+                              AND activa = TRUE;
+                            """,
+                            (str(creado_por), str(existing["id_credencial"])),
                         )
-                    return True
+
+                    # 2. Expirar/cancelar solicitudes QR vivas previas para respetar uq_pairing_activa_por_camara
+                    cur.execute(
+                        """
+                        UPDATE camera_pairing_request
+                        SET estado = 'CANCELADA',
+                            cancelado_en = CURRENT_TIMESTAMP,
+                            resuelto_por = %s,
+                            motivo_rechazo = 'Cancelada por asignación explícita de cámara USB'
+                        WHERE id_camara = %s
+                          AND estado IN ('CREADA', 'PENDIENTE');
+                        """,
+                        (str(creado_por), str(id_camara)),
+                    )
+
+                    # 3. Insertar solicitud sintética CONSUMIDA en camera_pairing_request
+                    cur.execute(
+                        """
+                        INSERT INTO camera_pairing_request (
+                            id_camara,
+                            token_claim_hash,
+                            token_poll_hash,
+                            estado,
+                            dispositivo_info,
+                            creado_por,
+                            resuelto_por,
+                            creado_en,
+                            expira_en,
+                            reclamado_en,
+                            resuelto_en,
+                            consumido_en
+                        ) VALUES (
+                            %s, %s, NULL, 'CONSUMIDA', %s::jsonb,
+                            %s, %s,
+                            CURRENT_TIMESTAMP,
+                            CURRENT_TIMESTAMP + interval '10 minutes',
+                            CURRENT_TIMESTAMP,
+                            CURRENT_TIMESTAMP,
+                            CURRENT_TIMESTAMP
+                        )
+                        RETURNING *;
+                        """,
+                        (
+                            str(id_camara),
+                            claim_hash,
+                            json.dumps(dispositivo_info),
+                            str(creado_por),
+                            str(creado_por),
+                        ),
+                    )
+                    req_row = cur.fetchone()
+
+                    # 4. Insertar credencial USB activa
+                    cur.execute(
+                        """
+                        INSERT INTO camara_credencial (
+                            id_camara,
+                            id_solicitud,
+                            token_transmision_hash,
+                            clave_cifrado_id,
+                            credencial_cifrada,
+                            entregado_en,
+                            activa
+                        ) VALUES (
+                            %s, %s, %s, 'usb-local-pull', NULL, CURRENT_TIMESTAMP, TRUE
+                        )
+                        RETURNING *;
+                        """,
+                        (str(id_camara), str(req_row["id_solicitud"]), stream_hash),
+                    )
+                    cred_row = cur.fetchone()
+
+                    # 5. Actualizar uri_stream de la cámara lógica
+                    cur.execute(
+                        """
+                        UPDATE camara
+                        SET uri_stream = %s
+                        WHERE id_camara = %s;
+                        """,
+                        (target_uri, str(id_camara)),
+                    )
+
+                    return self._row_to_request_dto(req_row), self._row_to_cred_dto(cred_row)
+        except ActiveCredentialConflictError:
+            raise
         except Exception as exc:
             raise DatabasePersistenceError(
-                f"Error al revocar credencial de cámara: {exc}"
+                f"Error al registrar cámara USB para '{codigo_camara}': {exc}"
             ) from exc
         finally:
             conn.close()
 
-    def get_credential_by_id(self, id_credencial: UUID) -> Optional[Dict[str, Any]]:
-        """Obtiene una credencial por su UUID junto con los metadatos de su cámara y solicitud."""
+    def get_credential_details(self, id_credencial: UUID) -> Optional[Dict[str, Any]]:
+        """Consulta metadatos de una credencial y su cámara lógica asociada."""
         conn = self._get_connection()
         try:
             with conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(
                         """
-                        SELECT 
+                        SELECT
                             cc.id_credencial,
                             cc.id_camara,
+                            cc.activa,
+                            cc.clave_cifrado_id,
                             c.codigo AS codigo_camara,
                             c.nombre AS nombre_camara,
                             c.uri_stream,
-                            pr.dispositivo_info,
-                            cc.activa,
-                            cc.activado_en,
-                            cc.revocado_en
+                            pr.dispositivo_info
                         FROM camara_credencial cc
                         JOIN camara c ON c.id_camara = cc.id_camara
                         LEFT JOIN camera_pairing_request pr ON pr.id_solicitud = cc.id_solicitud
@@ -447,162 +571,154 @@ class PsycopgPairingRepository:
                         (str(id_credencial),),
                     )
                     row = cur.fetchone()
-                    return dict(row) if row else None
+                    if not row:
+                        return None
+                    disp_info = row.get("dispositivo_info") or {}
+                    is_usb = (
+                        row["clave_cifrado_id"] == "usb-local-pull"
+                        or str(row["uri_stream"] or "").lower().startswith("usb://")
+                        or (isinstance(disp_info, dict) and disp_info.get("modo") == "pull_usb")
+                    )
+                    return {
+                        "id_credencial": UUID(str(row["id_credencial"])),
+                        "id_camara": UUID(str(row["id_camara"])),
+                        "activa": bool(row["activa"]),
+                        "clave_cifrado_id": row["clave_cifrado_id"],
+                        "codigo_camara": row["codigo_camara"],
+                        "nombre_camara": row["nombre_camara"],
+                        "uri_stream": row["uri_stream"],
+                        "dispositivo_info": disp_info,
+                        "is_usb": is_usb,
+                    }
         except Exception as exc:
-            raise DatabasePersistenceError(f"Error al consultar credencial {id_credencial}: {exc}") from exc
+            raise DatabasePersistenceError(
+                f"Error al consultar detalles de credencial: {exc}"
+            ) from exc
         finally:
             conn.close()
 
-    def get_active_device_for_camera(self, codigo_camara: str) -> Optional[Dict[str, Any]]:
-        """Consulta si existe una credencial activa para una cámara lógica."""
+    def revoke_credential_and_restore_lane(
+        self,
+        *,
+        id_credencial: UUID,
+        revocado_por: UUID,
+        motivo: str = "Revocación manual desde Dashboard",
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Revoca una credencial activa y, si pertenecía a una cámara USB pull,
+        restaura transaccionalmente `camara.uri_stream` al esquema `push://<cam>`.
+        Retorna detalles del carril afectado o None si no existe/ya inactiva.
+        """
         conn = self._get_connection()
         try:
             with conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(
                         """
-                        SELECT 
+                        SELECT
                             cc.id_credencial,
                             cc.id_camara,
+                            cc.activa,
+                            cc.clave_cifrado_id,
                             c.codigo AS codigo_camara,
-                            COALESCE(pr.dispositivo_info->>'nombre', pr.dispositivo_info->>'device_name', 'Dispositivo ' || c.codigo) AS nombre_dispositivo,
-                            pr.dispositivo_info,
-                            cc.activado_en
+                            c.uri_stream,
+                            pr.dispositivo_info
                         FROM camara_credencial cc
                         JOIN camara c ON c.id_camara = cc.id_camara
                         LEFT JOIN camera_pairing_request pr ON pr.id_solicitud = cc.id_solicitud
-                        WHERE c.codigo = %s AND cc.activa = TRUE;
+                        WHERE cc.id_credencial = %s
+                        FOR UPDATE OF cc;
                         """,
-                        (codigo_camara.strip().upper(),),
+                        (str(id_credencial),),
                     )
                     row = cur.fetchone()
-                    return dict(row) if row else None
+                    if not row or not row["activa"]:
+                        return None
+
+                    cur.execute(
+                        """
+                        UPDATE camara_credencial
+                        SET activa = FALSE,
+                            revocado_por = %s,
+                            revocado_en = CURRENT_TIMESTAMP,
+                            motivo_revocacion = %s
+                        WHERE id_credencial = %s
+                          AND activa = TRUE;
+                        """,
+                        (str(revocado_por), motivo, str(id_credencial)),
+                    )
+                    if cur.rowcount == 0:
+                        return None
+
+                    disp_info = row.get("dispositivo_info") or {}
+                    is_usb = (
+                        row["clave_cifrado_id"] == "usb-local-pull"
+                        or str(row["uri_stream"] or "").lower().startswith("usb://")
+                        or (isinstance(disp_info, dict) and disp_info.get("modo") == "pull_usb")
+                    )
+                    codigo_cam = str(row["codigo_camara"])
+                    restored_uri = f"push://{codigo_cam.lower()}"
+                    if is_usb:
+                        cur.execute(
+                            """
+                            UPDATE camara
+                            SET uri_stream = %s
+                            WHERE id_camara = %s;
+                            """,
+                            (restored_uri, str(row["id_camara"])),
+                        )
+
+                    return {
+                        "id_credencial": UUID(str(row["id_credencial"])),
+                        "id_camara": UUID(str(row["id_camara"])),
+                        "codigo_camara": codigo_cam,
+                        "is_usb": is_usb,
+                        "restored_uri": restored_uri if is_usb else row["uri_stream"],
+                    }
         except Exception as exc:
-            raise DatabasePersistenceError(f"Error al consultar dispositivo activo en '{codigo_camara}': {exc}") from exc
+            raise DatabasePersistenceError(
+                f"Error al revocar credencial y restaurar carril: {exc}"
+            ) from exc
         finally:
             conn.close()
 
-    def enroll_usb_device(
-        self,
-        *,
-        codigo_camara: str,
-        device_index: int,
-        device_name: str,
-        creado_por: UUID,
-        force_replace: bool = False,
-    ) -> Tuple[UUID, UUID]:
-        """
-        Enrola una cámara física USB en PostgreSQL en una única transacción atómica.
-        Cumple estrictamente con el DDL V004 y preserva la unicidad de credencial activa.
-        """
-        import secrets
-        import uuid as _uuid
-        cam_code_clean = codigo_camara.strip().upper()
-        if device_index < 0:
-            raise ValueError(f"device_index={device_index} debe ser un entero no negativo.")
-
+    def restore_push_uri(self, *, id_camara: UUID, codigo_camara: str) -> str:
+        """Restaura `camara.uri_stream` al esquema push://<codigo> cuando vuelve a modo móvil."""
+        target_uri = f"push://{codigo_camara.strip().lower()}"
         conn = self._get_connection()
         try:
             with conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    # 1. Resolver id_camara
-                    cur.execute("SELECT id_camara, codigo FROM camara WHERE codigo = %s;", (cam_code_clean,))
-                    cam_row = cur.fetchone()
-                    if not cam_row:
-                        raise ValueError(f"Cámara lógica '{cam_code_clean}' no encontrada en PostgreSQL.")
-                    id_camara = UUID(str(cam_row["id_camara"]))
-
-                    # 2. Comprobar conflicto de credenciales activas
+                with conn.cursor() as cur:
                     cur.execute(
                         """
-                        SELECT cc.id_credencial, COALESCE(pr.dispositivo_info->>'nombre', 'Dispositivo activo') AS nombre
-                        FROM camara_credencial cc
-                        LEFT JOIN camera_pairing_request pr ON pr.id_solicitud = cc.id_solicitud
-                        WHERE cc.id_camara = %s AND cc.activa = TRUE;
+                        UPDATE camara
+                        SET uri_stream = %s
+                        WHERE id_camara = %s;
                         """,
-                        (str(id_camara),),
+                        (target_uri, str(id_camara)),
                     )
-                    active_row = cur.fetchone()
-                    if active_row:
-                        if not force_replace:
-                            raise ActiveCredentialConflictError(
-                                f"La cámara '{cam_code_clean}' ya cuenta con un dispositivo activo ('{active_row['nombre']}').",
-                                active_device={"id_credencial": str(active_row["id_credencial"]), "nombre": active_row["nombre"]},
-                            )
-                        # Si force_replace es True, revocar la credencial previa en la misma transacción
-                        cur.execute(
-                            """
-                            UPDATE camara_credencial
-                            SET activa = FALSE,
-                                revocado_por = %s,
-                                revocado_en = CURRENT_TIMESTAMP,
-                                motivo_revocacion = %s
-                            WHERE id_camara = %s AND activa = TRUE;
-                            """,
-                            (str(creado_por), f"Sustituido por cámara USB: {device_name}", str(id_camara)),
-                        )
-
-                    # 3. Actualizar uri_stream en tabla camara
-                    new_uri = f"usb://{device_index}"
-                    cur.execute(
-                        "UPDATE camara SET uri_stream = %s, activa = TRUE WHERE id_camara = %s;",
-                        (new_uri, str(id_camara)),
-                    )
-
-                    # 4. Insertar solicitud sintética en camera_pairing_request (estado CONSUMIDA)
-                    syn_claim_hash = hash_token_sha256(f"claim_{_uuid.uuid4()}_{secrets.token_hex(16)}")
-                    syn_info = json.dumps({
-                        "nombre": device_name,
-                        "tipo": "Cámara USB (Local)",
-                        "device_index": device_index,
-                        "modo": "pull_usb",
-                        "backend": "MSMF",
-                        "enrolado_en": datetime.now(timezone.utc).isoformat(),
-                    })
-                    cur.execute(
-                        """
-                        INSERT INTO camera_pairing_request (
-                            id_camara, token_claim_hash, estado, dispositivo_info,
-                            creado_por, resuelto_por, expira_en, reclamado_en,
-                            resuelto_en, consumido_en
-                        )
-                        VALUES (
-                            %s, %s, 'CONSUMIDA', %s::jsonb,
-                            %s, %s, CURRENT_TIMESTAMP + INTERVAL '10 years', CURRENT_TIMESTAMP,
-                            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-                        )
-                        RETURNING id_solicitud;
-                        """,
-                        (str(id_camara), syn_claim_hash, syn_info, str(creado_por), str(creado_por)),
-                    )
-                    id_solicitud = cur.fetchone()["id_solicitud"]
-
-                    # 5. Insertar credencial en camara_credencial
-                    token_raw = f"vigia_usb_{device_index}_{secrets.token_urlsafe(32)}"
-                    token_hash = hash_token_sha256(token_raw)
-                    cur.execute(
-                        """
-                        INSERT INTO camara_credencial (
-                            id_camara, id_solicitud, token_transmision_hash,
-                            clave_cifrado_id, credencial_cifrada, activa, activado_en
-                        )
-                        VALUES (
-                            %s, %s, %s,
-                            'v1-plain-token', %s, TRUE, CURRENT_TIMESTAMP
-                        )
-                        RETURNING id_credencial;
-                        """,
-                        (str(id_camara), str(id_solicitud), token_hash, token_raw),
-                    )
-                    id_credencial = UUID(str(cur.fetchone()["id_credencial"]))
-
-                    return id_credencial, id_camara
-        except ActiveCredentialConflictError:
-            raise
+            return target_uri
         except Exception as exc:
-            raise DatabasePersistenceError(f"Error al enrolar dispositivo USB: {exc}") from exc
+            raise DatabasePersistenceError(
+                f"Error al restaurar URI push para '{codigo_camara}': {exc}"
+            ) from exc
         finally:
             conn.close()
+
+    def revoke_credential(
+        self,
+        *,
+        id_credencial: UUID,
+        revocado_por: UUID,
+        motivo: str = "Revocación manual desde Dashboard",
+    ) -> bool:
+        """Revoca de forma inmediata una credencial de transmisión activa."""
+        res = self.revoke_credential_and_restore_lane(
+            id_credencial=id_credencial,
+            revocado_por=revocado_por,
+            motivo=motivo,
+        )
+        return res is not None
 
     def validate_stream_token(
         self,
@@ -611,8 +727,8 @@ class PsycopgPairingRepository:
         token_transmision: str,
     ) -> bool:
         """
-        Verifica en microsegundos si el token provisto es una credencial individual activa
-        para la cámara lógica indicada.
+        Verifica en microsegundos si el token provisto es una credencial móvil individual activa
+        para la cámara lógica indicada (excluyendo credenciales USB locales).
         """
         token_hash = hash_token_sha256(token_transmision)
         conn = self._get_connection()
@@ -628,6 +744,7 @@ class PsycopgPairingRepository:
                           AND cc.token_transmision_hash = %s
                           AND cc.activa = TRUE
                           AND c.activa = TRUE
+                          AND cc.clave_cifrado_id <> 'usb-local-pull'
                         LIMIT 1;
                         """,
                         (codigo_camara, token_hash),

@@ -1,0 +1,108 @@
+{
+  "_is_template_only": true,
+  "_notice": "PLANTILLA ILUSTRATIVA DE ANOTACION MANUAL — NO REPRESENTA GROUND TRUTH REAL. Todas las coordenadas son ejemplos ficticios de formato.",
+  "dataset_version": "VIGIA-BENCH-v1",
+  "examples": [
+    {
+      "scenario": "Vehiculo a escala ocluido parcialmente en mano o escritorio (CAR + is_scale_model=true)",
+      "image_record": {
+        "image_id": "EJEMPLO_SCALE_CAR_01",
+        "rel_path": "20261106/CAM-ENTRADA/20261106T163525_864338Z_234fc19b2c20_orig.jpg",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "size_bytes": 123456,
+        "camera_id": "CAM-ENTRADA",
+        "session_id": "S06",
+        "capture_timestamp_utc": "2026-11-06T16:35:25.864338+00:00",
+        "width": 720,
+        "height": 1280,
+        "source_domain": "SCALE_MODEL_LAB",
+        "is_negative_sample": false,
+        "lighting_condition": "WELL_LIT",
+        "sharpness_tier": "MODERATE_BLUR",
+        "mean_luminance_y": 95.6,
+        "laplacian_variance": 58.9,
+        "annotation_status": "ANNOTATED_VERIFIED",
+        "annotations": [
+          {
+            "annotation_id": "EJEMPLO_ANN_01",
+            "image_id": "EJEMPLO_SCALE_CAR_01",
+            "class_label": "CAR",
+            "bbox_xyxy": [10, 460, 385, 680],
+            "visibility_ratio": 0.75,
+            "occlusion_level": "PARTIAL",
+            "relative_size": "LARGE",
+            "estimated_distance": "CLOSE_MACRO",
+            "lighting_local": "WELL_LIT",
+            "is_scale_model": true,
+            "is_partial_border": false,
+            "ignore_reason": null,
+            "annotator_id": "annotator_01",
+            "annotated_at_utc": "2026-11-14T10:00:00+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "Objeto vehicular ambiguo (ej. chasis LEGO sin carroceria) o miniatura en borde < 15% -> IGNORE",
+      "image_record": {
+        "image_id": "EJEMPLO_AMBIGUOUS_IGNORE_02",
+        "rel_path": "20261104/CAM-ENTRADA/20261104T163435_585610Z_5f6dd24bfe47_orig.jpg",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "size_bytes": 123456,
+        "camera_id": "CAM-ENTRADA",
+        "session_id": "S01",
+        "capture_timestamp_utc": "2026-11-04T16:34:35.585610+00:00",
+        "width": 720,
+        "height": 1280,
+        "source_domain": "SCALE_MODEL_LAB",
+        "is_negative_sample": false,
+        "lighting_condition": "WELL_LIT",
+        "sharpness_tier": "MODERATE_BLUR",
+        "mean_luminance_y": 86.1,
+        "laplacian_variance": 50.0,
+        "annotation_status": "ANNOTATED_VERIFIED",
+        "annotations": [
+          {
+            "annotation_id": "EJEMPLO_ANN_02",
+            "image_id": "EJEMPLO_AMBIGUOUS_IGNORE_02",
+            "class_label": "IGNORE",
+            "bbox_xyxy": [195, 410, 445, 605],
+            "visibility_ratio": 1.0,
+            "occlusion_level": "NONE",
+            "relative_size": "MEDIUM",
+            "estimated_distance": "CLOSE_MACRO",
+            "lighting_local": "SHADOW",
+            "is_scale_model": true,
+            "is_partial_border": false,
+            "ignore_reason": "AMBIGUOUS_LEGO_CHASSIS_WITHOUT_VEHICLE_BODY",
+            "annotator_id": "annotator_01",
+            "annotated_at_utc": "2026-11-14T10:05:00+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "Muestra negativa controlada sin vehiculos (True Negative para medir FP en escritorio/calle vacia)",
+      "image_record": {
+        "image_id": "EJEMPLO_NEGATIVE_03",
+        "rel_path": "negatives/CAM-SALIDA/EJEMPLO_mesa_teclado_mano_sin_vehiculo_orig.jpg",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "size_bytes": 98765,
+        "camera_id": "CAM-SALIDA",
+        "session_id": "NEG01",
+        "capture_timestamp_utc": "2026-11-14T10:10:00+00:00",
+        "width": 640,
+        "height": 480,
+        "source_domain": "NEGATIVE_CONTROL",
+        "is_negative_sample": true,
+        "lighting_condition": "WELL_LIT",
+        "sharpness_tier": "MODERATE_BLUR",
+        "mean_luminance_y": 110.0,
+        "laplacian_variance": 25.0,
+        "annotation_status": "ANNOTATED_VERIFIED",
+        "notes": "Escena negativa controlada con teclado, raton y persona/mano sin vehiculos.",
+        "annotations": []
+      }
+    }
+  ]
+}

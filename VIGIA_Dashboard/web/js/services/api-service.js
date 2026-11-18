@@ -12,11 +12,12 @@
  */
 
 export class ApiError extends Error {
-  constructor(message, status = 0, code = 'API_ERROR') {
+  constructor(message, status = 0, code = 'API_ERROR', data = null) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
+    this.data = data;
   }
 }
 
@@ -135,7 +136,7 @@ export function createApiService({ baseUrl, fetchFn } = {}) {
       if (response.status >= 500) {
         throw new ServerError(errorMsg, response.status, errorCode);
       }
-      throw new ApiError(errorMsg, response.status, errorCode);
+      throw new ApiError(errorMsg, response.status, errorCode, data);
     }
 
     return data || {};

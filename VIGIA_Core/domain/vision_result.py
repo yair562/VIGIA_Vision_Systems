@@ -96,14 +96,20 @@ class VisionResult:
 
     evidence_path: Optional[str] = None
     error_message: Optional[str] = None
+    vehicle_color_pred: Optional[str] = None
+    vehicle_color_confidence: Optional[float] = None
 
     def __post_init__(self) -> None:
         """Valida invariantes semánticas del contrato."""
-        # Un resultado técnico no puede tener datos de detección
+        # Un resultado técnico no puede tener datos de detección ni color
         if self.status in (VisionStatus.CAMERA_ERROR, VisionStatus.VISION_ERROR):
             if self.vehicle_detected:
                 raise ValueError(
                     f"status={self.status} no puede tener vehicle_detected=True"
+                )
+            if self.vehicle_color_pred is not None:
+                raise ValueError(
+                    f"status={self.status} no puede tener vehicle_color_pred"
                 )
 
         # Si se leyó la placa debe existir confianza
@@ -116,6 +122,7 @@ class VisionResult:
         for label, value in (
             ("vehicle_confidence", self.vehicle_confidence),
             ("plate_confidence", self.plate_confidence),
+            ("vehicle_color_confidence", self.vehicle_color_confidence),
         ):
             if value is not None and not (0.0 <= value <= 1.0):
                 raise ValueError(

@@ -1,0 +1,91 @@
+# Configuracion experimental aislada VIGIA-ML-02 (sin rutas absolutas)
+sandbox:
+  name: vigia_ml_sandbox
+  version: "0.2.0"
+  source_evidence_relpath: "../../evidencias_vigia"
+  raw_copy_relpath: "data/raw"
+  working_relpath: "data/working"
+  annotations_relpath: "data/annotations"
+  processed_relpath: "data/processed"
+  reports_relpath: "reports"
+  artifacts_relpath: "artifacts"
+
+controlled_copy:
+  # No copiar indiscriminadamente todo evidencias_vigia; seleccionar fechas curadas
+  include_dates:
+    - "20261111"
+    - "20261114"
+  # Politica por defecto: maximo 1 muestra representativa por clúster de duplicados
+  deduplicate_per_cluster: true
+  copy_annotated_pairs: true
+  verify_sha256: true
+  min_free_disk_gb: 2.0
+
+quality_and_dedup:
+  session_gap_seconds: 60.0
+  consecutive_mad_duplicate_threshold: 8.0
+  dhash_hamming_threshold: 6
+  blur_laplacian_severe: 15.0
+  blur_laplacian_moderate: 60.0
+  dark_luminance_y: 50.0
+  bright_luminance_y: 200.0
+  glare_v_threshold: 240
+  glare_s_max: 40
+
+taxonomies:
+  source_domains:
+    - SCALE_MODEL_LAB
+    - SCREEN_RECAPTURE
+    - REAL_FULL_SCALE
+    - NEGATIVE_CONTROL
+    - UNKNOWN
+  vehicle_classes:
+    - CAR
+    - MOTORCYCLE
+    - BUS
+    - TRUCK
+    - OTHER
+    - IGNORE
+  color_classes:
+    - WHITE
+    - BLACK
+    - GRAY
+    - SILVER
+    - RED
+    - BLUE
+    - GREEN
+    - YELLOW
+    - BROWN
+    - ORANGE
+    - OTHER
+    - INDETERMINATE
+
+baseline_a_color:
+  inner_crop_margin: 0.12
+  min_roi_pixels: 400
+  min_valid_pixel_ratio: 0.18
+  shadow_v_min: 35
+  shadow_l_min: 20
+  glare_v_max: 245
+  glare_s_max_for_glare: 28
+  achromatic_s_max: 42
+  min_confidence_for_decision: 0.34
+  min_margin_over_second: 0.05
+
+baseline_b_ml:
+  feature_bins_hue: 16
+  feature_bins_sv: 8
+  feature_bins_lab: 8
+  candidate_models:
+    - svm_rbf
+    - random_forest
+  indeterminate_proba_threshold: 0.50
+  random_seed: 42
+
+evaluation:
+  split_strategy: GroupKFold
+  group_keys:
+    - session_id
+    - duplicate_group
+  n_splits: 3
+  require_human_gt: true

@@ -1,0 +1,125 @@
+{
+  "total_scenarios": 8,
+  "passed_scenarios": 8,
+  "all_passed": true,
+  "results": {
+    "escenario_1_un_vehiculo": {
+      "pass": true,
+      "expected": "RED",
+      "predicted": "RED",
+      "confidence": 0.98,
+      "status": "CLASSIFIED"
+    },
+    "escenario_2_dos_vehiculos": {
+      "pass": true,
+      "vehiculo_1": {
+        "expected": "BLUE",
+        "predicted": "BLUE",
+        "confidence": 0.9131
+      },
+      "vehiculo_2": {
+        "expected": "YELLOW",
+        "predicted": "YELLOW",
+        "confidence": 0.98
+      }
+    },
+    "escenario_3_tres_o_mas_vehiculos": {
+      "pass": true,
+      "total_vehiculos": 4,
+      "vehiculo_1": {
+        "expected": "GREEN",
+        "predicted": "GREEN",
+        "confidence": 0.98
+      },
+      "vehiculo_2": {
+        "expected": "WHITE",
+        "predicted": "WHITE",
+        "confidence": 0.9523
+      },
+      "vehiculo_3": {
+        "expected": "BLACK",
+        "predicted": "BLACK",
+        "confidence": 0.92
+      },
+      "vehiculo_4": {
+        "expected": "RED",
+        "predicted": "RED",
+        "confidence": 0.98
+      }
+    },
+    "escenario_4_colores_diferentes": {
+      "pass": true,
+      "vehiculo_1": {
+        "expected": "ORANGE",
+        "predicted": "ORANGE",
+        "confidence": 0.98
+      },
+      "vehiculo_2": {
+        "expected": "SILVER",
+        "predicted": "SILVER",
+        "confidence": 0.98
+      }
+    },
+    "escenario_5_parcialmente_superpuestos": {
+      "pass": true,
+      "overlap_type": "horizontal_occlusion_25%",
+      "vehiculo_1": {
+        "expected": "BLUE",
+        "predicted": "BLUE",
+        "confidence": 0.8738
+      },
+      "vehiculo_2": {
+        "expected": "RED",
+        "predicted": "RED",
+        "confidence": 0.98
+      }
+    },
+    "escenario_6_parcialmente_ocultos": {
+      "pass": true,
+      "occlusion_ratio": 0.25,
+      "expected": "GREEN",
+      "predicted": "GREEN",
+      "confidence": 0.9512,
+      "status": "CLASSIFIED"
+    },
+    "escenario_7_vehiculos_muy_proximos": {
+      "pass": true,
+      "gap_px": 8,
+      "vehiculo_1": {
+        "expected": "YELLOW",
+        "predicted": "YELLOW",
+        "confidence": 0.98
+      },
+      "vehiculo_2": {
+        "expected": "BLUE",
+        "predicted": "BLUE",
+        "confidence": 0.9131
+      }
+    },
+    "escenario_8_diferentes_iluminaciones": {
+      "pass": true,
+      "casos_evaluados": 3,
+      "casos_exitosos": 3,
+      "detalle": {
+        "baja_iluminacion": {
+          "pass": true,
+          "predicted": "RED",
+          "confidence": 0.92,
+          "status": "CLASSIFIED"
+        },
+        "deslumbramiento_solar": {
+          "pass": true,
+          "predicted": "BLUE",
+          "confidence": 0.943,
+          "status": "CLASSIFIED"
+        },
+        "iluminacion_estandar": {
+          "pass": true,
+          "predicted": "WHITE",
+          "confidence": 0.971,
+          "status": "CLASSIFIED"
+        }
+      }
+    }
+  }
+}

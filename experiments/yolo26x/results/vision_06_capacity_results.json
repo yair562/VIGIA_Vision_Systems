@@ -1,0 +1,97 @@
+{
+  "timestamp_utc": "2026-11-17T00:41:22.333430+00:00",
+  "vram_hardware": {
+    "total_mb": 6140.5,
+    "free_before_mb": 5075.0,
+    "device_free_during_load_mb": 4401.0,
+    "post_warmup_allocated_mb": 370.84,
+    "end_allocated_mb": 434.84,
+    "peak_allocated_mb": 487.07,
+    "end_reserved_mb": 626.0,
+    "peak_reserved_mb": 626.0,
+    "vram_drift_mb": 64.0,
+    "post_unload_allocated_mb": 96.0
+  },
+  "process_memory_mb": {
+    "rss_before_mb": 491.28,
+    "rss_after_100_mb": 1324.99
+  },
+  "concurrent_workload": {
+    "cameras": [
+      "CAM-ENTRADA",
+      "CAM-SALIDA"
+    ],
+    "total_inferences": 100,
+    "wall_elapsed_s": 4.055,
+    "aggregate_throughput_fps": 24.66,
+    "errors": [],
+    "inferences_by_model": {
+      "yolo26x.pt": 100
+    },
+    "detector_metrics": {
+      "total_inferences": 100,
+      "last_inference_model": "yolo26x.pt",
+      "inferences_by_model": {
+        "yolo26x.pt": 100
+      },
+      "inference_errors": 0,
+      "cuda_errors": 0,
+      "init_errors": 0,
+      "fallback_count": 0,
+      "last_recovery_ms": null,
+      "frontal_aux_triggers": 84,
+      "frontal_aux_recoveries": 34,
+      "duplicates_suppressed": 118,
+      "latency_mean_ms": 40.401,
+      "latency_p50_ms": 42.143,
+      "latency_p95_ms": 48.323,
+      "latency_p99_ms": 104.194,
+      "inference_fps": 24.75,
+      "queue_wait_mean_ms": 37.58,
+      "last_queue_wait_ms": 41.377,
+      "last_camera_code": "CAM-ENTRADA",
+      "last_inference_at": "2026-11-17T00:41:22.333430+00:00"
+    },
+    "cam_metrics": {
+      "CAM-ENTRADA": {
+        "ingest_count": 51,
+        "processed_count": 51,
+        "ingest_fps": 10.03,
+        "processed_fps": 12.03,
+        "dropped_frames": 0,
+        "drop_reasons": {},
+        "last_drop_policy": null,
+        "last_queue_wait_ms": 41.377,
+        "last_step_ms": 86.12,
+        "last_frame_at": "2026-11-17T00:41:22.333430+00:00",
+        "last_status": "PROCESSED",
+        "effective_model": "yolo26x.pt",
+        "last_inference_model": "yolo26x.pt"
+      },
+      "CAM-SALIDA": {
+        "ingest_count": 50,
+        "processed_count": 50,
+        "ingest_fps": 12.49,
+        "processed_fps": 12.9,
+        "dropped_frames": 0,
+        "drop_reasons": {},
+        "last_drop_policy": null,
+        "last_queue_wait_ms": 40.884,
+        "last_step_ms": 86.034,
+        "last_frame_at": "2026-11-17T00:41:22.288675+00:00",
+        "last_status": "PROCESSED",
+        "effective_model": "yolo26x.pt",
+        "last_inference_model": "yolo26x.pt"
+      }
+    },
+    "detector_config_verified": {
+      "effective_model": "yolo26x.pt",
+      "device": "cuda:0",
+      "effective_fp16": true,
+      "end2end": true,
+      "using_fallback": false,
+      "frontal_aux_imgsz": 384,
+      "deduplicate_iou_threshold": 0.55
+    }
+  }
+}

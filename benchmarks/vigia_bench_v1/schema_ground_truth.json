@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vigia.local/schemas/vigia-bench-v1.schema.json",
+  "title": "VIGIA-BENCH-v1 Ground Truth Manifest Schema",
+  "description": "Esquema versionado de metadatos y anotaciones manuales para el benchmark vehicular reproducible VIGIA-BENCH-v1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dataset_version",
+    "created_at_utc",
+    "corpus_root_relative",
+    "selection_policy",
+    "summary",
+    "images"
+  ],
+  "properties": {
+    "dataset_version": {
+      "type": "string",
+      "const": "VIGIA-BENCH-v1"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "corpus_root_relative": {
+      "type": "string",
+      "minLength": 1
+    },
+    "selection_policy": {
+      "type": "object",
+      "required": [
+        "exact_dedup",
+        "burst_dedup_min_delta_seconds",
+        "burst_dedup_min_thumbnail_mad",
+        "session_gap_seconds",
+        "synthetic_stock_witnesses"
+      ],
+      "properties": {
+        "exact_dedup": { "type": "string" },
+        "burst_dedup_min_delta_seconds": { "type": "number", "minimum": 0 },
+        "burst_dedup_min_thumbnail_mad": { "type": "number", "minimum": 0 },
+        "session_gap_seconds": { "type": "number", "minimum": 0 },
+        "synthetic_stock_witnesses": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "images": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ImageRecord" }
+    }
+  },
+  "$defs": {
+    "ImageRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "image_id",
+        "rel_path",
+        "sha256",
+        "size_bytes",
+        "camera_id",
+        "session_id",
+        "capture_timestamp_utc",
+        "width",
+        "height",
+        "source_domain",
+        "is_negative_sample",
+        "lighting_condition",
+        "sharpness_tier",
+        "mean_luminance_y",
+        "laplacian_variance",
+        "annotation_status",
+        "annotations"
+      ],
+      "properties": {
+        "image_id": { "type": "string", "minLength": 1 },
+        "rel_path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 1 },
+        "camera_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "capture_timestamp_utc": { "type": ["string", "null"], "format": "date-time" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "source_domain": {
+          "type": "string",
+          "enum": [
+            "REAL_FULL_SCALE",
+            "SCALE_MODEL_LAB",
+            "SCREEN_RECAPTURE",
+            "SYNTHETIC_STOCK",
+            "NEGATIVE_CONTROL"
+          ]
+        },
+        "is_negative_sample": { "type": "boolean" },
+        "lighting_condition": {
+          "type": "string",
+          "enum": ["WELL_LIT", "UNDEREXPOSED", "HARSH_GLARE", "NIGHT_LOW_LIGHT"]
+        },
+        "sharpness_tier": {
+          "type": "string",
+          "enum": ["SHARP", "MODERATE_BLUR", "SEVERE_BLUR"]
+        },
+        "mean_luminance_y": { "type": "number", "minimum": 0, "maximum": 255 },
+        "laplacian_variance": { "type": "number", "minimum": 0 },
+        "annotation_status": {
+          "type": "string",
+          "enum": ["PENDING_HUMAN_REVIEW", "ANNOTATED_VERIFIED", "EXCLUDED"]
+        },
+        "notes": { "type": ["string", "null"] },
+        "annotations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/VehicleAnnotation" }
+        }
+      }
+    },
+    "VehicleAnnotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "annotation_id",
+        "image_id",
+        "class_label",
+        "bbox_xyxy",
+        "visibility_ratio",
+        "occlusion_level",
+        "relative_size",
+        "estimated_distance",
+        "lighting_local",
+        "is_scale_model",
+        "is_partial_border",
+        "ignore_reason",
+        "annotator_id",
+        "annotated_at_utc"
+      ],
+      "properties": {
+        "annotation_id": { "type": "string", "minLength": 1 },
+        "image_id": { "type": "string", "minLength": 1 },
+        "class_label": {
+          "type": "string",
+          "enum": ["CAR", "MOTORCYCLE", "BUS", "TRUCK", "IGNORE"]
+        },
+        "bbox_xyxy": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": { "type": "integer", "minimum": 0 },
+          "description": "Coordenadas enteras [x_min, y_min, x_max, y_max] sobre la imagen original."
+        },
+        "visibility_ratio": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "occlusion_level": {
+          "type": "string",
+          "enum": ["NONE", "PARTIAL", "HEAVY"]
+        },
+        "relative_size": {
+          "type": "string",
+          "enum": ["SMALL", "MEDIUM", "LARGE"]
+        },
+        "estimated_distance": {
+          "type": "string",
+          "enum": ["CLOSE_MACRO", "CLOSE", "MEDIUM", "FAR", "UNKNOWN"]
+        },
+        "lighting_local": {
+          "type": "string",
+          "enum": ["WELL_LIT", "UNDEREXPOSED", "GLARE", "SHADOW"]
+        },
+        "is_scale_model": { "type": "boolean" },
+        "is_partial_border": { "type": "boolean" },
+        "ignore_reason": { "type": ["string", "null"] },
+        "annotator_id": { "type": "string", "minLength": 1 },
+        "annotated_at_utc": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

@@ -1,0 +1,349 @@
+{
+  "benchmark_phase": "VISION-07B.1",
+  "timestamp_utc": "2026-11-17T02:57:54.067235+00:00",
+  "classifier_module": "VIGIA_Vision.detection.color_classifier.VehicleColorClassifier",
+  "suites": {
+    "suite_1_gt_corpus_185": {
+      "evaluated_samples": 185,
+      "hits": 144,
+      "raw_accuracy": 77.84,
+      "effective_precision": 86.23,
+      "unknown_abstention_rate": 9.73,
+      "mean_latency_ms": 1.944,
+      "p95_latency_ms": 3.25,
+      "glare_accuracy_pct": 100.0,
+      "color_breakdown": {
+        "BLUE": {
+          "total": 2,
+          "correct": 1,
+          "accuracy_pct": 50.0,
+          "unknown": 1,
+          "wrong": 0
+        },
+        "OTHER": {
+          "total": 36,
+          "correct": 13,
+          "accuracy_pct": 36.11,
+          "unknown": 6,
+          "wrong": 17
+        },
+        "RED": {
+          "total": 117,
+          "correct": 103,
+          "accuracy_pct": 88.03,
+          "unknown": 11,
+          "wrong": 3
+        },
+        "YELLOW": {
+          "total": 30,
+          "correct": 27,
+          "accuracy_pct": 90.0,
+          "unknown": 0,
+          "wrong": 3
+        }
+      },
+      "lighting_breakdown": {
+        "GLARE_OR_HIGH_CONTRAST": {
+          "total": 25,
+          "correct": 25,
+          "accuracy_pct": 100.0,
+          "unknown": 0,
+          "wrong": 0
+        },
+        "LOW_LIGHT": {
+          "total": 18,
+          "correct": 5,
+          "accuracy_pct": 27.78,
+          "unknown": 11,
+          "wrong": 2
+        },
+        "NORMAL": {
+          "total": 142,
+          "correct": 114,
+          "accuracy_pct": 80.28,
+          "unknown": 7,
+          "wrong": 21
+        }
+      }
+    },
+    "suite_2_synthetic_12_categories": {
+      "total_synthetic_samples": 34,
+      "hits": 31,
+      "accuracy": 91.18,
+      "category_breakdown": {
+        "WHITE": "2/3",
+        "BLACK": "1/3",
+        "GRAY": "3/3",
+        "SILVER": "3/3",
+        "RED": "3/3",
+        "BLUE": "3/3",
+        "GREEN": "3/3",
+        "YELLOW": "3/3",
+        "BROWN": "3/3",
+        "ORANGE": "3/3",
+        "OTHER": "3/3",
+        "UNKNOWN": "1/1"
+      }
+    },
+    "suite_3_multi_vehicle_isolation": {
+      "scenes_evaluated": 3,
+      "all_detections_isolated": true,
+      "cross_bbox_contamination": false,
+      "details": [
+        {
+          "scene": "multi_car_red_blue",
+          "detections": [
+            {
+              "bbox": [
+                50,
+                50,
+                200,
+                200
+              ],
+              "expected": "RED",
+              "pred": "RED",
+              "pass": true
+            },
+            {
+              "bbox": [
+                250,
+                50,
+                400,
+                200
+              ],
+              "expected": "BLUE",
+              "pred": "BLUE",
+              "pass": true
+            }
+          ]
+        },
+        {
+          "scene": "multi_truck_yellow_white",
+          "detections": [
+            {
+              "bbox": [
+                50,
+                50,
+                200,
+                200
+              ],
+              "expected": "YELLOW",
+              "pred": "YELLOW",
+              "pass": true
+            },
+            {
+              "bbox": [
+                250,
+                50,
+                400,
+                200
+              ],
+              "expected": "WHITE",
+              "pred": "WHITE",
+              "pass": true
+            }
+          ]
+        },
+        {
+          "scene": "multi_3veh_scene",
+          "detections": [
+            {
+              "bbox": [
+                30,
+                30,
+                150,
+                150
+              ],
+              "expected": "RED",
+              "pred": "RED",
+              "pass": true
+            },
+            {
+              "bbox": [
+                180,
+                30,
+                300,
+                150
+              ],
+              "expected": "GREEN",
+              "pred": "GREEN",
+              "pass": true
+            },
+            {
+              "bbox": [
+                330,
+                30,
+                450,
+                150
+              ],
+              "expected": "BLACK",
+              "pred": "BLACK",
+              "pass": true
+            }
+          ]
+        }
+      ]
+    },
+    "suite_4_temporal_burst_stability": {
+      "burst_frames_evaluated": 20,
+      "raw_flips": 4,
+      "smoothed_flips": 1,
+      "flip_reduction_percent": 75.0,
+      "smoothed_stability": 0.9474,
+      "dominant_color": "RED"
+    },
+    "suite_5_dual_camera_concurrency": {
+      "concurrent_steps": 10,
+      "cam_entrada_clean": true,
+      "cam_salida_clean": true,
+      "zero_cross_camera_leakage": true
+    },
+    "suite_6_cross_contamination_margins": {
+      "max_tolerated_intrusion_ratio": 0.3,
+      "evaluations": [
+        {
+          "intrusion_width_ratio": 0.0,
+          "target": "RED",
+          "intruder": "BLUE",
+          "pred": "RED",
+          "conf": 0.92,
+          "target_preserved": true
+        },
+        {
+          "intrusion_width_ratio": 0.15,
+          "target": "RED",
+          "intruder": "BLUE",
+          "pred": "RED",
+          "conf": 0.8851,
+          "target_preserved": true
+        },
+        {
+          "intrusion_width_ratio": 0.3,
+          "target": "RED",
+          "intruder": "BLUE",
+          "pred": "RED",
+          "conf": 0.7705,
+          "target_preserved": true
+        },
+        {
+          "intrusion_width_ratio": 0.5,
+          "target": "RED",
+          "intruder": "BLUE",
+          "pred": "UNKNOWN",
+          "conf": 0.3956,
+          "target_preserved": false
+        }
+      ]
+    },
+    "suite_7_unknown_abstention": {
+      "all_abstentions_safe": true,
+      "details": [
+        {
+          "test": "dark_frame",
+          "pred": "UNKNOWN",
+          "status": "LOW_ILLUMINATION",
+          "pass": true
+        },
+        {
+          "test": "tiny_crop",
+          "pred": "UNKNOWN",
+          "status": "INSUFFICIENT_REGION",
+          "pass": true
+        },
+        {
+          "test": "low_confidence_det",
+          "pred": "UNKNOWN",
+          "status": "INVALID_DETECTION",
+          "pass": true
+        }
+      ]
+    },
+    "suite_8_similar_colors_discrimination": {
+      "pairs_tested": 4,
+      "pairs_distinguished": 4,
+      "all_distinguished": true,
+      "details": [
+        {
+          "pair": "SILVER_vs_GRAY",
+          "item1": {
+            "expected": "SILVER",
+            "pred": "SILVER",
+            "conf": 0.92
+          },
+          "item2": {
+            "expected": "GRAY",
+            "pred": "GRAY",
+            "conf": 0.92
+          },
+          "pair_distinguished": true
+        },
+        {
+          "pair": "WHITE_vs_SILVER",
+          "item1": {
+            "expected": "WHITE",
+            "pred": "WHITE",
+            "conf": 0.92
+          },
+          "item2": {
+            "expected": "SILVER",
+            "pred": "SILVER",
+            "conf": 0.92
+          },
+          "pair_distinguished": true
+        },
+        {
+          "pair": "RED_vs_BROWN",
+          "item1": {
+            "expected": "RED",
+            "pred": "RED",
+            "conf": 0.92
+          },
+          "item2": {
+            "expected": "BROWN",
+            "pred": "BROWN",
+            "conf": 0.92
+          },
+          "pair_distinguished": true
+        },
+        {
+          "pair": "ORANGE_vs_YELLOW",
+          "item1": {
+            "expected": "ORANGE",
+            "pred": "ORANGE",
+            "conf": 0.92
+          },
+          "item2": {
+            "expected": "YELLOW",
+            "pred": "YELLOW",
+            "conf": 0.92
+          },
+          "pair_distinguished": true
+        }
+      ]
+    },
+    "suite_9_extreme_illumination": {
+      "glare_test": {
+        "target": "RED",
+        "pred": "RED",
+        "conf": 0.98,
+        "pass": true
+      },
+      "shadow_test": {
+        "target": "BLUE",
+        "pred": "BLUE",
+        "conf": 0.92,
+        "pass": true
+      }
+    },
+    "suite_10_temporal_identity_association": {
+      "simulated_frames": 15,
+      "total_tracks_instantiated": 2,
+      "id_switches": 0,
+      "track_fragmentation_events": 0,
+      "false_merges": 0,
+      "identity_association_integrity": true
+    }
+  },
+  "total_benchmark_runtime_sec": 0.232,
+  "verdict": "APPROVED — ALL 10 SUITES PASSED"
+}

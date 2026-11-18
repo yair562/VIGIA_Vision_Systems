@@ -40,8 +40,10 @@ from VIGIA_Vision.detection import (
     YoloDetectorConfig,
     YoloVehicleDetector,
     filter_detections_by_roi,
+    load_yolo_config_from_env,
     project_normalized_roi,
     resolve_inference_device,
+    resolve_yolo_weights_path,
     validate_bgr_frame,
 )
 from VIGIA_Vision.runtime import (
@@ -98,9 +100,11 @@ __all__ = [
     "derive_annotated_evidence_path",
     "derive_original_evidence_path",
     "filter_detections_by_roi",
+    "load_yolo_config_from_env",
     "map_raw_label_to_domain_vehicle_type",
     "project_normalized_roi",
     "render_annotated_frame",
     "resolve_inference_device",
+    "resolve_yolo_weights_path",
     "validate_bgr_frame",
 ]

@@ -400,6 +400,19 @@
   font-weight: var(--font-weight-regular);
 }
 
+.device-type-label {
+  display: inline-block;
+  font-weight: 500;
+}
+
+.device-type-label--usb {
+  color: #7c3aed;
+}
+
+.device-type-label--mobile {
+  color: #2563eb;
+}
+
 /* Distinción visual de estados de conexión */
 .device-status-pill {
   display: inline-flex;

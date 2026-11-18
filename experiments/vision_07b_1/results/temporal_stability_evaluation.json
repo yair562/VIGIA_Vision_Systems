@@ -1,0 +1,215 @@
+{
+  "total_burst_frames": 20,
+  "raw_color_sequence": [
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "ORANGE",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "UNKNOWN",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER"
+  ],
+  "raw_flips_count": 4,
+  "raw_stability_ratio": 0.7895,
+  "smoothed_color_sequence": [
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER",
+    "OTHER"
+  ],
+  "smoothed_flips_count": 1,
+  "smoothed_stability_ratio": 0.9474,
+  "flips_reduction_percentage": 75.0,
+  "dominant_entity_color": "RED",
+  "detailed_steps": [
+    {
+      "step": 1,
+      "file": "20261117/CAM-ENTRADA/20261117T000625_139777Z_e105539291d8_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.7651,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 2,
+      "file": "20261117/CAM-ENTRADA/20261117T000628_778997Z_7c1decf7e523_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.7942,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 3,
+      "file": "20261117/CAM-ENTRADA/20261117T000629_659045Z_d3a8c64cc7a7_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.8123,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 4,
+      "file": "20261117/CAM-ENTRADA/20261117T000630_062904Z_c86985f176f2_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.8092,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 5,
+      "file": "20261117/CAM-ENTRADA/20261117T000630_263802Z_968f43325a17_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.7833,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 6,
+      "file": "20261117/CAM-ENTRADA/20261117T000630_399716Z_8d24fd52a63d_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.78,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 7,
+      "file": "20261117/CAM-ENTRADA/20261117T000631_155957Z_24aad757b50c_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.751,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 8,
+      "file": "20261117/CAM-ENTRADA/20261117T000634_053918Z_dcdb888b5e94_orig.jpg",
+      "raw_color": "RED",
+      "raw_conf": 0.8383,
+      "smoothed_color": "RED",
+      "smoothed_conf": 1.0
+    },
+    {
+      "step": 9,
+      "file": "20261117/CAM-ENTRADA/20261117T000700_081138Z_8ce2cde8a714_orig.jpg",
+      "raw_color": "ORANGE",
+      "raw_conf": 0.7964,
+      "smoothed_color": "RED",
+      "smoothed_conf": 0.8238
+    },
+    {
+      "step": 10,
+      "file": "20261117/CAM-ENTRADA/20261117T000700_822192Z_e09860159ede_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7452,
+      "smoothed_color": "RED",
+      "smoothed_conf": 0.6939
+    },
+    {
+      "step": 11,
+      "file": "20261117/CAM-ENTRADA/20261117T000701_092595Z_4c2a3951fa79_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7421,
+      "smoothed_color": "RED",
+      "smoothed_conf": 0.5888
+    },
+    {
+      "step": 12,
+      "file": "20261117/CAM-ENTRADA/20261117T000701_429329Z_66f145214d8f_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7379,
+      "smoothed_color": "RED",
+      "smoothed_conf": 0.5027
+    },
+    {
+      "step": 13,
+      "file": "20261117/CAM-ENTRADA/20261117T000701_563673Z_7bb4035b2f3a_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7436,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.4773
+    },
+    {
+      "step": 14,
+      "file": "20261117/CAM-ENTRADA/20261117T000701_700529Z_479c62f7ff64_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7351,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.5498
+    },
+    {
+      "step": 15,
+      "file": "20261117/CAM-ENTRADA/20261117T000705_543767Z_f08126fb9df1_orig.jpg",
+      "raw_color": "UNKNOWN",
+      "raw_conf": 0.3733,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.5498
+    },
+    {
+      "step": 16,
+      "file": "20261117/CAM-ENTRADA/20261117T000706_083508Z_a6f2fefa48b0_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7302,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.6107
+    },
+    {
+      "step": 17,
+      "file": "20261117/CAM-ENTRADA/20261117T000706_353261Z_251330ce2d2e_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.799,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.6668
+    },
+    {
+      "step": 18,
+      "file": "20261117/CAM-ENTRADA/20261117T000707_027403Z_3c534cab35ec_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7785,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.7127
+    },
+    {
+      "step": 19,
+      "file": "20261117/CAM-ENTRADA/20261117T000708_327782Z_4fb44926818b_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.7615,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.7508
+    },
+    {
+      "step": 20,
+      "file": "20261117/CAM-ENTRADA/20261117T000709_273159Z_c66508f01c15_orig.jpg",
+      "raw_color": "OTHER",
+      "raw_conf": 0.4717,
+      "smoothed_color": "OTHER",
+      "smoothed_conf": 0.7721
+    }
+  ]
+}

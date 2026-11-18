@@ -1,0 +1,3546 @@
+{
+  "corpus_audit": {
+    "filesystem_counts": {
+      "total_files": 1392,
+      "orig_jpg": 696,
+      "annot_jpg": 696,
+      "other_files": 0,
+      "unique_sha256": 279,
+      "exact_duplicates": 396,
+      "exact_dup_groups_n_gt_1": 3,
+      "perceptual_clusters_in_unique": 178,
+      "temporal_sequences": 30
+    },
+    "confirmed_category_counts_unique_279": {
+      "Autobús": 84,
+      "Automóvil": 276,
+      "Baja iluminación": 38,
+      "Camión": 8,
+      "Contraluz": 58,
+      "Motocicleta": 8,
+      "Oclusión parcial": 103,
+      "Vehículo frontal": 104,
+      "Vehículo frontal oblicuo": 80,
+      "Vehículo lateral": 149,
+      "Vehículo pequeño o lejano": 66,
+      "Vehículo trasero": 19
+    },
+    "confirmed_category_counts_all_675": {
+      "Autobús": 480,
+      "Automóvil": 276,
+      "Baja iluminación": 38,
+      "Camión": 8,
+      "Contraluz": 58,
+      "Motocicleta": 8,
+      "Oclusión parcial": 499,
+      "Vehículo frontal": 104,
+      "Vehículo frontal oblicuo": 476,
+      "Vehículo lateral": 149,
+      "Vehículo pequeño o lejano": 66,
+      "Vehículo trasero": 19
+    },
+    "frontal_reconciliation": {
+      "unique_has_frontal_car": 76,
+      "unique_has_frontal_bus": 18,
+      "unique_intersection_both_car_and_bus": 7,
+      "intersection_sample_ids": [
+        "EV-0581",
+        "EV-0582",
+        "EV-0583",
+        "EV-0584",
+        "EV-0585",
+        "EV-0586",
+        "EV-0587"
+      ],
+      "unique_union_primary_frontal_car_or_bus": 87,
+      "unique_screen_grid_with_frontal_tag": 17,
+      "all_screen_grid_with_frontal_tag": 17,
+      "unique_total_with_frontal_tag": 104,
+      "all_675_with_frontal_tag": 104,
+      "unique_bus_frontal_plus_oblique_school_bus": 30,
+      "why_89_vs_95_occurred": {
+        "76_frontal_cars_plus_18_frontal_buses_plus_1_moto_screen": 95,
+        "87_primary_frontal_images_plus_2_unique_motorcycle_front_only_or_screen": "La cifra '89' en VISION-05A provino de restar parcialmente la intersección multi-vehículo o excluir recapturas de cuadrícula sobre 95 observaciones de subcategorías (76 autos frontales + 18 autobuses frontales + 1 secuencia de moto frontal). Matemáticamente exacto: 76 imágenes únicas con automóvil frontal primario + 18 imágenes únicas con autobús frontal primario - 7 imágenes compartidas (EV-0581..EV-0587 donde aparecen AMBOS en el mismo frame) = 87 imágenes únicas con automóvil/autobús frontal evaluado; sumando las 11 imágenes únicas de cuadrículas de pantalla con tag 'Vehículo frontal' (EV-0295..0303 [3 hashes únicos, 9 archivos] y EV-0449..0456 [8 archivos]), el total de imágenes únicas con tag 'Vehículo frontal' es 98 (y 104 sobre el total de 675 archivos)."
+      }
+    }
+  },
+  "key_samples_exact": {
+    "EV-0442": {
+      "relative_path": "20261110/CAM-ENTRADA/20261110T184439_891189Z_d8bb68d50c91_orig.jpg",
+      "file_name": "20261110T184439_891189Z_d8bb68d50c91_orig.jpg",
+      "resolution": "720x1280",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 18.11,
+      "confirmed_categories": [
+        "Automóvil",
+        "Vehículo frontal",
+        "Vehículo pequeño o lejano"
+      ],
+      "visual_notes": "Auto rojo pequeño/lejano visto directamente de frente sobre mesa blanca.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.9087,
+          "bbox": [
+            494,
+            613,
+            642,
+            762
+          ],
+          "width": 148,
+          "height": 149,
+          "rel_area_pct": 2.393,
+          "aspect_ratio_wh": 0.993,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8276,
+          "bbox": [
+            494,
+            613,
+            642,
+            761
+          ],
+          "width": 148,
+          "height": 148,
+          "rel_area_pct": 2.377,
+          "aspect_ratio_wh": 1.0,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0483": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T004948_798024Z_a846ba30a07a_orig.jpg",
+      "file_name": "20261114T004948_798024Z_a846ba30a07a_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "LOW_LIGHT",
+      "sharpness_laplacian": 12.6,
+      "confirmed_categories": [
+        "Automóvil",
+        "Baja iluminación",
+        "Vehículo lateral"
+      ],
+      "visual_notes": "Auto rojo lateral en baja iluminación severa frente a teclado oscuro.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.251,
+          "bbox": [
+            136,
+            130,
+            434,
+            245
+          ],
+          "width": 298,
+          "height": 115,
+          "rel_area_pct": 11.156,
+          "aspect_ratio_wh": 2.591,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8223,
+          "bbox": [
+            132,
+            129,
+            435,
+            242
+          ],
+          "width": 303,
+          "height": 113,
+          "rel_area_pct": 11.146,
+          "aspect_ratio_wh": 2.681,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0494": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T004957_154790Z_2271be730b5b_orig.jpg",
+      "file_name": "20261114T004957_154790Z_2271be730b5b_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "LOW_LIGHT",
+      "sharpness_laplacian": 2.77,
+      "confirmed_categories": [
+        "Automóvil",
+        "Baja iluminación",
+        "Vehículo lateral"
+      ],
+      "visual_notes": "Auto rojo lateral en baja iluminación severa frente a teclado oscuro.",
+      "yolo26x_baseline_cands_010": [],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.814,
+          "bbox": [
+            166,
+            204,
+            492,
+            344
+          ],
+          "width": 326,
+          "height": 140,
+          "rel_area_pct": 14.857,
+          "aspect_ratio_wh": 2.329,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0525": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T005855_533774Z_5d9a6398fdc5_orig.jpg",
+      "file_name": "20261114T005855_533774Z_5d9a6398fdc5_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 8.72,
+      "confirmed_categories": [
+        "Automóvil",
+        "Vehículo lateral"
+      ],
+      "visual_notes": "Auto rojo en vista lateral sobre escritorio.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.7217,
+          "bbox": [
+            162,
+            112,
+            450,
+            227
+          ],
+          "width": 288,
+          "height": 115,
+          "rel_area_pct": 10.781,
+          "aspect_ratio_wh": 2.504,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.3979,
+          "bbox": [
+            161,
+            111,
+            449,
+            227
+          ],
+          "width": 288,
+          "height": 116,
+          "rel_area_pct": 10.875,
+          "aspect_ratio_wh": 2.483,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.7358,
+          "bbox": [
+            160,
+            111,
+            449,
+            228
+          ],
+          "width": 289,
+          "height": 117,
+          "rel_area_pct": 11.007,
+          "aspect_ratio_wh": 2.47,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0550": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T005953_419239Z_5f4588730e82_orig.jpg",
+      "file_name": "20261114T005953_419239Z_5f4588730e82_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 8.81,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo lateral"
+      ],
+      "visual_notes": "Autobús escolar amarillo en vista lateral (con auto rojo parcial en borde superior fuera de ROI).",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "bus",
+          "confidence": 0.814,
+          "bbox": [
+            95,
+            97,
+            474,
+            256
+          ],
+          "width": 379,
+          "height": 159,
+          "rel_area_pct": 19.616,
+          "aspect_ratio_wh": 2.384,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.4092,
+          "bbox": [
+            352,
+            0,
+            571,
+            25
+          ],
+          "width": 219,
+          "height": 25,
+          "rel_area_pct": 1.782,
+          "aspect_ratio_wh": 8.76,
+          "in_roi": false
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "bus",
+          "confidence": 0.832,
+          "bbox": [
+            96,
+            97,
+            474,
+            256
+          ],
+          "width": 378,
+          "height": 159,
+          "rel_area_pct": 19.564,
+          "aspect_ratio_wh": 2.377,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0575": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T010013_064537Z_07ac07b83576_orig.jpg",
+      "file_name": "20261114T010013_064537Z_07ac07b83576_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 7.48,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal",
+        "Vehículo pequeño o lejano"
+      ],
+      "visual_notes": "Autobús escolar amarillo visto directamente de frente sostenido con la mano + auto rojo pequeño al fondo.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.7842,
+          "bbox": [
+            497,
+            51,
+            630,
+            141
+          ],
+          "width": 133,
+          "height": 90,
+          "rel_area_pct": 3.896,
+          "aspect_ratio_wh": 1.478,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.1379,
+          "bbox": [
+            212,
+            152,
+            427,
+            360
+          ],
+          "width": 215,
+          "height": 208,
+          "rel_area_pct": 14.557,
+          "aspect_ratio_wh": 1.034,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8774,
+          "bbox": [
+            496,
+            51,
+            628,
+            142
+          ],
+          "width": 132,
+          "height": 91,
+          "rel_area_pct": 3.91,
+          "aspect_ratio_wh": 1.451,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0581": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T010037_321148Z_29a0e74bbe1e_orig.jpg",
+      "file_name": "20261114T010037_321148Z_29a0e74bbe1e_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 10.07,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Vehículo frontal",
+        "Vehículo pequeño o lejano"
+      ],
+      "visual_notes": "Autobús escolar amarillo visto directamente de frente sobre mesa + automóvil secundario.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.6704,
+          "bbox": [
+            240,
+            100,
+            339,
+            174
+          ],
+          "width": 99,
+          "height": 74,
+          "rel_area_pct": 2.385,
+          "aspect_ratio_wh": 1.338,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.5947,
+          "bbox": [
+            301,
+            158,
+            433,
+            333
+          ],
+          "width": 132,
+          "height": 175,
+          "rel_area_pct": 7.52,
+          "aspect_ratio_wh": 0.754,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.4534,
+          "bbox": [
+            301,
+            158,
+            433,
+            333
+          ],
+          "width": 132,
+          "height": 175,
+          "rel_area_pct": 7.52,
+          "aspect_ratio_wh": 0.754,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.1412,
+          "bbox": [
+            240,
+            100,
+            339,
+            174
+          ],
+          "width": 99,
+          "height": 74,
+          "rel_area_pct": 2.385,
+          "aspect_ratio_wh": 1.338,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.7446,
+          "bbox": [
+            240,
+            99,
+            338,
+            174
+          ],
+          "width": 98,
+          "height": 75,
+          "rel_area_pct": 2.393,
+          "aspect_ratio_wh": 1.307,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.283,
+          "bbox": [
+            301,
+            157,
+            434,
+            339
+          ],
+          "width": 133,
+          "height": 182,
+          "rel_area_pct": 7.88,
+          "aspect_ratio_wh": 0.731,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0584": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T010046_419841Z_1d02f0a21e97_orig.jpg",
+      "file_name": "20261114T010046_419841Z_1d02f0a21e97_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 11.82,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Vehículo frontal",
+        "Vehículo pequeño o lejano"
+      ],
+      "visual_notes": "Autobús escolar amarillo visto directamente de frente sobre mesa + automóvil secundario.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8984,
+          "bbox": [
+            240,
+            98,
+            338,
+            168
+          ],
+          "width": 98,
+          "height": 70,
+          "rel_area_pct": 2.233,
+          "aspect_ratio_wh": 1.4,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.6299,
+          "bbox": [
+            302,
+            154,
+            434,
+            328
+          ],
+          "width": 132,
+          "height": 174,
+          "rel_area_pct": 7.477,
+          "aspect_ratio_wh": 0.759,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.5815,
+          "bbox": [
+            303,
+            154,
+            434,
+            328
+          ],
+          "width": 131,
+          "height": 174,
+          "rel_area_pct": 7.42,
+          "aspect_ratio_wh": 0.753,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8491,
+          "bbox": [
+            239,
+            98,
+            338,
+            168
+          ],
+          "width": 99,
+          "height": 70,
+          "rel_area_pct": 2.256,
+          "aspect_ratio_wh": 1.414,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.7563,
+          "bbox": [
+            303,
+            154,
+            434,
+            335
+          ],
+          "width": 131,
+          "height": 181,
+          "rel_area_pct": 7.718,
+          "aspect_ratio_wh": 0.724,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0588": {
+      "relative_path": "20261114/CAM-SALIDA/20261114T010054_443040Z_bbf2d0cdf38b_orig.jpg",
+      "file_name": "20261114T010054_443040Z_bbf2d0cdf38b_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 5.29,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal",
+        "Vehículo frontal oblicuo"
+      ],
+      "visual_notes": "Autobús escolar amarillo visto directamente de frente sobre mesa + automóvil secundario.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.4495,
+          "bbox": [
+            42,
+            70,
+            321,
+            236
+          ],
+          "width": 279,
+          "height": 166,
+          "rel_area_pct": 15.076,
+          "aspect_ratio_wh": 1.681,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.151,
+          "bbox": [
+            316,
+            103,
+            501,
+            337
+          ],
+          "width": 185,
+          "height": 234,
+          "rel_area_pct": 14.092,
+          "aspect_ratio_wh": 0.791,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.1384,
+          "bbox": [
+            317,
+            104,
+            500,
+            336
+          ],
+          "width": 183,
+          "height": 232,
+          "rel_area_pct": 13.82,
+          "aspect_ratio_wh": 0.789,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8472,
+          "bbox": [
+            41,
+            71,
+            321,
+            238
+          ],
+          "width": 280,
+          "height": 167,
+          "rel_area_pct": 15.221,
+          "aspect_ratio_wh": 1.677,
+          "in_roi": true
+        },
+        {
+          "label": "bus",
+          "confidence": 0.2422,
+          "bbox": [
+            318,
+            105,
+            500,
+            338
+          ],
+          "width": 182,
+          "height": 233,
+          "rel_area_pct": 13.804,
+          "aspect_ratio_wh": 0.781,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.116,
+          "bbox": [
+            318,
+            103,
+            500,
+            337
+          ],
+          "width": 182,
+          "height": 234,
+          "rel_area_pct": 13.863,
+          "aspect_ratio_wh": 0.778,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0625": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172015_568913Z_c43de572acc5_orig.jpg",
+      "file_name": "20261116T172015_568913Z_c43de572acc5_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 9.92,
+      "confirmed_categories": [
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal"
+      ],
+      "visual_notes": "Automóvil convertible cian visto directamente de frente (con auto rosa frontal parcial a la izquierda en 632..636).",
+      "yolo26x_baseline_cands_010": [],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8066,
+          "bbox": [
+            228,
+            104,
+            492,
+            340
+          ],
+          "width": 264,
+          "height": 236,
+          "rel_area_pct": 20.281,
+          "aspect_ratio_wh": 1.119,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0626": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172016_108973Z_31dccc3c8845_orig.jpg",
+      "file_name": "20261116T172016_108973Z_31dccc3c8845_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 18.91,
+      "confirmed_categories": [
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal"
+      ],
+      "visual_notes": "Automóvil convertible cian visto directamente de frente (con auto rosa frontal parcial a la izquierda en 632..636).",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.4495,
+          "bbox": [
+            217,
+            98,
+            490,
+            338
+          ],
+          "width": 273,
+          "height": 240,
+          "rel_area_pct": 21.328,
+          "aspect_ratio_wh": 1.137,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.7705,
+          "bbox": [
+            220,
+            99,
+            490,
+            334
+          ],
+          "width": 270,
+          "height": 235,
+          "rel_area_pct": 20.654,
+          "aspect_ratio_wh": 1.149,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0627": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172020_828094Z_dc015465e05a_orig.jpg",
+      "file_name": "20261116T172020_828094Z_dc015465e05a_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 12.85,
+      "confirmed_categories": [
+        "Automóvil",
+        "Vehículo frontal"
+      ],
+      "visual_notes": "Automóvil convertible cian visto directamente de frente (con auto rosa frontal parcial a la izquierda en 632..636).",
+      "yolo26x_baseline_cands_010": [],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.7959,
+          "bbox": [
+            196,
+            69,
+            444,
+            287
+          ],
+          "width": 248,
+          "height": 218,
+          "rel_area_pct": 17.599,
+          "aspect_ratio_wh": 1.138,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.4321,
+          "bbox": [
+            494,
+            145,
+            640,
+            325
+          ],
+          "width": 146,
+          "height": 180,
+          "rel_area_pct": 8.555,
+          "aspect_ratio_wh": 0.811,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0635": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172036_202643Z_df5e1071c00f_orig.jpg",
+      "file_name": "20261116T172036_202643Z_df5e1071c00f_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 5.75,
+      "confirmed_categories": [
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal"
+      ],
+      "visual_notes": "Automóvil convertible cian visto directamente de frente (con auto rosa frontal parcial a la izquierda en 632..636).",
+      "yolo26x_baseline_cands_010": [],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8643,
+          "bbox": [
+            233,
+            86,
+            496,
+            317
+          ],
+          "width": 263,
+          "height": 231,
+          "rel_area_pct": 19.776,
+          "aspect_ratio_wh": 1.139,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.7676,
+          "bbox": [
+            1,
+            69,
+            237,
+            272
+          ],
+          "width": 236,
+          "height": 203,
+          "rel_area_pct": 15.595,
+          "aspect_ratio_wh": 1.163,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0637": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172044_969280Z_957178f6e593_orig.jpg",
+      "file_name": "20261116T172044_969280Z_957178f6e593_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 9.08,
+      "confirmed_categories": [
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal"
+      ],
+      "visual_notes": "Automóvil convertible rosa visto directamente de frente en primer plano.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.2942,
+          "bbox": [
+            286,
+            116,
+            639,
+            440
+          ],
+          "width": 353,
+          "height": 324,
+          "rel_area_pct": 37.23,
+          "aspect_ratio_wh": 1.09,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.1749,
+          "bbox": [
+            286,
+            116,
+            639,
+            440
+          ],
+          "width": 353,
+          "height": 324,
+          "rel_area_pct": 37.23,
+          "aspect_ratio_wh": 1.09,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.731,
+          "bbox": [
+            286,
+            116,
+            640,
+            444
+          ],
+          "width": 354,
+          "height": 328,
+          "rel_area_pct": 37.797,
+          "aspect_ratio_wh": 1.079,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0657": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172113_418425Z_e8a735512bc2_orig.jpg",
+      "file_name": "20261116T172113_418425Z_e8a735512bc2_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 24.71,
+      "confirmed_categories": [
+        "Automóvil",
+        "Vehículo frontal",
+        "Vehículo frontal oblicuo"
+      ],
+      "visual_notes": "Automóvil convertible rosa en vista frontal con ligera rotación oblicua (~15 grados).",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.5352,
+          "bbox": [
+            178,
+            127,
+            541,
+            354
+          ],
+          "width": 363,
+          "height": 227,
+          "rel_area_pct": 26.823,
+          "aspect_ratio_wh": 1.599,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.5078,
+          "bbox": [
+            177,
+            127,
+            540,
+            354
+          ],
+          "width": 363,
+          "height": 227,
+          "rel_area_pct": 26.823,
+          "aspect_ratio_wh": 1.599,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.8174,
+          "bbox": [
+            178,
+            126,
+            542,
+            353
+          ],
+          "width": 364,
+          "height": 227,
+          "rel_area_pct": 26.897,
+          "aspect_ratio_wh": 1.604,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.1255,
+          "bbox": [
+            0,
+            133,
+            86,
+            374
+          ],
+          "width": 86,
+          "height": 241,
+          "rel_area_pct": 6.747,
+          "aspect_ratio_wh": 0.357,
+          "in_roi": false
+        }
+      ]
+    },
+    "EV-0663": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172139_786321Z_b8404ad60d25_orig.jpg",
+      "file_name": "20261116T172139_786321Z_b8404ad60d25_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 28.78,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal oblicuo"
+      ],
+      "visual_notes": "Autobús escolar amarillo en vista frontal oblicua.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "bus",
+          "confidence": 0.2583,
+          "bbox": [
+            128,
+            106,
+            387,
+            296
+          ],
+          "width": 259,
+          "height": 190,
+          "rel_area_pct": 16.019,
+          "aspect_ratio_wh": 1.363,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.2407,
+          "bbox": [
+            127,
+            106,
+            386,
+            296
+          ],
+          "width": 259,
+          "height": 190,
+          "rel_area_pct": 16.019,
+          "aspect_ratio_wh": 1.363,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "truck",
+          "confidence": 0.686,
+          "bbox": [
+            128,
+            104,
+            388,
+            296
+          ],
+          "width": 260,
+          "height": 192,
+          "rel_area_pct": 16.25,
+          "aspect_ratio_wh": 1.354,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.2422,
+          "bbox": [
+            29,
+            65,
+            150,
+            170
+          ],
+          "width": 121,
+          "height": 105,
+          "rel_area_pct": 4.136,
+          "aspect_ratio_wh": 1.152,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.1766,
+          "bbox": [
+            568,
+            249,
+            640,
+            362
+          ],
+          "width": 72,
+          "height": 113,
+          "rel_area_pct": 2.648,
+          "aspect_ratio_wh": 0.637,
+          "in_roi": false
+        }
+      ]
+    },
+    "EV-0665": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172140_190972Z_c2499a3ef3d5_orig.jpg",
+      "file_name": "20261116T172140_190972Z_c2499a3ef3d5_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 28.48,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal oblicuo"
+      ],
+      "visual_notes": "Autobús escolar amarillo en vista frontal oblicua.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "bus",
+          "confidence": 0.2213,
+          "bbox": [
+            126,
+            106,
+            386,
+            296
+          ],
+          "width": 260,
+          "height": 190,
+          "rel_area_pct": 16.081,
+          "aspect_ratio_wh": 1.368,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.1943,
+          "bbox": [
+            126,
+            106,
+            386,
+            296
+          ],
+          "width": 260,
+          "height": 190,
+          "rel_area_pct": 16.081,
+          "aspect_ratio_wh": 1.368,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "truck",
+          "confidence": 0.7324,
+          "bbox": [
+            126,
+            104,
+            386,
+            296
+          ],
+          "width": 260,
+          "height": 192,
+          "rel_area_pct": 16.25,
+          "aspect_ratio_wh": 1.354,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.4727,
+          "bbox": [
+            28,
+            66,
+            152,
+            169
+          ],
+          "width": 124,
+          "height": 103,
+          "rel_area_pct": 4.158,
+          "aspect_ratio_wh": 1.204,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.1515,
+          "bbox": [
+            566,
+            249,
+            640,
+            364
+          ],
+          "width": 74,
+          "height": 115,
+          "rel_area_pct": 2.77,
+          "aspect_ratio_wh": 0.643,
+          "in_roi": false
+        }
+      ]
+    },
+    "EV-0671": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172203_520604Z_e0c6c9b2989f_orig.jpg",
+      "file_name": "20261116T172203_520604Z_e0c6c9b2989f_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 12.46,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Oclusión parcial",
+        "Vehículo frontal",
+        "Vehículo frontal oblicuo"
+      ],
+      "visual_notes": "Autobús escolar amarillo visto directamente de frente (izquierda) + auto deportivo rojo oblicuo (derecha).",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.876,
+          "bbox": [
+            258,
+            236,
+            462,
+            328
+          ],
+          "width": 204,
+          "height": 92,
+          "rel_area_pct": 6.109,
+          "aspect_ratio_wh": 2.217,
+          "in_roi": true
+        },
+        {
+          "label": "car",
+          "confidence": 0.1859,
+          "bbox": [
+            147,
+            232,
+            264,
+            359
+          ],
+          "width": 117,
+          "height": 127,
+          "rel_area_pct": 4.837,
+          "aspect_ratio_wh": 0.921,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.1268,
+          "bbox": [
+            147,
+            232,
+            264,
+            359
+          ],
+          "width": 117,
+          "height": 127,
+          "rel_area_pct": 4.837,
+          "aspect_ratio_wh": 0.921,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.7842,
+          "bbox": [
+            257,
+            236,
+            461,
+            327
+          ],
+          "width": 204,
+          "height": 91,
+          "rel_area_pct": 6.043,
+          "aspect_ratio_wh": 2.242,
+          "in_roi": true
+        }
+      ]
+    },
+    "EV-0673": {
+      "relative_path": "20261116/CAM-SALIDA/20261116T172215_381514Z_e271b33b3173_orig.jpg",
+      "file_name": "20261116T172215_381514Z_e271b33b3173_orig.jpg",
+      "resolution": "640x480",
+      "lighting_condition": "NORMAL",
+      "sharpness_laplacian": 18.61,
+      "confirmed_categories": [
+        "Autobús",
+        "Automóvil",
+        "Vehículo frontal oblicuo"
+      ],
+      "visual_notes": "Autobús escolar amarillo frontal-oblicuo + auto deportivo rojo frontal-oblicuo.",
+      "yolo26x_baseline_cands_010": [
+        {
+          "label": "car",
+          "confidence": 0.875,
+          "bbox": [
+            326,
+            217,
+            528,
+            316
+          ],
+          "width": 202,
+          "height": 99,
+          "rel_area_pct": 6.51,
+          "aspect_ratio_wh": 2.04,
+          "in_roi": true
+        },
+        {
+          "label": "bus",
+          "confidence": 0.2351,
+          "bbox": [
+            149,
+            210,
+            362,
+            337
+          ],
+          "width": 213,
+          "height": 127,
+          "rel_area_pct": 8.806,
+          "aspect_ratio_wh": 1.677,
+          "in_roi": true
+        }
+      ],
+      "yolo11n_ref_cands_010": [
+        {
+          "label": "truck",
+          "confidence": 0.7388,
+          "bbox": [
+            151,
+            210,
+            362,
+            337
+          ],
+          "width": 211,
+          "height": 127,
+          "rel_area_pct": 8.723,
+          "aspect_ratio_wh": 1.661,
+          "in_roi": true
+        },
+        {
+          "label": "truck",
+          "confidence": 0.5601,
+          "bbox": [
+            324,
+            215,
+            529,
+            317
+          ],
+          "width": 205,
+          "height": 102,
+          "rel_area_pct": 6.807,
+          "aspect_ratio_wh": 2.01,
+          "in_roi": true
+        }
+      ]
+    }
+  },
+  "reproduction": {
+    "yolo11n_reference": {
+      "latency": {
+        "mean_ms": 12.71,
+        "p50_ms": 12.0,
+        "p95_ms": 15.79,
+        "fps": 78.68
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 256,
+          "rate_070_pct": 91.76,
+          "hits_025": 279,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7894
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 73,
+          "rate_070_pct": 91.25,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7892
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 226,
+          "rate_070_pct": 93.39,
+          "hits_025": 242,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7934
+        },
+        "closeup_vehicles": {
+          "total": 153,
+          "hits_070": 136,
+          "rate_070_pct": 88.89,
+          "hits_025": 153,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7712
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 139,
+          "rate_070_pct": 93.29,
+          "hits_025": 149,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7918
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 64,
+          "rate_070_pct": 96.97,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8163
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 53,
+          "rate_070_pct": 91.38,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8147
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8003
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 65,
+          "rate_070_pct": 85.53,
+          "hits_025": 76,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.778
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 31,
+          "rate_070_pct": 81.58,
+          "hits_025": 38,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7618
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 115,
+          "rate_070_pct": 88.46,
+          "hits_025": 130,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7716
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 9,
+          "rate_070_pct": 50.0,
+          "hits_025": 13,
+          "rate_025_pct": 72.22,
+          "mean_top_conf": 0.6959
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.6959
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 63,
+          "rate_070_pct": 88.73,
+          "hits_025": 71,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7723
+        },
+        "dup_frames_025": 13,
+        "dup_pairs_025": 13,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 255,
+          "mean_iou_vs_640": 0.89,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 26.51,
+          "recovered_070_count": 77,
+          "recovered_070_ids": [
+            "EV-0003",
+            "EV-0008",
+            "EV-0211",
+            "EV-0429",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0493",
+            "EV-0494",
+            "EV-0495",
+            "EV-0496",
+            "EV-0497",
+            "EV-0499",
+            "EV-0501"
+          ],
+          "lost_070_count": 15,
+          "lost_070_ids": [
+            "EV-0477",
+            "EV-0479",
+            "EV-0487",
+            "EV-0490",
+            "EV-0510",
+            "EV-0513",
+            "EV-0516",
+            "EV-0517",
+            "EV-0521",
+            "EV-0591",
+            "EV-0610",
+            "EV-0651",
+            "EV-0655",
+            "EV-0672",
+            "EV-0675"
+          ]
+        }
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_070": 652,
+          "rate_070_pct": 96.59,
+          "hits_025": 675,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8096
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_070": 469,
+          "rate_070_pct": 98.53,
+          "hits_025": 476,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.818
+        },
+        "lighting_normal": {
+          "total": 638,
+          "hits_070": 622,
+          "rate_070_pct": 97.49,
+          "hits_025": 638,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8123
+        },
+        "closeup_vehicles": {
+          "total": 549,
+          "hits_070": 532,
+          "rate_070_pct": 96.9,
+          "hits_025": 549,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8092
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 139,
+          "rate_070_pct": 93.29,
+          "hits_025": 149,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7918
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 64,
+          "rate_070_pct": 96.97,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8163
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 53,
+          "rate_070_pct": 91.38,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8147
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8003
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 65,
+          "rate_070_pct": 85.53,
+          "hits_025": 76,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.778
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 31,
+          "rate_070_pct": 81.58,
+          "hits_025": 38,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7618
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 115,
+          "rate_070_pct": 88.46,
+          "hits_025": 130,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7716
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 9,
+          "rate_070_pct": 50.0,
+          "hits_025": 13,
+          "rate_025_pct": 72.22,
+          "mean_top_conf": 0.6959
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.6959
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 63,
+          "rate_070_pct": 88.73,
+          "hits_025": 71,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7723
+        },
+        "dup_frames_025": 13,
+        "dup_pairs_025": 13,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 651,
+          "mean_iou_vs_640": 0.9455,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 13.17,
+          "recovered_070_count": 77,
+          "recovered_070_ids": [
+            "EV-0003",
+            "EV-0008",
+            "EV-0211",
+            "EV-0429",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0493",
+            "EV-0494",
+            "EV-0495",
+            "EV-0496",
+            "EV-0497",
+            "EV-0499",
+            "EV-0501"
+          ],
+          "lost_070_count": 15,
+          "lost_070_ids": [
+            "EV-0477",
+            "EV-0479",
+            "EV-0487",
+            "EV-0490",
+            "EV-0510",
+            "EV-0513",
+            "EV-0516",
+            "EV-0517",
+            "EV-0521",
+            "EV-0591",
+            "EV-0610",
+            "EV-0651",
+            "EV-0655",
+            "EV-0672",
+            "EV-0675"
+          ]
+        }
+      }
+    },
+    "yolo26x_baseline": {
+      "latency": {
+        "mean_ms": 22.17,
+        "p50_ms": 21.19,
+        "p95_ms": 27.32,
+        "fps": 45.11
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 194,
+          "rate_070_pct": 69.53,
+          "hits_025": 255,
+          "rate_025_pct": 91.4,
+          "mean_top_conf": 0.7866
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 55,
+          "rate_070_pct": 68.75,
+          "hits_025": 76,
+          "rate_025_pct": 95.0,
+          "mean_top_conf": 0.7887
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 177,
+          "rate_070_pct": 73.14,
+          "hits_025": 226,
+          "rate_025_pct": 93.39,
+          "mean_top_conf": 0.7983
+        },
+        "closeup_vehicles": {
+          "total": 151,
+          "hits_070": 89,
+          "rate_070_pct": 58.94,
+          "hits_025": 136,
+          "rate_025_pct": 90.07,
+          "mean_top_conf": 0.7464
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 103,
+          "rate_070_pct": 69.13,
+          "hits_025": 137,
+          "rate_025_pct": 91.95,
+          "mean_top_conf": 0.7701
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 58,
+          "rate_070_pct": 87.88,
+          "hits_025": 65,
+          "rate_025_pct": 98.48,
+          "mean_top_conf": 0.8548
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 51,
+          "rate_070_pct": 87.93,
+          "hits_025": 57,
+          "rate_025_pct": 98.28,
+          "mean_top_conf": 0.8504
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 18,
+          "rate_070_pct": 94.74,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8619
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 53,
+          "rate_070_pct": 69.74,
+          "hits_025": 66,
+          "rate_025_pct": 86.84,
+          "mean_top_conf": 0.8394
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 18,
+          "rate_070_pct": 47.37,
+          "hits_025": 30,
+          "rate_025_pct": 78.95,
+          "mean_top_conf": 0.7034
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 92,
+          "rate_070_pct": 70.77,
+          "hits_025": 122,
+          "rate_025_pct": 93.85,
+          "mean_top_conf": 0.7778
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 3,
+          "rate_070_pct": 16.67,
+          "hits_025": 13,
+          "rate_025_pct": 72.22,
+          "mean_top_conf": 0.6367
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.6367
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 31,
+          "rate_070_pct": 43.66,
+          "hits_025": 56,
+          "rate_025_pct": 78.87,
+          "mean_top_conf": 0.7119
+        },
+        "dup_frames_025": 45,
+        "dup_pairs_025": 50,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_070": 590,
+          "rate_070_pct": 87.41,
+          "hits_025": 651,
+          "rate_025_pct": 96.44,
+          "mean_top_conf": 0.8832
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_070": 451,
+          "rate_070_pct": 94.75,
+          "hits_025": 472,
+          "rate_025_pct": 99.16,
+          "mean_top_conf": 0.9201
+        },
+        "lighting_normal": {
+          "total": 638,
+          "hits_070": 573,
+          "rate_070_pct": 89.81,
+          "hits_025": 622,
+          "rate_025_pct": 97.49,
+          "mean_top_conf": 0.8919
+        },
+        "closeup_vehicles": {
+          "total": 547,
+          "hits_070": 485,
+          "rate_070_pct": 88.67,
+          "hits_025": 532,
+          "rate_025_pct": 97.26,
+          "mean_top_conf": 0.8945
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 103,
+          "rate_070_pct": 69.13,
+          "hits_025": 137,
+          "rate_025_pct": 91.95,
+          "mean_top_conf": 0.7701
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 58,
+          "rate_070_pct": 87.88,
+          "hits_025": 65,
+          "rate_025_pct": 98.48,
+          "mean_top_conf": 0.8548
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 51,
+          "rate_070_pct": 87.93,
+          "hits_025": 57,
+          "rate_025_pct": 98.28,
+          "mean_top_conf": 0.8504
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 18,
+          "rate_070_pct": 94.74,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8619
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 53,
+          "rate_070_pct": 69.74,
+          "hits_025": 66,
+          "rate_025_pct": 86.84,
+          "mean_top_conf": 0.8394
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 18,
+          "rate_070_pct": 47.37,
+          "hits_025": 30,
+          "rate_025_pct": 78.95,
+          "mean_top_conf": 0.7034
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 92,
+          "rate_070_pct": 70.77,
+          "hits_025": 122,
+          "rate_025_pct": 93.85,
+          "mean_top_conf": 0.7778
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 3,
+          "rate_070_pct": 16.67,
+          "hits_025": 13,
+          "rate_025_pct": 72.22,
+          "mean_top_conf": 0.6367
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.6367
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 31,
+          "rate_070_pct": 43.66,
+          "hits_025": 56,
+          "rate_025_pct": 78.87,
+          "mean_top_conf": 0.7119
+        },
+        "dup_frames_025": 45,
+        "dup_pairs_025": 50,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0
+      }
+    },
+    "yolo26x_optimized_05a1": {
+      "latency": {
+        "mean_ms": 32.14,
+        "p50_ms": 26.11,
+        "p95_ms": 52.15,
+        "fps": 31.11
+      },
+      "runtime_counters": {
+        "total_inferences": 279,
+        "inference_errors": 0,
+        "cuda_errors": 0,
+        "init_errors": 0,
+        "fallback_count": 0,
+        "last_recovery_ms": null,
+        "frontal_aux_triggers": 132,
+        "frontal_aux_recoveries": 79,
+        "duplicates_suppressed": 669,
+        "latency_mean_ms": 32.119,
+        "latency_p50_ms": 26.091,
+        "latency_p95_ms": 52.125,
+        "latency_p99_ms": 59.781,
+        "inference_fps": 31.13,
+        "queue_wait_mean_ms": 0.0,
+        "last_queue_wait_ms": 0.0,
+        "last_camera_code": "CAM-SALIDA",
+        "last_inference_at": "2026-11-16T19:15:06.638771+00:00"
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 241,
+          "rate_070_pct": 86.38,
+          "hits_025": 270,
+          "rate_025_pct": 96.77,
+          "mean_top_conf": 0.8455
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 71,
+          "rate_070_pct": 88.75,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8702
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 214,
+          "rate_070_pct": 88.43,
+          "hits_025": 237,
+          "rate_025_pct": 97.93,
+          "mean_top_conf": 0.8504
+        },
+        "closeup_vehicles": {
+          "total": 150,
+          "hits_070": 123,
+          "rate_070_pct": 82.0,
+          "hits_025": 145,
+          "rate_025_pct": 96.67,
+          "mean_top_conf": 0.8128
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 127,
+          "rate_070_pct": 85.23,
+          "hits_025": 144,
+          "rate_025_pct": 96.64,
+          "mean_top_conf": 0.8358
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 65,
+          "rate_070_pct": 98.48,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.899
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 57,
+          "rate_070_pct": 98.28,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.9093
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8996
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 65,
+          "rate_070_pct": 85.53,
+          "hits_025": 71,
+          "rate_025_pct": 93.42,
+          "mean_top_conf": 0.869
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 28,
+          "rate_070_pct": 73.68,
+          "hits_025": 34,
+          "rate_025_pct": 89.47,
+          "mean_top_conf": 0.8138
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 117,
+          "rate_070_pct": 90.0,
+          "hits_025": 126,
+          "rate_025_pct": 96.92,
+          "mean_top_conf": 0.8509
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 12,
+          "rate_070_pct": 66.67,
+          "hits_025": 15,
+          "rate_025_pct": 83.33,
+          "mean_top_conf": 0.7476
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.7476
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 47,
+          "rate_070_pct": 66.2,
+          "hits_025": 66,
+          "rate_025_pct": 92.96,
+          "mean_top_conf": 0.7613
+        },
+        "dup_frames_025": 0,
+        "dup_pairs_025": 0,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 255,
+          "mean_iou_vs_640": 0.9742,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 5.63,
+          "recovered_070_count": 47,
+          "recovered_070_ids": [
+            "EV-0008",
+            "EV-0211",
+            "EV-0429",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0497",
+            "EV-0502",
+            "EV-0505",
+            "EV-0508",
+            "EV-0509",
+            "EV-0515",
+            "EV-0526"
+          ],
+          "lost_070_count": 0,
+          "lost_070_ids": []
+        }
+      },
+      "all_675": {
+        "all": {
+          "total": 675,
+          "hits_070": 637,
+          "rate_070_pct": 94.37,
+          "hits_025": 666,
+          "rate_025_pct": 98.67,
+          "mean_top_conf": 0.9048
+        },
+        "oblique_vehicles": {
+          "total": 476,
+          "hits_070": 467,
+          "rate_070_pct": 98.11,
+          "hits_025": 476,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.9327
+        },
+        "lighting_normal": {
+          "total": 638,
+          "hits_070": 610,
+          "rate_070_pct": 95.61,
+          "hits_025": 633,
+          "rate_025_pct": 99.22,
+          "mean_top_conf": 0.9098
+        },
+        "closeup_vehicles": {
+          "total": 546,
+          "hits_070": 519,
+          "rate_070_pct": 95.05,
+          "hits_025": 541,
+          "rate_025_pct": 99.08,
+          "mean_top_conf": 0.9098
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 127,
+          "rate_070_pct": 85.23,
+          "hits_025": 144,
+          "rate_025_pct": 96.64,
+          "mean_top_conf": 0.8358
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 65,
+          "rate_070_pct": 98.48,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.899
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 57,
+          "rate_070_pct": 98.28,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.9093
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8996
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 65,
+          "rate_070_pct": 85.53,
+          "hits_025": 71,
+          "rate_025_pct": 93.42,
+          "mean_top_conf": 0.869
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 28,
+          "rate_070_pct": 73.68,
+          "hits_025": 34,
+          "rate_025_pct": 89.47,
+          "mean_top_conf": 0.8138
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 117,
+          "rate_070_pct": 90.0,
+          "hits_025": 126,
+          "rate_025_pct": 96.92,
+          "mean_top_conf": 0.8509
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 12,
+          "rate_070_pct": 66.67,
+          "hits_025": 15,
+          "rate_025_pct": 83.33,
+          "mean_top_conf": 0.7476
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.7476
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 47,
+          "rate_070_pct": 66.2,
+          "hits_025": 66,
+          "rate_025_pct": 92.96,
+          "mean_top_conf": 0.7613
+        },
+        "dup_frames_025": 0,
+        "dup_pairs_025": 0,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 651,
+          "mean_iou_vs_640": 0.9899,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 2.21,
+          "recovered_070_count": 47,
+          "recovered_070_ids": [
+            "EV-0008",
+            "EV-0211",
+            "EV-0429",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0497",
+            "EV-0502",
+            "EV-0505",
+            "EV-0508",
+            "EV-0509",
+            "EV-0515",
+            "EV-0526"
+          ],
+          "lost_070_count": 0,
+          "lost_070_ids": []
+        }
+      }
+    }
+  },
+  "multiscale_validation": {
+    "single_640": {
+      "imgsz": 640,
+      "mode": "single_scale_dedup",
+      "latency": {
+        "mean_ms": 21.61,
+        "p50_ms": 20.55,
+        "p95_ms": 27.06,
+        "fps": 46.27
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 209,
+          "rate_070_pct": 74.91,
+          "hits_025": 260,
+          "rate_025_pct": 93.19,
+          "mean_top_conf": 0.8025
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 59,
+          "rate_070_pct": 73.75,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7922
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 190,
+          "rate_070_pct": 78.51,
+          "hits_025": 231,
+          "rate_025_pct": 95.45,
+          "mean_top_conf": 0.8132
+        },
+        "closeup_vehicles": {
+          "total": 150,
+          "hits_070": 101,
+          "rate_070_pct": 67.33,
+          "hits_025": 140,
+          "rate_025_pct": 93.33,
+          "mean_top_conf": 0.7611
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 110,
+          "rate_070_pct": 73.83,
+          "hits_025": 139,
+          "rate_025_pct": 93.29,
+          "mean_top_conf": 0.7897
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 63,
+          "rate_070_pct": 95.45,
+          "hits_025": 65,
+          "rate_025_pct": 98.48,
+          "mean_top_conf": 0.8665
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 52,
+          "rate_070_pct": 89.66,
+          "hits_025": 57,
+          "rate_025_pct": 98.28,
+          "mean_top_conf": 0.8623
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8996
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 56,
+          "rate_070_pct": 73.68,
+          "hits_025": 65,
+          "rate_025_pct": 85.53,
+          "mean_top_conf": 0.8545
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 20,
+          "rate_070_pct": 52.63,
+          "hits_025": 30,
+          "rate_025_pct": 78.95,
+          "mean_top_conf": 0.7252
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 102,
+          "rate_070_pct": 78.46,
+          "hits_025": 122,
+          "rate_025_pct": 93.85,
+          "mean_top_conf": 0.801
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 9,
+          "rate_070_pct": 50.0,
+          "hits_025": 15,
+          "rate_025_pct": 83.33,
+          "mean_top_conf": 0.6666
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.6666
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 35,
+          "rate_070_pct": 49.3,
+          "hits_025": 61,
+          "rate_025_pct": 85.92,
+          "mean_top_conf": 0.7123
+        },
+        "dup_frames_025": 0,
+        "dup_pairs_025": 0,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 255,
+          "mean_iou_vs_640": 0.9923,
+          "min_iou_vs_640": 0.0173,
+          "mean_center_shift_px": 1.05,
+          "recovered_070_count": 15,
+          "recovered_070_ids": [
+            "EV-0446",
+            "EV-0491",
+            "EV-0505",
+            "EV-0509",
+            "EV-0526",
+            "EV-0547",
+            "EV-0578",
+            "EV-0579",
+            "EV-0580",
+            "EV-0581",
+            "EV-0586",
+            "EV-0615",
+            "EV-0616",
+            "EV-0618",
+            "EV-0639"
+          ],
+          "lost_070_count": 0,
+          "lost_070_ids": []
+        }
+      }
+    },
+    "single_480": {
+      "imgsz": 480,
+      "mode": "single_scale_dedup",
+      "latency": {
+        "mean_ms": 21.19,
+        "p50_ms": 20.51,
+        "p95_ms": 26.31,
+        "fps": 47.19
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 215,
+          "rate_070_pct": 77.06,
+          "hits_025": 260,
+          "rate_025_pct": 93.19,
+          "mean_top_conf": 0.8243
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 62,
+          "rate_070_pct": 77.5,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.808
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 193,
+          "rate_070_pct": 79.75,
+          "hits_025": 231,
+          "rate_025_pct": 95.45,
+          "mean_top_conf": 0.8266
+        },
+        "closeup_vehicles": {
+          "total": 150,
+          "hits_070": 105,
+          "rate_070_pct": 70.0,
+          "hits_025": 141,
+          "rate_025_pct": 94.0,
+          "mean_top_conf": 0.781
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 115,
+          "rate_070_pct": 77.18,
+          "hits_025": 138,
+          "rate_025_pct": 92.62,
+          "mean_top_conf": 0.8285
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 61,
+          "rate_070_pct": 92.42,
+          "hits_025": 65,
+          "rate_025_pct": 98.48,
+          "mean_top_conf": 0.8694
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 55,
+          "rate_070_pct": 94.83,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8688
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8919
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 60,
+          "rate_070_pct": 78.95,
+          "hits_025": 69,
+          "rate_025_pct": 90.79,
+          "mean_top_conf": 0.8473
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 23,
+          "rate_070_pct": 60.53,
+          "hits_025": 30,
+          "rate_025_pct": 78.95,
+          "mean_top_conf": 0.8101
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 105,
+          "rate_070_pct": 80.77,
+          "hits_025": 120,
+          "rate_025_pct": 92.31,
+          "mean_top_conf": 0.8458
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 10,
+          "rate_070_pct": 55.56,
+          "hits_025": 14,
+          "rate_025_pct": 77.78,
+          "mean_top_conf": 0.7474
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.7474
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 36,
+          "rate_070_pct": 50.7,
+          "hits_025": 63,
+          "rate_025_pct": 88.73,
+          "mean_top_conf": 0.7211
+        },
+        "dup_frames_025": 0,
+        "dup_pairs_025": 0,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 249,
+          "mean_iou_vs_640": 0.9424,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 11.74,
+          "recovered_070_count": 31,
+          "recovered_070_ids": [
+            "EV-0211",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0481",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0505",
+            "EV-0508",
+            "EV-0509",
+            "EV-0515",
+            "EV-0526",
+            "EV-0546",
+            "EV-0547",
+            "EV-0579",
+            "EV-0580",
+            "EV-0581",
+            "EV-0586",
+            "EV-0587"
+          ],
+          "lost_070_count": 10,
+          "lost_070_ids": [
+            "EV-0459",
+            "EV-0524",
+            "EV-0548",
+            "EV-0573",
+            "EV-0576",
+            "EV-0577",
+            "EV-0638",
+            "EV-0654",
+            "EV-0655",
+            "EV-0668"
+          ]
+        }
+      }
+    },
+    "single_384": {
+      "imgsz": 384,
+      "mode": "single_scale_dedup",
+      "latency": {
+        "mean_ms": 20.17,
+        "p50_ms": 19.43,
+        "p95_ms": 25.6,
+        "fps": 49.58
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 198,
+          "rate_070_pct": 70.97,
+          "hits_025": 255,
+          "rate_025_pct": 91.4,
+          "mean_top_conf": 0.7895
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 61,
+          "rate_070_pct": 76.25,
+          "hits_025": 74,
+          "rate_025_pct": 92.5,
+          "mean_top_conf": 0.8012
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 171,
+          "rate_070_pct": 70.66,
+          "hits_025": 222,
+          "rate_025_pct": 91.74,
+          "mean_top_conf": 0.7854
+        },
+        "closeup_vehicles": {
+          "total": 148,
+          "hits_070": 82,
+          "rate_070_pct": 55.41,
+          "hits_025": 131,
+          "rate_025_pct": 88.51,
+          "mean_top_conf": 0.7298
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 97,
+          "rate_070_pct": 65.1,
+          "hits_025": 138,
+          "rate_025_pct": 92.62,
+          "mean_top_conf": 0.7653
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 59,
+          "rate_070_pct": 89.39,
+          "hits_025": 63,
+          "rate_025_pct": 95.45,
+          "mean_top_conf": 0.8448
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 56,
+          "rate_070_pct": 96.55,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8817
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8718
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 60,
+          "rate_070_pct": 78.95,
+          "hits_025": 71,
+          "rate_025_pct": 93.42,
+          "mean_top_conf": 0.8188
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 28,
+          "rate_070_pct": 73.68,
+          "hits_025": 34,
+          "rate_025_pct": 89.47,
+          "mean_top_conf": 0.8198
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 87,
+          "rate_070_pct": 66.92,
+          "hits_025": 120,
+          "rate_025_pct": 92.31,
+          "mean_top_conf": 0.7817
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 7,
+          "rate_070_pct": 38.89,
+          "hits_025": 13,
+          "rate_025_pct": 72.22,
+          "mean_top_conf": 0.7072
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.7072
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 35,
+          "rate_070_pct": 49.3,
+          "hits_025": 57,
+          "rate_025_pct": 80.28,
+          "mean_top_conf": 0.7002
+        },
+        "dup_frames_025": 0,
+        "dup_pairs_025": 0,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 243,
+          "mean_iou_vs_640": 0.9264,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 15.25,
+          "recovered_070_count": 32,
+          "recovered_070_ids": [
+            "EV-0008",
+            "EV-0429",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0497",
+            "EV-0502",
+            "EV-0505",
+            "EV-0508",
+            "EV-0515",
+            "EV-0526",
+            "EV-0579",
+            "EV-0581"
+          ],
+          "lost_070_count": 28,
+          "lost_070_ids": [
+            "EV-0548",
+            "EV-0549",
+            "EV-0550",
+            "EV-0551",
+            "EV-0552",
+            "EV-0553",
+            "EV-0554",
+            "EV-0555",
+            "EV-0557",
+            "EV-0558",
+            "EV-0559",
+            "EV-0560",
+            "EV-0561",
+            "EV-0562",
+            "EV-0563",
+            "EV-0564",
+            "EV-0565",
+            "EV-0566",
+            "EV-0567",
+            "EV-0572"
+          ]
+        }
+      }
+    },
+    "single_320": {
+      "imgsz": 320,
+      "mode": "single_scale_dedup",
+      "latency": {
+        "mean_ms": 21.56,
+        "p50_ms": 20.83,
+        "p95_ms": 26.98,
+        "fps": 46.38
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 209,
+          "rate_070_pct": 74.91,
+          "hits_025": 262,
+          "rate_025_pct": 93.91,
+          "mean_top_conf": 0.7973
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 57,
+          "rate_070_pct": 71.25,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.7688
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 178,
+          "rate_070_pct": 73.55,
+          "hits_025": 229,
+          "rate_025_pct": 94.63,
+          "mean_top_conf": 0.7873
+        },
+        "closeup_vehicles": {
+          "total": 148,
+          "hits_070": 93,
+          "rate_070_pct": 62.84,
+          "hits_025": 138,
+          "rate_025_pct": 93.24,
+          "mean_top_conf": 0.739
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 111,
+          "rate_070_pct": 74.5,
+          "hits_025": 138,
+          "rate_025_pct": 92.62,
+          "mean_top_conf": 0.8062
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 58,
+          "rate_070_pct": 87.88,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8186
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 50,
+          "rate_070_pct": 86.21,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8575
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8943
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 52,
+          "rate_070_pct": 68.42,
+          "hits_025": 68,
+          "rate_025_pct": 89.47,
+          "mean_top_conf": 0.8083
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 32,
+          "rate_070_pct": 84.21,
+          "hits_025": 34,
+          "rate_025_pct": 89.47,
+          "mean_top_conf": 0.8675
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 107,
+          "rate_070_pct": 82.31,
+          "hits_025": 123,
+          "rate_025_pct": 94.62,
+          "mean_top_conf": 0.8212
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 9,
+          "rate_070_pct": 50.0,
+          "hits_025": 15,
+          "rate_025_pct": 83.33,
+          "mean_top_conf": 0.6376
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.6376
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 32,
+          "rate_070_pct": 45.07,
+          "hits_025": 61,
+          "rate_025_pct": 85.92,
+          "mean_top_conf": 0.6776
+        },
+        "dup_frames_025": 1,
+        "dup_pairs_025": 1,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 248,
+          "mean_iou_vs_640": 0.93,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 13.21,
+          "recovered_070_count": 37,
+          "recovered_070_ids": [
+            "EV-0008",
+            "EV-0211",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0493",
+            "EV-0494",
+            "EV-0495",
+            "EV-0496",
+            "EV-0497",
+            "EV-0501",
+            "EV-0502",
+            "EV-0505"
+          ],
+          "lost_070_count": 22,
+          "lost_070_ids": [
+            "EV-0004",
+            "EV-0006",
+            "EV-0295",
+            "EV-0296",
+            "EV-0461",
+            "EV-0466",
+            "EV-0548",
+            "EV-0549",
+            "EV-0550",
+            "EV-0552",
+            "EV-0553",
+            "EV-0554",
+            "EV-0565",
+            "EV-0573",
+            "EV-0576",
+            "EV-0577",
+            "EV-0640",
+            "EV-0641",
+            "EV-0646",
+            "EV-0650"
+          ]
+        }
+      }
+    },
+    "cond_640_plus_480": {
+      "imgsz": "640+480_cond",
+      "mode": "conditional_aux_probe",
+      "latency": {
+        "mean_ms": 32.91,
+        "p50_ms": 27.5,
+        "p95_ms": 54.04,
+        "fps": 30.39
+      },
+      "runtime_counters": {
+        "total_inferences": 279,
+        "inference_errors": 0,
+        "cuda_errors": 0,
+        "init_errors": 0,
+        "fallback_count": 0,
+        "last_recovery_ms": null,
+        "frontal_aux_triggers": 132,
+        "frontal_aux_recoveries": 81,
+        "duplicates_suppressed": 728,
+        "latency_mean_ms": 32.892,
+        "latency_p50_ms": 27.474,
+        "latency_p95_ms": 54.008,
+        "latency_p99_ms": 60.805,
+        "inference_fps": 30.4,
+        "queue_wait_mean_ms": 0.001,
+        "last_queue_wait_ms": 0.0,
+        "last_camera_code": "CAM-SALIDA",
+        "last_inference_at": "2026-11-16T19:15:42.132931+00:00"
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 243,
+          "rate_070_pct": 87.1,
+          "hits_025": 267,
+          "rate_025_pct": 95.7,
+          "mean_top_conf": 0.858
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 73,
+          "rate_070_pct": 91.25,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8887
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 217,
+          "rate_070_pct": 89.67,
+          "hits_025": 236,
+          "rate_025_pct": 97.52,
+          "mean_top_conf": 0.8667
+        },
+        "closeup_vehicles": {
+          "total": 150,
+          "hits_070": 126,
+          "rate_070_pct": 84.0,
+          "hits_025": 144,
+          "rate_025_pct": 96.0,
+          "mean_top_conf": 0.8379
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 131,
+          "rate_070_pct": 87.92,
+          "hits_025": 143,
+          "rate_025_pct": 95.97,
+          "mean_top_conf": 0.8447
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 65,
+          "rate_070_pct": 98.48,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.906
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 56,
+          "rate_070_pct": 96.55,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.9084
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8996
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 64,
+          "rate_070_pct": 84.21,
+          "hits_025": 69,
+          "rate_025_pct": 90.79,
+          "mean_top_conf": 0.8843
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 27,
+          "rate_070_pct": 71.05,
+          "hits_025": 32,
+          "rate_025_pct": 84.21,
+          "mean_top_conf": 0.7961
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 118,
+          "rate_070_pct": 90.77,
+          "hits_025": 124,
+          "rate_025_pct": 95.38,
+          "mean_top_conf": 0.86
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 13,
+          "rate_070_pct": 72.22,
+          "hits_025": 15,
+          "rate_025_pct": 83.33,
+          "mean_top_conf": 0.7792
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.7792
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 49,
+          "rate_070_pct": 69.01,
+          "hits_025": 65,
+          "rate_025_pct": 91.55,
+          "mean_top_conf": 0.7961
+        },
+        "dup_frames_025": 0,
+        "dup_pairs_025": 0,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 255,
+          "mean_iou_vs_640": 0.9811,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 3.2,
+          "recovered_070_count": 49,
+          "recovered_070_ids": [
+            "EV-0008",
+            "EV-0211",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0497",
+            "EV-0502",
+            "EV-0505",
+            "EV-0508",
+            "EV-0509",
+            "EV-0515",
+            "EV-0526",
+            "EV-0542",
+            "EV-0543"
+          ],
+          "lost_070_count": 0,
+          "lost_070_ids": []
+        }
+      }
+    },
+    "cond_640_plus_384": {
+      "imgsz": "640+384_cond",
+      "mode": "conditional_aux_probe",
+      "latency": {
+        "mean_ms": 31.77,
+        "p50_ms": 27.44,
+        "p95_ms": 49.0,
+        "fps": 31.48
+      },
+      "runtime_counters": {
+        "total_inferences": 279,
+        "inference_errors": 0,
+        "cuda_errors": 0,
+        "init_errors": 0,
+        "fallback_count": 0,
+        "last_recovery_ms": null,
+        "frontal_aux_triggers": 132,
+        "frontal_aux_recoveries": 79,
+        "duplicates_suppressed": 669,
+        "latency_mean_ms": 31.751,
+        "latency_p50_ms": 27.418,
+        "latency_p95_ms": 48.978,
+        "latency_p99_ms": 52.584,
+        "inference_fps": 31.5,
+        "queue_wait_mean_ms": 0.001,
+        "last_queue_wait_ms": 0.001,
+        "last_camera_code": "CAM-SALIDA",
+        "last_inference_at": "2026-11-16T19:15:51.488148+00:00"
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 241,
+          "rate_070_pct": 86.38,
+          "hits_025": 270,
+          "rate_025_pct": 96.77,
+          "mean_top_conf": 0.8455
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 71,
+          "rate_070_pct": 88.75,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8702
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 214,
+          "rate_070_pct": 88.43,
+          "hits_025": 237,
+          "rate_025_pct": 97.93,
+          "mean_top_conf": 0.8504
+        },
+        "closeup_vehicles": {
+          "total": 150,
+          "hits_070": 123,
+          "rate_070_pct": 82.0,
+          "hits_025": 145,
+          "rate_025_pct": 96.67,
+          "mean_top_conf": 0.8128
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 127,
+          "rate_070_pct": 85.23,
+          "hits_025": 144,
+          "rate_025_pct": 96.64,
+          "mean_top_conf": 0.8358
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 65,
+          "rate_070_pct": 98.48,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.899
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 57,
+          "rate_070_pct": 98.28,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.9093
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8996
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 65,
+          "rate_070_pct": 85.53,
+          "hits_025": 71,
+          "rate_025_pct": 93.42,
+          "mean_top_conf": 0.869
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 28,
+          "rate_070_pct": 73.68,
+          "hits_025": 34,
+          "rate_025_pct": 89.47,
+          "mean_top_conf": 0.8138
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 117,
+          "rate_070_pct": 90.0,
+          "hits_025": 126,
+          "rate_025_pct": 96.92,
+          "mean_top_conf": 0.8509
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 12,
+          "rate_070_pct": 66.67,
+          "hits_025": 15,
+          "rate_025_pct": 83.33,
+          "mean_top_conf": 0.7476
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.7476
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 47,
+          "rate_070_pct": 66.2,
+          "hits_025": 66,
+          "rate_025_pct": 92.96,
+          "mean_top_conf": 0.7613
+        },
+        "dup_frames_025": 0,
+        "dup_pairs_025": 0,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 255,
+          "mean_iou_vs_640": 0.9742,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 5.63,
+          "recovered_070_count": 47,
+          "recovered_070_ids": [
+            "EV-0008",
+            "EV-0211",
+            "EV-0429",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0497",
+            "EV-0502",
+            "EV-0505",
+            "EV-0508",
+            "EV-0509",
+            "EV-0515",
+            "EV-0526"
+          ],
+          "lost_070_count": 0,
+          "lost_070_ids": []
+        }
+      }
+    },
+    "cond_640_plus_320": {
+      "imgsz": "640+320_cond",
+      "mode": "conditional_aux_probe",
+      "latency": {
+        "mean_ms": 30.19,
+        "p50_ms": 26.81,
+        "p95_ms": 46.94,
+        "fps": 33.12
+      },
+      "runtime_counters": {
+        "total_inferences": 279,
+        "inference_errors": 0,
+        "cuda_errors": 0,
+        "init_errors": 0,
+        "fallback_count": 0,
+        "last_recovery_ms": null,
+        "frontal_aux_triggers": 132,
+        "frontal_aux_recoveries": 86,
+        "duplicates_suppressed": 624,
+        "latency_mean_ms": 30.178,
+        "latency_p50_ms": 26.792,
+        "latency_p95_ms": 46.917,
+        "latency_p99_ms": 54.541,
+        "inference_fps": 33.14,
+        "queue_wait_mean_ms": 0.0,
+        "last_queue_wait_ms": 0.0,
+        "last_camera_code": "CAM-SALIDA",
+        "last_inference_at": "2026-11-16T19:16:00.509484+00:00"
+      },
+      "unique_279": {
+        "all": {
+          "total": 279,
+          "hits_070": 247,
+          "rate_070_pct": 88.53,
+          "hits_025": 270,
+          "rate_025_pct": 96.77,
+          "mean_top_conf": 0.8575
+        },
+        "oblique_vehicles": {
+          "total": 80,
+          "hits_070": 73,
+          "rate_070_pct": 91.25,
+          "hits_025": 80,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8836
+        },
+        "lighting_normal": {
+          "total": 242,
+          "hits_070": 215,
+          "rate_070_pct": 88.84,
+          "hits_025": 236,
+          "rate_025_pct": 97.52,
+          "mean_top_conf": 0.8593
+        },
+        "closeup_vehicles": {
+          "total": 150,
+          "hits_070": 124,
+          "rate_070_pct": 82.67,
+          "hits_025": 144,
+          "rate_025_pct": 96.0,
+          "mean_top_conf": 0.8257
+        },
+        "lateral_vehicles": {
+          "total": 149,
+          "hits_070": 134,
+          "rate_070_pct": 89.93,
+          "hits_025": 146,
+          "rate_025_pct": 97.99,
+          "mean_top_conf": 0.8466
+        },
+        "small_vehicles": {
+          "total": 66,
+          "hits_070": 65,
+          "rate_070_pct": 98.48,
+          "hits_025": 66,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.9022
+        },
+        "backlight_glare": {
+          "total": 58,
+          "hits_070": 57,
+          "rate_070_pct": 98.28,
+          "hits_025": 58,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.9063
+        },
+        "rear_vehicles": {
+          "total": 19,
+          "hits_070": 19,
+          "rate_070_pct": 100.0,
+          "hits_025": 19,
+          "rate_025_pct": 100.0,
+          "mean_top_conf": 0.8996
+        },
+        "frontal_cars": {
+          "total": 76,
+          "hits_070": 65,
+          "rate_070_pct": 85.53,
+          "hits_025": 69,
+          "rate_025_pct": 90.79,
+          "mean_top_conf": 0.8818
+        },
+        "low_light": {
+          "total": 38,
+          "hits_070": 33,
+          "rate_070_pct": 86.84,
+          "hits_025": 35,
+          "rate_025_pct": 92.11,
+          "mean_top_conf": 0.8477
+        },
+        "cam_salida_20261114": {
+          "total": 130,
+          "hits_070": 122,
+          "rate_070_pct": 93.85,
+          "hits_025": 127,
+          "rate_025_pct": 97.69,
+          "mean_top_conf": 0.863
+        },
+        "frontal_buses_presence": {
+          "total": 18,
+          "hits_070": 11,
+          "rate_070_pct": 61.11,
+          "hits_025": 16,
+          "rate_025_pct": 88.89,
+          "mean_top_conf": 0.7198
+        },
+        "frontal_buses_strict_label": {
+          "total": 18,
+          "hits_070": 0,
+          "rate_070_pct": 0.0,
+          "hits_025": 0,
+          "rate_025_pct": 0.0,
+          "mean_top_conf": 0.7198
+        },
+        "cam_salida_20261116": {
+          "total": 71,
+          "hits_070": 48,
+          "rate_070_pct": 67.61,
+          "hits_025": 65,
+          "rate_025_pct": 91.55,
+          "mean_top_conf": 0.7856
+        },
+        "dup_frames_025": 1,
+        "dup_pairs_025": 2,
+        "dup_frames_070": 0,
+        "dup_pairs_070": 0,
+        "vs_640_stability": {
+          "matched_frames": 255,
+          "mean_iou_vs_640": 0.9735,
+          "min_iou_vs_640": 0.0,
+          "mean_center_shift_px": 4.36,
+          "recovered_070_count": 53,
+          "recovered_070_ids": [
+            "EV-0008",
+            "EV-0211",
+            "EV-0429",
+            "EV-0446",
+            "EV-0457",
+            "EV-0458",
+            "EV-0475",
+            "EV-0476",
+            "EV-0481",
+            "EV-0482",
+            "EV-0483",
+            "EV-0491",
+            "EV-0492",
+            "EV-0493",
+            "EV-0494",
+            "EV-0495",
+            "EV-0496",
+            "EV-0497",
+            "EV-0501",
+            "EV-0502"
+          ],
+          "lost_070_count": 0,
+          "lost_070_ids": []
+        }
+      }
+    }
+  },
+  "false_positive_single_vehicle_probe": {
+    "baseline_640": {
+      "single_vehicle_frames_checked": 36,
+      "extra_detections_above_070": 0,
+      "extra_detections_above_025": 7
+    },
+    "opt_640_384": {
+      "single_vehicle_frames_checked": 36,
+      "extra_detections_above_070": 0,
+      "extra_detections_above_025": 0
+    }
+  },
+  "architecture_and_environment_audit": {
+    "yolo11n_pt_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\yolo11n.pt",
+    "yolo11n_pt_sha256": "0EBBC80D4A7680D14987A577CD21342B65ECFD94632BD9A8DA63AE6417644EE1",
+    "yolo26x_pt_path": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\experiments\\yolo26x\\weights\\yolo26x.pt",
+    "yolo26x_pt_sha256": "9FDD44A31C504547FFB81D2C6D9E6DAC3493C8EAA8B0398D3F43BAE6C7003E92",
+    "env_file_exists": false,
+    "env_file_sha256": null,
+    "default_env_model_name": "yolo11n.pt",
+    "default_env_fallback_name": "yolo11n.pt",
+    "default_env_fallback_enabled": true,
+    "default_env_imgsz": 640,
+    "trust_ca_test_16_reproduction": {
+      "root_ca_file": "C:\\GEST.PROY.TI\\Software\\VIGIA_Vision_Systems\\certs\\vigia_root_ca.crt",
+      "root_ca_exists": true,
+      "modalidad_a_pki_targets": {
+        "Localhost": {
+          "host": "localhost",
+          "ip": "127.0.0.1",
+          "port": 5000,
+          "tcp_connected": true,
+          "tls_handshake": false,
+          "chain_validated": false,
+          "hostname_validated": false,
+          "http_app_status": null,
+          "cdp_url": null,
+          "tls_error": "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:992)"
+        },
+        "LAN": {
+          "host": "192.168.1.75",
+          "ip": "192.168.1.75",
+          "port": 5000,
+          "tcp_connected": false,
+          "tls_handshake": false,
+          "chain_validated": false,
+          "hostname_validated": false,
+          "http_app_status": null,
+          "cdp_url": null,
+          "tcp_error": "timed out"
+        }
+      },
+      "modalidad_b_os_trust": {
+        "url": "https://192.168.1.75:5000/app",
+        "trusted_by_os": false,
+        "http_status": null,
+        "error": "<urlopen error timed out>",
+        "crl_url": "http://192.168.1.75:5080/api/v1/tls/ca.crl",
+        "crl_http_ok": false,
+        "schannel_revocation_ok": false,
+        "crl_error": "<urlopen error timed out>",
+        "schannel_error": "Command '['curl.exe', '-I', 'https://192.168.1.75:5000/app']' timed out after 5 seconds"
+      },
+      "modalidad_a_passed": false,
+      "modalidad_b_trusted": false,
+      "crl_http_ok": false,
+      "schannel_revocation_ok": false,
+      "overall_success": false,
+      "root_ca_fingerprint_sha256": "E593B2D0B808BD8F8E97582ECDEBEAD29AEBC0F9F4BA9EF6ADB2D8E4362E4F4D"
+    }
+  }
+}

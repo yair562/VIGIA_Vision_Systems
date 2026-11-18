@@ -14,6 +14,8 @@ from VIGIA_Vision.capture.sources import (
     IFrameCaptureSource,
     MobilePushFrameBuffer,
     OpenCVCaptureSource,
+    parse_usb_source_uri,
+    probe_local_usb_cameras,
 )
 
 __all__ = [
@@ -23,4 +25,6 @@ __all__ = [
     "MobilePushFrameBuffer",
     "OpenCVCaptureSource",
     "UnregisteredCameraError",
+    "parse_usb_source_uri",
+    "probe_local_usb_cameras",
 ]
