@@ -1,13 +1,13 @@
 {
-  "generation_id": "gen_20261117_004247_ac841134",
-  "target_ip": "192.168.1.105",
+  "generation_id": "gen_20261118_213645_ef08d812",
+  "target_ip": "10.68.118.185",
   "ca_signed": true,
   "ca_cert_file": "vigia_root_ca.crt",
   "cert_file": "vigia_cert.pem",
   "key_file": "vigia_key.pem",
-  "cert_relpath": "generations/gen_20261117_004247_ac841134/vigia_cert.pem",
-  "key_relpath": "generations/gen_20261117_004247_ac841134/vigia_key.pem",
-  "cdp_url": "http://192.168.1.105:5080/api/v1/tls/ca.crl",
+  "cert_relpath": "generations/gen_20261118_213645_ef08d812/vigia_cert.pem",
+  "key_relpath": "generations/gen_20261118_213645_ef08d812/vigia_key.pem",
+  "cdp_url": "http://10.68.118.185:5080/api/v1/tls/ca.crl",
   "crl_port": 5080,
-  "created_at": "2026-11-17T00:42:47.591514+00:00"
+  "created_at": "2026-11-18T21:36:45.265667+00:00"
 }
